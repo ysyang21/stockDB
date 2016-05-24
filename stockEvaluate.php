@@ -1450,7 +1450,7 @@ function evaluate_stock_price($pepo, $date, $id_kline)
 	if ($centurion==0)
 		$pepo->verdict = 100.0;
 	else
-		$pepo->verdict = $celsius/$centurion;
+		$pepo->verdict = decimal2(($celsius/$centurion)*100);
 /*
 	if ($potential_profit_margin > 0 and $potential_risk_margin > 0) // H > N > L
 	{
