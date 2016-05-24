@@ -238,7 +238,7 @@ function show_stock_evaluation($pepos)
 	echo_n('  <table>');
 	echo_n('    <caption>股價評估過程(*為今年推估值)</caption>');
 	echo_n('    <thead><th>評估日期<th>去年營收(億)<th>營收年增率*<th>今年營收(億)*<th>稅後淨利率*<th>稅後淨利(億)*<th>股本(億)*<th>EPS*' .
-	    '<th>股價高低點<th>當日收盤<th>上下檔風險*<th>投資建議*</thead>');
+	    '<th>股價高低點<th>當日收盤<th>上下檔風險*<th>溫度計*</thead>');
 	echo_n('    <tbody>');
 	foreach ($pepos as $pepo) {
 		echo '      <tr>';
@@ -254,7 +254,7 @@ function show_stock_evaluation($pepos)
 		echo '<td>' . decimal2($pepo->idr_estimated->high) . "/" . decimal2($pepo->idr_estimated->low);
 		echo '<td>' . decimal2($pepo->evaluate_price);
 		echo '<td>' . $pepo->potential;
-		if ($pepo->verdict == "buy buy buy")
+		if ($pepo->verdict <= 0.0)
 			echo "<td class = 'good'>" . $pepo->verdict;
 		else
 			echo '<td>' . $pepo->verdict;

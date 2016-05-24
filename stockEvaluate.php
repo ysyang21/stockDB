@@ -39,7 +39,7 @@ class pepoData
 	public $evaluate_date = "";
 	public $stock_position = "";
 	public $potential = "";
-	public $verdict = "";
+	public $verdict = 0.0;
 	public $monthly_revenue_yoy = array();
 }
 
@@ -1444,6 +1444,14 @@ function evaluate_stock_price($pepo, $date, $id_kline)
 		decimal2($pepo->idr_estimated->low);
 	echo_v (DEBUG_VERBOSE, "[evaluate_stock] N: id " . $pepo->id . " at day " . $date . ", " . $pepo->stock_position);
 
+	$centurion = $pepo->idr_estimated->high - $pepo->idr_estimated->low;
+	$celsius = $pepo->evaluate_price - $pepo->idr_estimated->low;
+
+	if ($centurion==0)
+		$pepo->verdict = 100.0;
+	else
+		$pepo->verdict = $celsius/$centurion;
+/*
 	if ($potential_profit_margin > 0 and $potential_risk_margin > 0) // H > N > L
 	{
 		//$pepo->stock_position = "High(" . decimal2($pepo->idr_estimated->high) . ") <----> Now(" . decimal2($pepo->evaluate_price) . ") <----> Low(" . decimal2($pepo->idr_estimated->low) . ")";
@@ -1478,6 +1486,7 @@ function evaluate_stock_price($pepo, $date, $id_kline)
 		$pepo->verdict = "sell*3";
 		echo_v (DEBUG_VERBOSE, "[evaluate_stock] N: id " . $pepo->id . " at day " . $date . " is " . $pepo->verdict);
 	}
+*/
 }
 
 function query_topN_ids_from_start($id_values, $start, $topN)
