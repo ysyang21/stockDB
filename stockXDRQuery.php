@@ -30,36 +30,38 @@ class xdrData
 
 /******************** Query Utilities ************************/
 
-function query_xdr_data_by_id_y($id, $year)
+function query_xdr_data_by_id($id)
 {
-	$xbrdata = array();
+	$xdrdata = array();
 
-	$query = "SELECT * FROM xdrdata WHERE id = '" . $id . "' and Year(date) = '" . $year . "' ORDER BY date";
+	// Does it matter to set ORDER DESC or ORDER ASC?
+	// if DESC, a little different from moneyDJ values
+	$query = "SELECT * FROM xdrdata WHERE id = '" . $id . "' ORDER BY date";
 	stopwatch_inter();
 	$result = mysql_query($query) or die('MySQL query error');
 
 	$ii = 0;
 	while($row = mysql_fetch_array($result)){
-		$xbrdata[$ii] = new xdrData();
-		$xbrdata[$ii]->date = $row['date'];
-		$xbrdata[$ii]->value = $row['value'];
-		$xbrdata[$ii]->xdr = $row['xdr'];
-		$xbrdata[$ii]->xd = $row['xd'];
-		$xbrdata[$ii]->xr = $row['xr'];
-		$xbrdata[$ii]->xr2 = $row['xr2'];
-		$xbrdata[$ii]->xr2p = $row['xr2p'];
+		$xdrdata[$ii] = new xdrData();
+		$xdrdata[$ii]->date = $row['date'];
+		$xdrdata[$ii]->value = $row['value'];
+		$xdrdata[$ii]->xdr = $row['xdr'];
+		$xdrdata[$ii]->xd = $row['xd'];
+		$xdrdata[$ii]->xr = $row['xr'];
+		$xdrdata[$ii]->xr2 = $row['xr2'];
+		$xdrdata[$ii]->xr2p = $row['xr2p'];
 
-		echo_v(DEBUG_VERBOSE, "[query_xdr_data_by_id_y] stock " . $id . " xdr " . $row['value'] . " on " . $row['date']);
+		echo_v(DEBUG_VERBOSE, "[query_xdr_data_by_id] stock " . $id . " xdr " . $row['value'] . " on " . $row['date']);
 		$ii++;
 	}
 	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
 
 	if ($ii==0)
-		echo_v(DEBUG_VERBOSE, "[query_xdr_data_by_id_y] There are " . "no" . " xdr in year " . $year . " for id " . $id);
+		echo_v(DEBUG_VERBOSE, "[query_xdr_data_by_id] There are " . "no" . " xdr for id " . $id);
 	else
-		echo_v(DEBUG_VERBOSE, "[query_xdr_data_by_id_y] There are " . $ii . " xdr in year " . $year . " for id " . $id);
+		echo_v(DEBUG_VERBOSE, "[query_xdr_data_by_id] There are " . $ii . " xdr for id " . $id);
 
-	return $xbrdata;
+	return $xdrdata;
 }
 
 /******************** Test Utilities ************************/

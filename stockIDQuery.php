@@ -48,6 +48,7 @@ class idData
 	public $market = '';
 	public $type = '';
 	public $report = '';
+	public $ondate = '';
     public $onyyyy = '';
     public $onmm = '';
 }
@@ -225,6 +226,7 @@ function query_id_data_by_id($id)
 			$stock->market = $row['market'];
 			$stock->type = $row['type'];
 			$stock->report = $row['report'];
+			$stock->ondate = $row['ondate'];
 			$stock->onyyyy = substr($row['ondate'], 0, 4);
 			$stock->onmm = substr($row['ondate'], 5, 2);
 			echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");

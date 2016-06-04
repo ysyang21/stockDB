@@ -19,7 +19,7 @@ function show_stock_brief($stock, $price_rank, $price, $yoy_rank, $yoy)
 	echo_n('    <thead><th>代號<th>名稱<th>行業別<th>上市櫃別<th>財務報表<th>上市櫃時間'.
 			'<th>股價<th>股價排名<th>月營收年增率<th>月營收年增率排名</thead>');
 	echo '    <tbody><tr>';
-	echo '<td>' . $stock->id;
+	echo '<td>' . '<a href="index.php?stockid=' . $stock->id . '">' . $stock->id . '</a>';
 	echo '<td>' . $stock->name;
 	echo '<td>' . $stock->industry;
 	echo '<td>' . ($stock->market=='sii'?'上市':'上櫃');
@@ -72,23 +72,23 @@ function show_idr_per($pepos)
 	echo_n('    <caption>歷史資料(*為今年推估值)</caption>');
 	echo '    <thead><th>年度';
 	echo '<th>' . substr(date('Y'), 0, 4) . "*";
-	foreach ($pepos[$pepo_latest]->idr as $year => $idr)
+	foreach ($pepos[$pepo_latest]->xdr as $year => $xdr)
 		echo '<th>' . $year;
 	echo_n('</thead>');
 	echo_n('    <tbody>');
 
 	echo '      <tr>';
 	echo '<td>還原股價高檔';
-	echo '<td>' . decimal2($pepos[$pepo_latest]->idr_estimated->high);
-	foreach ($pepos[$pepo_latest]->idr as $year => $idr)
-		echo '<td>' . decimal2($idr->high);
+	echo '<td>' . decimal2($pepos[$pepo_latest]->xdr_estimated->high);
+	foreach ($pepos[$pepo_latest]->xdr as $year => $xdr)
+		echo '<td>' . decimal2($xdr->high);
 	echo_n('');
 
 	echo '      <tr>';
 	echo '<td>還原股價低檔';
-	echo '<td>' . decimal2($pepos[$pepo_latest]->idr_estimated->low);
-	foreach ($pepos[$pepo_latest]->idr as $year => $idr)
-		echo '<td>' . decimal2($idr->low);
+	echo '<td>' . decimal2($pepos[$pepo_latest]->xdr_estimated->low);
+	foreach ($pepos[$pepo_latest]->xdr as $year => $xdr)
+		echo '<td>' . decimal2($xdr->low);
 	echo_n('');
 
 	echo '      <tr>';
@@ -251,7 +251,7 @@ function show_stock_evaluation($pepos)
 		echo '<td>' . decimal2($pepo->stock_now/100000000);
 		echo '<td>' . decimal2($pepo->eps_estimated);
 		//echo '<td>' . decimal2($pepo->per_estimated->high) . "/" . decimal2($pepo->per_estimated->low);
-		echo '<td>' . decimal2($pepo->idr_estimated->high) . "/" . decimal2($pepo->idr_estimated->low);
+		echo '<td>' . decimal2($pepo->xdr_estimated->high) . "/" . decimal2($pepo->xdr_estimated->low);
 		echo '<td>' . decimal2($pepo->evaluate_price);
 		echo '<td>' . $pepo->potential;
 		if ($pepo->verdict <= 0.0)
@@ -494,11 +494,12 @@ function show_sii_candlestick_chart($prices)
 			$price[0] . ', ' . $price[1] . ', ' . $price[2] . ', ' . $price[3] . ']);');
 	}
 
-	show_ma5();
-	show_ma20();
+//	show_ma5();
+//	show_ma20();
 
 	echo_n('      var view = new google.visualization.DataView(data);');
-	echo_n('      view.setColumns([0, 1, 2, 3, 4, ma5, ma20]);');
+//	echo_n('      view.setColumns([0, 1, 2, 3, 4, ma5, ma20]);');
+	echo_n('      view.setColumns([0, 1, 2, 3, 4]);');
 	echo_n('      var options = {');
 	echo_n('        legend: { position: "none"},');
 	//	echo_n('        hAxis: { title: "日期"},');
@@ -547,11 +548,12 @@ function show_stock_candlestick_chart($id, $prices)
 			$price[0] . ', ' . $price[1] . ', ' . $price[2] . ', ' . $price[3] . ']);');
 	}
 
-	show_ma5();
-	show_ma20();
+//	show_ma5();
+//	show_ma20();
 
 	echo_n('      var view = new google.visualization.DataView(data);');
-	echo_n('      view.setColumns([0, 1, 2, 3, 4, ma5, ma20]);');
+//	echo_n('      view.setColumns([0, 1, 2, 3, 4, ma5, ma20]);');
+	echo_n('      view.setColumns([0, 1, 2, 3, 4]);');
 	echo_n('      var options = {');
 	echo_n('        legend: { position: "none"},');
 	//	echo_n('        hAxis: { title: "日期"},');
@@ -609,8 +611,8 @@ function show_stock_candlestick_chart_with_pepo($id, $prices, $pepos)
 				$found_in_pepo = true;
 				if ($found_first_in_pepo == false)
 					$found_first_in_pepo = true;
-				$high = str_replace(",", "", decimal2($pepo ->idr_estimated->high));
-				$low = str_replace(",", "", decimal2($pepo ->idr_estimated->low));
+				$high = str_replace(",", "", decimal2($pepo ->xdr_estimated->high));
+				$low = str_replace(",", "", decimal2($pepo ->xdr_estimated->low));
 				echo_n("      data.addRow([new Date('" . str_replace('/','-',$date) . "'), " .
 					$price[0] . ', ' . $price[1] . ', ' . $price[2] . ', ' . $price[3] . ', ' . $high . ', ' . $low . ']);');
 				break;

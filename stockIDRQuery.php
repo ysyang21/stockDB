@@ -16,7 +16,7 @@ include_once("LIB_log.php");
 include_once("stockDayQuery.php");
 include_once("stockXDRQuery.php");
 
-class idrData
+class xdrHL
 {
     // property declaration
 	public $high = 0.0;
@@ -30,58 +30,76 @@ class perData
     public $low = 0.0;
 }
 
-function query_idr_data_by_id_y($id, $year, $id_kline)
+// moneyDJ algorithm
+// $id_kline is [ $kline_date => $kline_lochs (low, open, close, high, stock) ]*
+function convert_idr_to_xdr($id, $id_kline)
 {
-	echo_v (DEBUG_VERBOSE, "[query_idr_data_by_id_y] id " . $id . " on year " . $year);
+	echo_v (DEBUG_VERBOSE, "[convert_idr_to_xdr] id " . $id);
 
-	// get day price of the year
-	$dayprices = query_day_price_by_id_y($id, $year, $id_kline);
-	//print_r($dayprices);
-	if (count($dayprices) > 0)
+	$xdr_kline = array();
+	foreach($id_kline as $kline_date => $kline_lochs)
 	{
-		// adjust the day data according to xdr date and value
-		$xdr = query_xdr_data_by_id_y($id, $year);
-		echo_v (DEBUG_VERBOSE, "[query_idr_data_by_id_y] " . count($xdr) . " xdr is found!");
-		foreach($xdr as $xdr_entry)
-		{
-			foreach($dayprices as $key => $value)
-			{
-				if ($key >= $xdr_entry->date)
-				{
-					if ($xdr_entry->xdr=='xd')
-					{
-						$dayprices[$key] += $xdr_entry->xd;
-					}
-					else if ($xdr_entry->xdr=='xr')
-					{
-						$dayprices[$key] *= (1+$xdr_entry->xr+$xdr_entry->xr2);
-						$dayprices[$key] -= ($xdr_entry->xr2p*$xdr_entry->xr2);
-					}
-					else if ($xdr_entry->xdr=='xdr')
-					{
-						$dayprices[$key] *= (1+$xdr_entry->xr+$xdr_entry->xr2);
-						$dayprices[$key] -= ($xdr_entry->xr2p*$xdr_entry->xr2);
-						$dayprices[$key] += $xdr_entry->xd;
-					}
-				}
-			}
-		}
-		foreach($dayprices as $key => $value)
-		{
-			$dayprices[$key] = decimal2($dayprices[$key]);
-		}
-		//print_r($dayprices);
-		// prepare idr object
-		rsort($dayprices);
-		//print_r($dayprices);
-		$idr = new idrData();
-		$idr->high = (float)$dayprices[0];
-		$idr->low = (float)$dayprices[count($dayprices)-1];
-
-		return $idr;
+		$xdr_kline[$kline_date] = $kline_lochs;
 	}
 
-	return null;
+	if (count($xdr_kline) > 0)
+	{
+		// adjust the day data according to xdr date and value
+		$xdr = query_xdr_data_by_id($id);
+		echo_v (DEBUG_VERBOSE, "[convert_idr_to_xdr] " . count($xdr) . " xdr is found!");
+
+		foreach($xdr as $xdr_entry)
+		{
+			// Get the last trade day before XD/XDR date
+			$date = date("Y-m-d", (strtotime($xdr_entry->date) - 86400));
+			$dates = array_keys($id_kline);
+			while (false === array_search($date, $dates))
+	    		$date = date("Y-m-d", (strtotime($date) - 86400));
+
+	    	if (($xdr_entry->xdr=='xd') or ($xdr_entry->xdr=='xdr'))
+	    	{
+	    		$before_xdr = $xdr_kline[$date][2];
+	    		$ratio = ($before_xdr-$xdr_entry->xd) / $before_xdr;
+
+	    		foreach($xdr_kline as $kline_date => $kline_lochs)
+	    		{
+	    			if ($kline_date < $xdr_entry->date)
+					{
+						$xdr_kline[$kline_date][0] *= $ratio; // low
+						$xdr_kline[$kline_date][1] *= $ratio; // open
+						$xdr_kline[$kline_date][2] *= $ratio; // close
+						$xdr_kline[$kline_date][3] *= $ratio; // high
+					}
+	    		}
+	    	}
+		}
+	}
+
+	return $xdr_kline;
+}
+
+function query_xdr_highlow_by_year($year, $xdr_kline)
+{
+	$highs = array();
+	$lows = array();
+
+	foreach ($xdr_kline as $kline_date => $kline_lochs)
+	{
+		if ($year == substr($kline_date, 0, 4))
+		{
+			$highs[$kline_date] = $kline_lochs[3];
+			$lows[$kline_date] = $kline_lochs[0];
+		}
+	}
+
+	rsort($highs);
+	rsort($lows);
+
+	$xdr = new xdrHL();
+	$xdr->high = decimal2((float)$highs[0]);
+	$xdr->low = decimal2((float)$lows[count($lows)-1]);
+
+	return $xdr;
 }
 
 /******************** Entry Function ************************/
@@ -129,27 +147,27 @@ function stockIDRQueryTest()
 		$id_kline = query_day_price_by_id_since($id, '2010-01-01');
 
 		// "future year" expected
-		$idr = query_idr_data_by_id_y($id, (string)((int)$nowyyyy + 1), $id_kline);
+		$idr = query_idr_highlow_by_id_y($id, (string)((int)$nowyyyy + 1), $id_kline);
 		print_r($idr);
 		// "current year" expected
-		$idr = query_idr_data_by_id_y($id, $nowyyyy, $id_kline);
+		$idr = query_idr_highlow_by_id_y($id, $nowyyyy, $id_kline);
 		print_r($idr);
 		// "full year" expected
-		$idr = query_idr_data_by_id_y($id, (string)((int)$nowyyyy - 1), $id_kline);
+		$idr = query_idr_highlow_by_id_y($id, (string)((int)$nowyyyy - 1), $id_kline);
 		print_r($idr);
 		// "full year" expected
-		$idr = query_idr_data_by_id_y($id, (string)((int)$onyyyy + 1), $id_kline);
+		$idr = query_idr_highlow_by_id_y($id, (string)((int)$onyyyy + 1), $id_kline);
 		print_r($idr);
 		// "IPO year" expected
-		$idr = query_idr_data_by_id_y($id, $onyyyy, $id_kline);
+		$idr = query_idr_highlow_by_id_y($id, $onyyyy, $id_kline);
 		print_r($idr);
 		// "before IPO year" expected
-		$idr = query_idr_data_by_id_y($id, (string)((int)$onyyyy - 1), $id_kline);
+		$idr = query_idr_highlow_by_id_y($id, (string)((int)$onyyyy - 1), $id_kline);
 		print_r($idr);
 	}
 
 	$id_kline = query_day_price_by_id_since('3126', '2014-01-01');
-	$idr = query_idr_data_by_id_y('3126', '2014', $id_kline);
+	$idr = query_idr_highlow_by_id_y('3126', '2014', $id_kline);
 	print_r($idr);
 }
 

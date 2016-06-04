@@ -31,7 +31,7 @@ function query_day_price_by_id_y($id, $year, $dayprices)
 	foreach ($dayprices as $date => $price) {
 		$yr = (int)substr($date,0,4);
 		if (($yr >= $year_0) AND ($yr < $year_1))
-			$kline[$date] = $price;
+			$kline[$date] = $price[2]; // loCh
 	}
 
 	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". "query_day_price_by:" . $id . ":" . $year . "[" . __FUNCTION__ . "]");
@@ -52,7 +52,7 @@ function query_day_price_by_id_since($id, $date)
 	return $kline;
 }
 
-function query_day_price_loch_by_id_since($id, $date)
+function query_day_price_lochs_by_id_since($id, $date)
 {
 	$query = "SELECT date, low, open, close, high, stock FROM daydata WHERE id = '" . $id . "' AND date >= '" . $date . "' ORDER BY date DESC;";
 	$result = mysql_query($query) or die('MySQL query error');

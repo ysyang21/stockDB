@@ -31,8 +31,8 @@ class pepoData
 	public $stock_now = 0;
 	public $eps = array();
 	public $eps_estimated = 0;
-	public $idr = array();
-	public $idr_estimated = null;
+	public $xdr = array();
+	public $xdr_estimated = null;
 	public $per = array();
 	public $per_estimated = null;
 	public $evaluate_price = 0;
@@ -979,7 +979,7 @@ function initialize_stock_data($stock, $date)
 	return $pepo;
 }
 
-function update_stock_data_nopat_over_revenue_diff2($pepo, $date, $id_kline)
+function update_stock_data_nopat_over_revenue_diff2($pepo, $date, $xdr_kline)
 {
 	echo_v(DEBUG_VERBOSE, "**** update_stock_data_nopat_over_revenue_diff2 ************************************************");
 
@@ -987,9 +987,9 @@ function update_stock_data_nopat_over_revenue_diff2($pepo, $date, $id_kline)
 	$year_1 = (string)((int)$year - 1);
 
 	// H. Get stock prices High and Low at year 2014-2011, including excluded dividends and excluded rights
-	$pepo->idr[$year_1] = query_idr_data_by_id_y( $pepo->id, $year_1, $id_kline);
+	$pepo->xdr[$year_1] = query_xdr_highlow_by_year($year_1, $xdr_kline);
 	echo_v(DEBUG_VERBOSE, "[evaluate_stock] H: id " . $pepo->id . " idr high/low(year) = " .
-		$pepo->idr[$year_1]->high . "/" . $pepo->idr[$year_1]->low . "(" . $year_1 . ")");
+		$pepo->xdr[$year_1]->high . "/" . $pepo->xdr[$year_1]->low . "(" . $year_1 . ")");
 
 	// I. Get EPS  and EPS2 at year 2014-2011
 	$pepo->eps[$year_1] = query_year_eps($pepo->id, $year_1);
@@ -1003,8 +1003,8 @@ function update_stock_data_nopat_over_revenue_diff2($pepo, $date, $id_kline)
 	// J. Compute 2014-2011 PER (P/E Ratio) High and Low by H / I
 
 	$pepo->per[$year_1] = new perData();
-	$pepo->per[$year_1]->high = $pepo->idr[$year_1]->high / $pepo->eps[$year_1];
-	$pepo->per[$year_1]->low = $pepo->idr[$year_1]->low / $pepo->eps[$year_1];
+	$pepo->per[$year_1]->high = $pepo->xdr[$year_1]->high / $pepo->eps[$year_1];
+	$pepo->per[$year_1]->low = $pepo->xdr[$year_1]->low / $pepo->eps[$year_1];
 
 	echo_v(DEBUG_VERBOSE, "[evaluate_stock] J: id " . $pepo->id . " per high/low(year) = " .
 	decimal2($pepo->per[$year_1]->high) .	"/" . decimal2($pepo->per[$year_1]->low) . "(" . $year_1 . ")");
@@ -1017,7 +1017,7 @@ function update_stock_data_nopat_over_revenue_diff2($pepo, $date, $id_kline)
 		decimal2($pepo->per_estimated->high) .	"/" . decimal2($pepo->per_estimated->low) . "(" . $year . ")");
 }
 
-function update_stock_data_nopat_over_revenue_diff3($pepo, $date, $id_kline)
+function update_stock_data_nopat_over_revenue_diff3($pepo, $date, $xdr_kline)
 {
 	echo_v(DEBUG_VERBOSE, "**** update_stock_data_nopat_over_revenue_diff3 ************************************************");
 
@@ -1026,11 +1026,11 @@ function update_stock_data_nopat_over_revenue_diff3($pepo, $date, $id_kline)
 	$year_2 = (string)((int)$year - 2);
 
 	// H. Get stock prices High and Low at year 2014-2011, including excluded dividends and excluded rights
-	$pepo->idr[$year_1] = query_idr_data_by_id_y( $pepo->id, $year_1, $id_kline);
-	$pepo->idr[$year_2] = query_idr_data_by_id_y( $pepo->id, $year_2, $id_kline);
+	$pepo->xdr[$year_1] = query_xdr_highlow_by_year($year_1, $xdr_kline);
+	$pepo->xdr[$year_2] = query_xdr_highlow_by_year($year_2, $xdr_kline);
 	echo_v(DEBUG_VERBOSE, "[evaluate_stock] H: id " . $pepo->id . " idr high/low(year) = " .
-		$pepo->idr[$year_1]->high . "/" . $pepo->idr[$year_1]->low . "(" . $year_1 . "), " .
-		$pepo->idr[$year_2]->high . "/" . $pepo->idr[$year_2]->low . "(" . $year_2 . ")");
+		$pepo->xdr[$year_1]->high . "/" . $pepo->xdr[$year_1]->low . "(" . $year_1 . "), " .
+		$pepo->xdr[$year_2]->high . "/" . $pepo->xdr[$year_2]->low . "(" . $year_2 . ")");
 
 	// I. Get EPS at year 2014-2011
 	$pepo->eps[$year_1] = query_year_eps($pepo->id, $year_1);
@@ -1048,12 +1048,12 @@ function update_stock_data_nopat_over_revenue_diff3($pepo, $date, $id_kline)
 	// J. Compute 2014-2011 PER (P/E Ratio) High and Low by H / I
 
 	$pepo->per[$year_1] = new perData();
-	$pepo->per[$year_1]->high = $pepo->idr[$year_1]->high / $pepo->eps[$year_1];
-	$pepo->per[$year_1]->low = $pepo->idr[$year_1]->low / $pepo->eps[$year_1];
+	$pepo->per[$year_1]->high = $pepo->xdr[$year_1]->high / $pepo->eps[$year_1];
+	$pepo->per[$year_1]->low = $pepo->xdr[$year_1]->low / $pepo->eps[$year_1];
 
 	$pepo->per[$year_2] = new perData();
-	$pepo->per[$year_2]->high = $pepo->idr[$year_2]->high / $pepo->eps[$year_2];
-	$pepo->per[$year_2]->low = $pepo->idr[$year_2]->low / $pepo->eps[$year_2];
+	$pepo->per[$year_2]->high = $pepo->xdr[$year_2]->high / $pepo->eps[$year_2];
+	$pepo->per[$year_2]->low = $pepo->xdr[$year_2]->low / $pepo->eps[$year_2];
 
 	echo_v(DEBUG_VERBOSE, "[evaluate_stock] J: id " . $pepo->id . " per high/low(year) = " .
 	decimal2($pepo->per[$year_1]->high) .	"/" . decimal2($pepo->per[$year_1]->low) . "(" . $year_1 . "), " .
@@ -1123,7 +1123,7 @@ function per3_low($pers, $date)
 	}
 }
 
-function update_stock_data_nopat_over_revenue_diff4($pepo, $date, $id_kline)
+function update_stock_data_nopat_over_revenue_diff4($pepo, $date, $xdr_kline)
 {
 	echo_v(DEBUG_VERBOSE, "**** update_stock_data_nopat_over_revenue_diff4 ************************************************");
 
@@ -1133,13 +1133,13 @@ function update_stock_data_nopat_over_revenue_diff4($pepo, $date, $id_kline)
 	$year_3 = (string)((int)$year - 3);
 
 	// H. Get stock prices High and Low at year 2014-2011, including excluded dividends and excluded rights
-	$pepo->idr[$year_1] = query_idr_data_by_id_y( $pepo->id, $year_1, $id_kline);
-	$pepo->idr[$year_2] = query_idr_data_by_id_y( $pepo->id, $year_2, $id_kline);
-	$pepo->idr[$year_3] = query_idr_data_by_id_y( $pepo->id, $year_3, $id_kline);
+	$pepo->xdr[$year_1] = query_xdr_highlow_by_year($year_1, $xdr_kline);
+	$pepo->xdr[$year_2] = query_xdr_highlow_by_year($year_2, $xdr_kline);
+	$pepo->xdr[$year_3] = query_xdr_highlow_by_year($year_3, $xdr_kline);
 	echo_v(DEBUG_VERBOSE, "[evaluate_stock] H: id " . $pepo->id . " idr high/low(year) = " .
-		$pepo->idr[$year_1]->high . "/" . $pepo->idr[$year_1]->low . "(" . $year_1 . "), " .
-		$pepo->idr[$year_2]->high . "/" . $pepo->idr[$year_2]->low . "(" . $year_2 . "), " .
-		$pepo->idr[$year_3]->high . "/" . $pepo->idr[$year_3]->low . "(" . $year_3 . ")");
+		$pepo->idr[$year_1]->high . "/" . $pepo->xdr[$year_1]->low . "(" . $year_1 . "), " .
+		$pepo->idr[$year_2]->high . "/" . $pepo->xdr[$year_2]->low . "(" . $year_2 . "), " .
+		$pepo->idr[$year_3]->high . "/" . $pepo->xdr[$year_3]->low . "(" . $year_3 . ")");
 
 	// I. Get EPS at year 2014-2011
 	$pepo->eps[$year_1] = query_year_eps($pepo->id, $year_1);
@@ -1161,16 +1161,16 @@ function update_stock_data_nopat_over_revenue_diff4($pepo, $date, $id_kline)
 	// J. Compute 2014-2011 PER (P/E Ratio) High and Low by H / I
 
 	$pepo->per[$year_1] = new perData();
-	$pepo->per[$year_1]->high = $pepo->idr[$year_1]->high / $pepo->eps[$year_1];
-	$pepo->per[$year_1]->low = $pepo->idr[$year_1]->low / $pepo->eps[$year_1];
+	$pepo->per[$year_1]->high = $pepo->xdr[$year_1]->high / $pepo->eps[$year_1];
+	$pepo->per[$year_1]->low = $pepo->xdr[$year_1]->low / $pepo->eps[$year_1];
 
 	$pepo->per[$year_2] = new perData();
-	$pepo->per[$year_2]->high = $pepo->idr[$year_2]->high / $pepo->eps[$year_2];
-	$pepo->per[$year_2]->low = $pepo->idr[$year_2]->low / $pepo->eps[$year_2];
+	$pepo->per[$year_2]->high = $pepo->xdr[$year_2]->high / $pepo->eps[$year_2];
+	$pepo->per[$year_2]->low = $pepo->xdr[$year_2]->low / $pepo->eps[$year_2];
 
 	$pepo->per[$year_3] = new perData();
-	$pepo->per[$year_3]->high = $pepo->idr[$year_3]->high / $pepo->eps[$year_3];
-	$pepo->per[$year_3]->low = $pepo->idr[$year_3]->low / $pepo->eps[$year_3];
+	$pepo->per[$year_3]->high = $pepo->xdr[$year_3]->high / $pepo->eps[$year_3];
+	$pepo->per[$year_3]->low = $pepo->xdr[$year_3]->low / $pepo->eps[$year_3];
 
 	echo_v(DEBUG_VERBOSE, "[evaluate_stock] J: id " . $pepo->id . " per high/low(year) = " .
 	decimal2($pepo->per[$year_1]->high) .	"/" . decimal2($pepo->per[$year_1]->low) . "(" . $year_1 . "), " .
@@ -1261,7 +1261,7 @@ function per4_low($pers, $date)
 	}
 }
 
-function update_stock_data_nopat_over_revenue_diff5($pepo, $date, $id_kline)
+function update_stock_data_nopat_over_revenue_diff5($pepo, $date, $xdr_kline)
 {
 	echo_v(DEBUG_VERBOSE, "**** update_stock_data_nopat_over_revenue_diff5 ************************************************");
 
@@ -1274,15 +1274,15 @@ function update_stock_data_nopat_over_revenue_diff5($pepo, $date, $id_kline)
 $t1 = round(microtime(true) * 1000);
 
 	// H. Get stock prices High and Low at year 2014-2011, including excluded dividends and excluded rights
-	$pepo->idr[$year_1] = query_idr_data_by_id_y( $pepo->id, $year_1, $id_kline);
-	$pepo->idr[$year_2] = query_idr_data_by_id_y( $pepo->id, $year_2, $id_kline);
-	$pepo->idr[$year_3] = query_idr_data_by_id_y( $pepo->id, $year_3, $id_kline);
-	$pepo->idr[$year_4] = query_idr_data_by_id_y( $pepo->id, $year_4, $id_kline);
-	echo_v(DEBUG_VERBOSE, "[evaluate_stock] H: id " . $pepo->id . " idr high/low(year) = " .
-		$pepo->idr[$year_1]->high . "/" . $pepo->idr[$year_1]->low . "(" . $year_1 . "), " .
-		$pepo->idr[$year_2]->high . "/" . $pepo->idr[$year_2]->low . "(" . $year_2 . "), " .
-		$pepo->idr[$year_3]->high . "/" . $pepo->idr[$year_3]->low . "(" . $year_3 . "), " .
-		$pepo->idr[$year_4]->high . "/" . $pepo->idr[$year_4]->low . "(" . $year_4 . ")");
+	$pepo->xdr[$year_1] = query_xdr_highlow_by_year($year_1, $xdr_kline);
+	$pepo->xdr[$year_2] = query_xdr_highlow_by_year($year_2, $xdr_kline);
+	$pepo->xdr[$year_3] = query_xdr_highlow_by_year($year_3, $xdr_kline);
+	$pepo->xdr[$year_4] = query_xdr_highlow_by_year($year_4, $xdr_kline);
+	echo_v(DEBUG_VERBOSE, "[evaluate_stock] H: id " . $pepo->id . " xdr high/low(year) = " .
+		$pepo->xdr[$year_1]->high . "/" . $pepo->xdr[$year_1]->low . "(" . $year_1 . "), " .
+		$pepo->xdr[$year_2]->high . "/" . $pepo->xdr[$year_2]->low . "(" . $year_2 . "), " .
+		$pepo->xdr[$year_3]->high . "/" . $pepo->xdr[$year_3]->low . "(" . $year_3 . "), " .
+		$pepo->xdr[$year_4]->high . "/" . $pepo->xdr[$year_4]->low . "(" . $year_4 . ")");
 
 $t2 = round(microtime(true) * 1000);
 echo_v(LOG_VERBOSE, ($t2-$t1) . " ms to " . '<span style="color:#FF0000">' . "Step H" . '</span>' . "[" . __FUNCTION__ . "]");
@@ -1314,20 +1314,20 @@ echo_v(LOG_VERBOSE, ($t3-$t2) . " ms to " . '<span style="color:#FF0000">' . "St
 	// J. Compute 2014-2011 PER (P/E Ratio) High and Low by H / I
 
 	$pepo->per[$year_1] = new perData();
-	$pepo->per[$year_1]->high = $pepo->idr[$year_1]->high / $pepo->eps[$year_1];
-	$pepo->per[$year_1]->low = $pepo->idr[$year_1]->low / $pepo->eps[$year_1];
+	$pepo->per[$year_1]->high = $pepo->xdr[$year_1]->high / $pepo->eps[$year_1];
+	$pepo->per[$year_1]->low = $pepo->xdr[$year_1]->low / $pepo->eps[$year_1];
 
 	$pepo->per[$year_2] = new perData();
-	$pepo->per[$year_2]->high = $pepo->idr[$year_2]->high / $pepo->eps[$year_2];
-	$pepo->per[$year_2]->low = $pepo->idr[$year_2]->low / $pepo->eps[$year_2];
+	$pepo->per[$year_2]->high = $pepo->xdr[$year_2]->high / $pepo->eps[$year_2];
+	$pepo->per[$year_2]->low = $pepo->xdr[$year_2]->low / $pepo->eps[$year_2];
 
 	$pepo->per[$year_3] = new perData();
-	$pepo->per[$year_3]->high = $pepo->idr[$year_3]->high / $pepo->eps[$year_3];
-	$pepo->per[$year_3]->low = $pepo->idr[$year_3]->low / $pepo->eps[$year_3];
+	$pepo->per[$year_3]->high = $pepo->xdr[$year_3]->high / $pepo->eps[$year_3];
+	$pepo->per[$year_3]->low = $pepo->xdr[$year_3]->low / $pepo->eps[$year_3];
 
 	$pepo->per[$year_4] = new perData();
-	$pepo->per[$year_4]->high = $pepo->idr[$year_4]->high / $pepo->eps[$year_4];
-	$pepo->per[$year_4]->low = $pepo->idr[$year_4]->low / $pepo->eps[$year_4];
+	$pepo->per[$year_4]->high = $pepo->xdr[$year_4]->high / $pepo->eps[$year_4];
+	$pepo->per[$year_4]->low = $pepo->xdr[$year_4]->low / $pepo->eps[$year_4];
 
 	echo_v(DEBUG_VERBOSE, "[evaluate_stock] J: id " . $pepo->id . " per high/low(year) = " .
 	decimal2($pepo->per[$year_1]->high) .	"/" . decimal2($pepo->per[$year_1]->low) . "(" . $year_1 . "), " .
@@ -1348,7 +1348,7 @@ echo_v(LOG_VERBOSE, ($t4-$t3) . " ms to " . '<span style="color:#FF0000">' . "St
 		decimal2($pepo->per_estimated->high) .	"/" . decimal2($pepo->per_estimated->low) . "(" . $year . ")");
 }
 
-function update_stock_data_nopat_over_revenue($pepo, $date, $id_kline)
+function update_stock_data_nopat_over_revenue($pepo, $date, $xdr_kline)
 {
 	echo_v(DEBUG_VERBOSE, "**** update_stock_data_nopat_over_revenue ************************************************");
 
@@ -1382,35 +1382,35 @@ echo_v(LOG_VERBOSE, ($t4-$t3) . " ms to " . '<span style="color:#FF0000">' . "St
 	// e.x. to satisfy a condition in which we have at least one full year data to work with,
 	//      we assume the worst case as now: 2015/1/1, since: 2013/12/31
 	if ($diff >= 5)
-		update_stock_data_nopat_over_revenue_diff5($pepo, $date, $id_kline);
+		update_stock_data_nopat_over_revenue_diff5($pepo, $date, $xdr_kline);
 	else if ($diff == 4)
-		update_stock_data_nopat_over_revenue_diff4($pepo, $date, $id_kline);
+		update_stock_data_nopat_over_revenue_diff4($pepo, $date, $xdr_kline);
 	else if ($diff == 3)
-		update_stock_data_nopat_over_revenue_diff3($pepo, $date, $id_kline);
+		update_stock_data_nopat_over_revenue_diff3($pepo, $date, $xdr_kline);
 	else if ($diff == 2)
-		update_stock_data_nopat_over_revenue_diff2($pepo, $date, $id_kline);
+		update_stock_data_nopat_over_revenue_diff2($pepo, $date, $xdr_kline);
 	else
 		echo_v (ERROR_VERBOSE, "[update_stock_data_nopat_over_revenue] invalid diff value = " . $diff);
 	
 	// K. Estimate stock prices High and Low by G * J
-	$pepo->idr_estimated = new idrData();
-	$pepo->idr_estimated->high = $pepo->eps_estimated * $pepo->per_estimated->high;
-	$pepo->idr_estimated->low = $pepo->eps_estimated * $pepo->per_estimated->low;
+	$pepo->xdr_estimated = new xdrHL();
+	$pepo->xdr_estimated->high = $pepo->eps_estimated * $pepo->per_estimated->high;
+	$pepo->xdr_estimated->low = $pepo->eps_estimated * $pepo->per_estimated->low;
 	echo_v(DEBUG_VERBOSE, "[evaluate_stock] K: id " . $pepo->id . " estimated price high/low(year) = " .
-		decimal2($pepo->idr_estimated->high) . "/" . decimal2($pepo->idr_estimated->low) . "(" . $year . ")");
+		decimal2($pepo->xdr_estimated->high) . "/" . decimal2($pepo->xdr_estimated->low) . "(" . $year . ")");
 
 $t5 = round(microtime(true) * 1000);
 echo_v(LOG_VERBOSE, ($t5-$t4) . " ms to " . '<span style="color:#FF0000">' . "Step K=HIJ" . '</span>' . "[" . __FUNCTION__ . "]");
 }
 
-function evaluate_stock_price($pepo, $date, $id_kline)
+function evaluate_stock_price($pepo, $date, $xdr_kline)
 {
 	echo_v(DEBUG_VERBOSE, "**** evaluate_stock_price ************************************************");
 
 	$year = substr($date, 0, 4);
 
 	// L. Identify the latest stock price
-	$dayprices = query_day_price_by_id_y($pepo->id, $year, $id_kline);
+	$dayprices = query_day_price_by_id_y($pepo->id, $year, $xdr_kline);
 
 	while (array_key_exists($date, $dayprices) == false)
 	{
@@ -1427,8 +1427,8 @@ function evaluate_stock_price($pepo, $date, $id_kline)
 	echo_v(DEBUG_VERBOSE, "[evaluate_stock] L: id " . $pepo->id . " at day " . $pepo->evaluate_date . ", price = " . $pepo->evaluate_price);
 
 	// M. Compute the potential profit margin and risk margin
-	$potential_profit_margin = ($pepo->idr_estimated->high - $pepo->evaluate_price) / $pepo->evaluate_price;
-	$potential_risk_margin = -($pepo->idr_estimated->low - $pepo->evaluate_price) / $pepo->evaluate_price;
+	$potential_profit_margin = ($pepo->xdr_estimated->high - $pepo->evaluate_price) / $pepo->evaluate_price;
+	$potential_risk_margin = -($pepo->xdr_estimated->low - $pepo->evaluate_price) / $pepo->evaluate_price;
 	$pepo->potential = percent($potential_profit_margin) . "/" . percent($potential_risk_margin);
 	echo_v(DEBUG_VERBOSE, "[evaluate_stock] M: id " . $pepo->id . " at year " . $year .
 		", potential profit margin = " . percent($potential_profit_margin) .
@@ -1438,55 +1438,19 @@ function evaluate_stock_price($pepo, $date, $id_kline)
 	//    case 1:   high<----->now<------->low, profit and risk are both positive -> 
 	//    case 2:   now<------>high<------->low, profit is negative and risk is large positive
 	//    case 3:   high<----->low<--------->now, profit is large positive and risk is negative
-	//$pepo->stock_position = "(" . number_format($pepo->idr_estimated->high,2) . "," . number_format($pepo->idr_estimated->low,2) . ")," . number_format($pepo->evaluate_price,2);
+
 	$pepo->stock_position =
-		decimal2($pepo->idr_estimated->high) . "/" .
-		decimal2($pepo->idr_estimated->low);
+		decimal2($pepo->xdr_estimated->high) . "/" .
+		decimal2($pepo->xdr_estimated->low);
 	echo_v (DEBUG_VERBOSE, "[evaluate_stock] N: id " . $pepo->id . " at day " . $date . ", " . $pepo->stock_position);
 
-	$centurion = $pepo->idr_estimated->high - $pepo->idr_estimated->low;
-	$celsius = $pepo->evaluate_price - $pepo->idr_estimated->low;
+	$centurion = $pepo->xdr_estimated->high - $pepo->xdr_estimated->low;
+	$celsius = $pepo->evaluate_price - $pepo->xdr_estimated->low;
 
 	if ($centurion==0)
 		$pepo->verdict = 100.0;
 	else
 		$pepo->verdict = decimal2(($celsius/$centurion)*100);
-/*
-	if ($potential_profit_margin > 0 and $potential_risk_margin > 0) // H > N > L
-	{
-		//$pepo->stock_position = "High(" . decimal2($pepo->idr_estimated->high) . ") <----> Now(" . decimal2($pepo->evaluate_price) . ") <----> Low(" . decimal2($pepo->idr_estimated->low) . ")";
-		//echo_v (DEBUG_VERBOSE, "[evaluate_stock] N: id " . $pepo->id . " at day " . $date . ", " . $pepo->stock_position);
-		if ($potential_profit_margin < 0.1 * $potential_risk_margin)
-		{
-			$pepo->verdict = "sell";
-			echo_v (DEBUG_VERBOSE, "[evaluate_stock] N: id " . $pepo->id . " at day " . $date . " is " . $pepo->verdict);
-		}
-		else if ($potential_profit_margin > 2 * $potential_risk_margin)
-		{
-			$pepo->verdict = "buy";
-			echo_v (DEBUG_VERBOSE, "[evaluate_stock] N: id " . $pepo->id . " at day " . $date . " is " . $pepo->verdict);
-		}
-		else
-		{
-			$pepo->verdict = "hold";
-			echo_v (DEBUG_VERBOSE, "[evaluate_stock] N: id " . $pepo->id . " at day " . $date . " is " . $pepo->verdict);
-		}
-	}
-	else if ($potential_profit_margin > 0 and $potential_risk_margin < 0) // H > L > N
-	{
-		//$pepo->stock_position = "High(" . decimal2($pepo->idr_estimated->high) . ") <----> Low(" . decimal2($pepo->idr_estimated->low) . ") <----> Now(" . decimal2($pepo->evaluate_price) . ")";
-		//echo_v (DEBUG_VERBOSE, "[evaluate_stock] N: id " . $pepo->id . " at day " . $date . ", " . $pepo->stock_position);
-		$pepo->verdict = "buy*3";
-		echo_v (DEBUG_VERBOSE, "[evaluate_stock] N: id " . $pepo->id . " at day " . $date . " is " . $pepo->verdict);
-	}
-	else if ($potential_profit_margin < 0 and $potential_risk_margin > 0) // N > H > L
-	{
-		//$pepo->stock_position = "Now(" . decimal2($pepo->evaluate_price) . ") <----> High(" . decimal2($pepo->idr_estimated->high) . ") <----> Low(" . decimal2($pepo->idr_estimated->low) . ")";
-		//echo_v (DEBUG_VERBOSE, "[evaluate_stock] N: id " . $pepo->id . " at day " . $date . ", " . $pepo->stock_position);
-		$pepo->verdict = "sell*3";
-		echo_v (DEBUG_VERBOSE, "[evaluate_stock] N: id " . $pepo->id . " at day " . $date . " is " . $pepo->verdict);
-	}
-*/
 }
 
 function query_topN_ids_from_start($id_values, $start, $topN)
@@ -1502,7 +1466,8 @@ function query_topN_ids_from_start($id_values, $start, $topN)
 
 function stockEvaluateTest($id, $since_date, $id_prices, $id_yoys, $sii_kline)
 {
-	$id_kline = query_day_price_by_id_since($id, '2010-01-01');
+	$id_kline = query_day_price_lochs_by_id_since($id, '2010-01-01');
+	$xdr_kline = convert_idr_to_xdr($id, $id_kline);
 	prepare_id_seasonly_xbrl($id);
 	prepare_id_monthly_revenue($id);
 	$stock = query_id_data_by_id($id);
@@ -1557,11 +1522,11 @@ echo_v(LOG_VERBOSE, ($t2-$t1) . " ms to ". "INITIALIZE_STOCK_DATA" . "[" . __FUN
 			echo '  </table><br>' . "\n";
 			return;
 		}
-		update_stock_data_nopat_over_revenue($pepo, $date, $id_kline);
+		update_stock_data_nopat_over_revenue($pepo, $date, $xdr_kline);
 $t3 = round(microtime(true) * 1000);
 echo_v(LOG_VERBOSE, ($t3-$t2) . " ms to ". "UPDATE_STOCK_DATA_NOPAT_OVER_REVENUE" . "[" . __FUNCTION__ . "]");
 
-		evaluate_stock_price($pepo, $date, $id_kline);
+		evaluate_stock_price($pepo, $date, $xdr_kline);
 $t4 = round(microtime(true) * 1000);
 echo_v(LOG_VERBOSE, ($t4-$t3) . " ms to ". "EVALUATE_STOCK_PRICE" . "[" . __FUNCTION__ . "]");
 
@@ -1599,18 +1564,18 @@ echo_v(LOG_VERBOSE, ($t4-$t3) . " ms to ". "EVALUATE_STOCK_PRICE" . "[" . __FUNC
 	echo '        </td>' . "\n";
 	echo '        <td>' . "\n";
 
-	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr("query_day_price_loch_by_id_since") . "[" . __FUNCTION__ . "]");
-	$prices = query_day_price_loch_by_id_since($id, $since_date);
-	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr("query_day_price_loch_by_id_since") . "[" . __FUNCTION__ . "]");
+	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr("query_day_price_lochs_by_id_since") . "[" . __FUNCTION__ . "]");
+	$prices = query_day_price_lochs_by_id_since($id, $since_date);
+	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr("query_day_price_lochs_by_id_since") . "[" . __FUNCTION__ . "]");
 	$prices = array_reverse($prices);
 	show_stock_candlestick_chart($id, $prices);
 	show_stock_bar_chart($id, $prices);
 
 	show_stock_candlestick_chart_with_pepo($id, $prices, $pepos);
 
-	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr("query_day_price_loch_by_id_since") . "[" . __FUNCTION__ . "]");
-	$prices = query_day_price_loch_by_id_since('sii', $since_date);
-	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr("query_day_price_loch_by_id_since") . "[" . __FUNCTION__ . "]");
+	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr("query_day_price_lochs_by_id_since") . "[" . __FUNCTION__ . "]");
+	$prices = query_day_price_lochs_by_id_since('sii', $since_date);
+	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr("query_day_price_lochs_by_id_since") . "[" . __FUNCTION__ . "]");
 	$prices = array_reverse($prices);
 	show_sii_candlestick_chart($prices);
 

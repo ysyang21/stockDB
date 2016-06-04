@@ -47,6 +47,20 @@ function prepare_id_seasonly_xbrl($id)
 	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
 }
 
+function query_all_inventory($id)
+{
+	$query = "SELECT season, inventory FROM xbrldata WHERE id = " . $id;
+	stopwatch_inter();
+	$result = mysql_query($query) or die('MySQL query error');
+	$inventory = [];
+	while($row = mysql_fetch_array($result)){
+		$inventory[$row[0]] = $row[1];
+	}
+
+	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
+	return $inventory;
+}
+
 function query_yearly_revenue($id, $year)
 {
 	global $id_seasonly_xbrl;
