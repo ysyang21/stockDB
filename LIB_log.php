@@ -18,7 +18,7 @@ define("LOG_VERBOSE", 60);
 define("ALARM_VERBOSE", 40);
 define("ERROR_VERBOSE", 20);
 define("NO_VERBOSE", 0);
-define("Day1", '2016-01-01');
+define("Day1", '2015-01-01');
 
 $verbose = ALARM_VERBOSE;
 
@@ -261,6 +261,16 @@ $observed_stocks = array(
 	//'大豐電',
 	//'翔名科技',
 );
+
+function year_to_twyear($year)
+{
+	return (string)((int)$year - 1911);
+}
+
+function twyear_to_year($twyear)
+{
+	return (string)((int)$twyear + 1911);
+}
 
 function date_to_twdate($date)
 {

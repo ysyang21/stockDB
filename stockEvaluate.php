@@ -13,7 +13,7 @@ Descriptions:
 
 include_once("LIB_log.php");
 
-include_once("stockIDRQuery.php");
+include_once("stockXDRQuery.php");
 include_once("xbrlQuery.php");
 include_once("stockMonthQuery.php");
 include_once("stockWebpage.php");
@@ -23,6 +23,7 @@ class pepoData
     // property declaration
 	public $id = "";
 	public $onyyyy = "";
+	public $xr = 0.0;
 	public $revenue_lastyear = 0;
 	public $revenue_yoy_estimated = 0; // 月營收年增率
 	public $revenue_estimated = 0;
@@ -943,6 +944,7 @@ function initialize_stock_data($stock, $date)
 	$pepo = new pepoData();
 	$pepo->id = $stock->id;
 	$pepo->onyyyy = $stock->onyyyy;
+	$pepo->xr = query_xr_data_by_id($pepo->id)/10;
 
 	$year = substr($date, 0, 4);
 	$month = substr($date, 5, 2);
@@ -1369,7 +1371,11 @@ $t3 = round(microtime(true) * 1000);
 echo_v(LOG_VERBOSE, ($t3-$t2) . " ms to " . '<span style="color:#FF0000">' . "Step E" . '</span>' . "[" . __FUNCTION__ . "]");
 
 	// F. Estimate stock by using 2014 stock directly
-	$pepo->stock_now = query_year_stock($pepo->id, $year_1);
+	// v.1 of stock_now
+	// $pepo->stock_now = query_year_stock($pepo->id, $year_1);
+	// v.2 of stock_now
+	$pepo->stock_now = ( (date("Y") == substr($date, 0, 4)) ? (1+$pepo->xr)*query_year_stock($pepo->id, $year_1) : query_year_stock($pepo->id, substr($date, 0, 4)) );
+
 	echo_v(DEBUG_VERBOSE, "[evaluate_stock] F: id " . $pepo->id . " estimated stock (" . $year . ") = " . $pepo->stock_now);
 $t4 = round(microtime(true) * 1000);
 echo_v(LOG_VERBOSE, ($t4-$t3) . " ms to " . '<span style="color:#FF0000">' . "Step F" . '</span>' . "[" . __FUNCTION__ . "]");

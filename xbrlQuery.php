@@ -135,7 +135,7 @@ function query_seasonly_publish($id, $season)
 
 	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". "query_seasonly_publish_by:" . $id . ":" . $season . "[" . __FUNCTION__ . "]");
 	if($publish == "")
-		echo_v(DEBUG_VERBOSE, "[query_seasonly_revenue] id = " . $id . " has no seasonly publish data on " . $season);
+		echo_v(DEBUG_VERBOSE, "[query_seasonly_publish] id = " . $id . " has no seasonly publish data on " . $season);
 	return $publish;
 }
 
@@ -152,7 +152,7 @@ function query_year_stock($id, $year)
 
 	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". "query_year_stock_by:" . $id . ":" . $year_season . "[" . __FUNCTION__ . "]");
 	if($stock == -1)
-		echo_v(ERROR_VERBOSE, "[query_seasonly_revenue] id = " . $id . " has no stock data on " . $year);
+		echo_v(ERROR_VERBOSE, "[query_year_stock] id = " . $id . " has no stock data on " . $year);
 	return $stock;
 }
 
@@ -186,7 +186,7 @@ function query_year_eps2($id, $year)
 
 	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to " . "query_year_eps2_by:" . $id . ":" . $year_season . "[" . __FUNCTION__ . "]");
 	if($eps2 == -1)
-		echo_v(ERROR_VERBOSE, "[query_year_eps] id = " . $id . " has no yearly eps2 data on " . $year);
+		echo_v(ERROR_VERBOSE, "[query_year_eps2] id = " . $id . " has no yearly eps2 data on " . $year);
 	return $eps2;
 }
 
