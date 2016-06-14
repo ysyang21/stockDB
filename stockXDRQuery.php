@@ -113,8 +113,42 @@ function query_xr_data_by_id($id)
 {
 	$xr = 0.0;
 
-	// Does it matter to set ORDER DESC or ORDER ASC?
-	// if DESC, a little different from moneyDJ values
+	$query = "SELECT xr FROM xdrdata WHERE id = '" . $id . "' AND market = 'sii' AND Year(date) = '" . date("Y") . "'";
+	stopwatch_inter();
+	$result = mysql_query($query) or die('MySQL query error');
+
+	$kk = 0;
+	while($row = mysql_fetch_array($result)){
+		$xr = $row['xr'];
+		echo_v(DEBUG_VERBOSE, "[query_xr_data_by_id] stock " . $id . ", xr= " . $xr);
+		$kk++;
+		break;
+	}
+
+	if ($kk != 0) {
+		echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
+		echo_v(DEBUG_VERBOSE, "[query_xr_data_by_id] There are " . $kk . " xr for id " . $id);
+		return $xr;
+	}
+
+	$query = "SELECT xr FROM xdrdata WHERE id = '" . $id . "' AND market = 'otc' AND Year(date) = '" . date("Y") . "'";
+	stopwatch_inter();
+	$result = mysql_query($query) or die('MySQL query error');
+
+	$jj = 0;
+	while($row = mysql_fetch_array($result)){
+		$xr = $row['xr'];
+		echo_v(DEBUG_VERBOSE, "[query_xr_data_by_id] stock " . $id . ", xr= " . $xr);
+		$jj++;
+		break;
+	}
+
+	if ($jj != 0) {
+		echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
+		echo_v(DEBUG_VERBOSE, "[query_xr_data_by_id] There are " . $jj . " xr for id " . $id);
+		return $xr;
+	}
+
 	$query = "SELECT xr FROM xdrdata WHERE id = '" . $id . "' AND market = 'bod' AND Year(date) = '" . date("Y") . "'";
 	stopwatch_inter();
 	$result = mysql_query($query) or die('MySQL query error');

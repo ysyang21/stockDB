@@ -47,9 +47,23 @@ function prepare_id_seasonly_xbrl($id)
 	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
 }
 
-function query_all_inventory($id)
+function query_xbrl_inventory($id)
 {
 	$query = "SELECT season, inventory FROM xbrldata WHERE id = " . $id;
+	stopwatch_inter();
+	$result = mysql_query($query) or die('MySQL query error');
+	$inventory = [];
+	while($row = mysql_fetch_array($result)){
+		$inventory[$row[0]] = $row[1];
+	}
+
+	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
+	return $inventory;
+}
+
+function query_xbrl_income_statement($id)
+{
+	$query = "SELECT season, revenue, income, eps, eps2 FROM xbrldata WHERE id = " . $id;
 	stopwatch_inter();
 	$result = mysql_query($query) or die('MySQL query error');
 	$inventory = [];
@@ -412,7 +426,7 @@ function load_seasonly_xbrl($id)
 	for ($ii=$start;$ii<min(count($season_enum),$start+$len);$ii++)
 		array_push($season_list, $season_enum[$ii]);
 
-	$sql = "SELECT season, stock, revenue, nopat, eps, eps2, publish, inventory, income, cashoa, cashia FROM xbrldata WHERE id = " . $id .
+	$sql = "SELECT season, stock, revenue, income, nopat, eps, eps2, revenue_, income_, nopat_, eps_, eps2_, publish, inventory, income, cashoa, cashia FROM xbrldata WHERE id = " . $id .
 		" AND (season = " . $season_list[0];
 
 	for ($ii=1;$ii<$len;$ii++)
@@ -424,20 +438,27 @@ function load_seasonly_xbrl($id)
 
 	$xbrls = array();
 
+	$jj = 0;
 	while($row = mysql_fetch_array($result)){
 		$xbrl = new xbrlData();
-		$xbrl->season = $row[0];
-		$xbrl->stock = $row[1];
-		$xbrl->revenue = $row[2];
-		$xbrl->nopat = $row[3];
-		$xbrl->eps = $row[4];
-		$xbrl->eps2 = $row[5];
-		$xbrl->publish = $row[6];
-		$xbrl->inventory = $row[7];
-		$xbrl->income = $row[8];
-		$xbrl->cashoa = $row[9];
-		$xbrl->cashia = $row[10];
-
+		$xbrl->season = $row[$jj++];
+		$xbrl->stock = $row[$jj++];
+		$xbrl->revenue = $row[$jj++];
+		$xbrl->income = $row[$jj++];
+		$xbrl->nopat = $row[$jj++];
+		$xbrl->eps = $row[$jj++];
+		$xbrl->eps2 = $row[$jj++];
+		$xbrl->revenue_ = $row[$jj++];
+		$xbrl->income_ = $row[$jj++];
+		$xbrl->nopat_ = $row[$jj++];
+		$xbrl->eps_ = $row[$jj++];
+		$xbrl->eps2_ = $row[$jj++];
+		$xbrl->publish = $row[$jj++];
+		$xbrl->inventory = $row[$jj++];
+		$xbrl->income = $row[$jj++];
+		$xbrl->cashoa = $row[$jj++];
+		$xbrl->cashia = $row[$jj++];
+		$jj = 0;
 		array_push($xbrls, $xbrl);
 	}
 
@@ -455,20 +476,41 @@ function load_seasonly_xbrl($id)
 				if (substr($xbrls[$ii+1]->season, 4, 2) == '03')
 				{
 					$xbrls[$ii]->revenue -= $xbrls[$ii+1]->revenue;
+					$xbrls[$ii]->income -= $xbrls[$ii+1]->income;
 					$xbrls[$ii]->nopat -= $xbrls[$ii+1]->nopat;
 					$xbrls[$ii]->eps -= $xbrls[$ii+1]->eps;
+					$xbrls[$ii]->eps2 -= $xbrls[$ii+1]->eps2;
+					$xbrls[$ii]->revenue_ -= $xbrls[$ii+1]->revenue_;
+					$xbrls[$ii]->income_ -= $xbrls[$ii+1]->income_;
+					$xbrls[$ii]->nopat_ -= $xbrls[$ii+1]->nopat_;
+					$xbrls[$ii]->eps_ -= $xbrls[$ii+1]->eps_;
+					$xbrls[$ii]->eps2_ -= $xbrls[$ii+1]->eps2_;
 				}
 				if (substr($xbrls[$ii+2]->season, 4, 2) == '02')
 				{
 					$xbrls[$ii]->revenue -= $xbrls[$ii+2]->revenue;
+					$xbrls[$ii]->income -= $xbrls[$ii+2]->income;
 					$xbrls[$ii]->nopat -= $xbrls[$ii+2]->nopat;
 					$xbrls[$ii]->eps -= $xbrls[$ii+2]->eps;
+					$xbrls[$ii]->eps2 -= $xbrls[$ii+2]->eps2;
+					$xbrls[$ii]->revenue_ -= $xbrls[$ii+2]->revenue_;
+					$xbrls[$ii]->income_ -= $xbrls[$ii+2]->income_;
+					$xbrls[$ii]->nopat_ -= $xbrls[$ii+2]->nopat_;
+					$xbrls[$ii]->eps_ -= $xbrls[$ii+2]->eps_;
+					$xbrls[$ii]->eps2_ -= $xbrls[$ii+2]->eps2_;
 				}
 				if (substr($xbrls[$ii+3]->season, 4, 2) == '01')
 				{
 					$xbrls[$ii]->revenue -= $xbrls[$ii+3]->revenue;
+					$xbrls[$ii]->income -= $xbrls[$ii+3]->income;
 					$xbrls[$ii]->nopat -= $xbrls[$ii+3]->nopat;
 					$xbrls[$ii]->eps -= $xbrls[$ii+3]->eps;
+					$xbrls[$ii]->eps2 -= $xbrls[$ii+3]->eps2;
+					$xbrls[$ii]->revenue_ -= $xbrls[$ii+3]->revenue_;
+					$xbrls[$ii]->income_ -= $xbrls[$ii+3]->income_;
+					$xbrls[$ii]->nopat_ -= $xbrls[$ii+3]->nopat_;
+					$xbrls[$ii]->eps_ -= $xbrls[$ii+3]->eps_;
+					$xbrls[$ii]->eps2_ -= $xbrls[$ii+3]->eps2_;
 				}
 			}	
 		}
@@ -477,20 +519,41 @@ function load_seasonly_xbrl($id)
 			if (substr($xbrls[$ii]->season, 4, 2) == '04' and $count - $ii >=1)
 			{
 				$xbrls[$ii]->revenue -= $xbrls[$ii+1]->revenue;
+				$xbrls[$ii]->income -= $xbrls[$ii+1]->income;
 				$xbrls[$ii]->nopat -= $xbrls[$ii+1]->nopat;
 				$xbrls[$ii]->eps -= $xbrls[$ii+1]->eps;
+				$xbrls[$ii]->eps2 -= $xbrls[$ii+1]->eps2;
+				$xbrls[$ii]->revenue_ -= $xbrls[$ii+1]->revenue_;
+				$xbrls[$ii]->income_ -= $xbrls[$ii+1]->income_;
+				$xbrls[$ii]->nopat_ -= $xbrls[$ii+1]->nopat_;
+				$xbrls[$ii]->eps_ -= $xbrls[$ii+1]->eps_;
+				$xbrls[$ii]->eps2_ -= $xbrls[$ii+1]->eps2_;
 			}
 			if (substr($xbrls[$ii]->season, 4, 2) == '03' and $count - $ii >=1)
 			{
 				$xbrls[$ii]->revenue -= $xbrls[$ii+1]->revenue;
+				$xbrls[$ii]->income -= $xbrls[$ii+1]->income;
 				$xbrls[$ii]->nopat -= $xbrls[$ii+1]->nopat;
 				$xbrls[$ii]->eps -= $xbrls[$ii+1]->eps;
+				$xbrls[$ii]->eps2 -= $xbrls[$ii+1]->eps2;
+				$xbrls[$ii]->revenue_ -= $xbrls[$ii+1]->revenue_;
+				$xbrls[$ii]->income_ -= $xbrls[$ii+1]->income_;
+				$xbrls[$ii]->nopat_ -= $xbrls[$ii+1]->nopat_;
+				$xbrls[$ii]->eps_ -= $xbrls[$ii+1]->eps_;
+				$xbrls[$ii]->eps2_ -= $xbrls[$ii+1]->eps2_;
 			}
 			if (substr($xbrls[$ii]->season, 4, 2) == '02' and $count - $ii >=1)
 			{
 				$xbrls[$ii]->revenue -= $xbrls[$ii+1]->revenue;
+				$xbrls[$ii]->income -= $xbrls[$ii+1]->income;
 				$xbrls[$ii]->nopat -= $xbrls[$ii+1]->nopat;
 				$xbrls[$ii]->eps -= $xbrls[$ii+1]->eps;
+				$xbrls[$ii]->eps2 -= $xbrls[$ii+1]->eps2;
+				$xbrls[$ii]->revenue_ -= $xbrls[$ii+1]->revenue_;
+				$xbrls[$ii]->income_ -= $xbrls[$ii+1]->income_;
+				$xbrls[$ii]->nopat_ -= $xbrls[$ii+1]->nopat_;
+				$xbrls[$ii]->eps_ -= $xbrls[$ii+1]->eps_;
+				$xbrls[$ii]->eps2_ -= $xbrls[$ii+1]->eps2_;
 			}
 		}
 	}

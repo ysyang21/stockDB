@@ -16,10 +16,15 @@ function show_stock_brief($stock, $price_rank, $price, $yoy_rank, $yoy)
 {
 	echo_n('  <table>');
 	echo_n('    <caption>股票簡介</caption>');
-	echo_n('    <thead><th>代號<th>名稱<th>行業別<th>上市櫃別<th>財務報表<th>上市櫃時間'.
-			'<th>股價<th>股價排名<th>月營收年增率<th>月營收年增率排名</thead>');
+	$thead = '    <thead><th>代號<th>名稱<th>行業別<th>上市櫃別<th>財務報表<th>上市櫃時間';
+	if ($price_rank != -1)
+		$thead = $thead . '<th>股價<th>股價排名';
+	if ($yoy_rank != -1)
+		$thead = $thead . '<th>月營收年增率<th>月營收年增率排名';
+	$thead = $thead . '</thead>';
+	echo_n($thead);
 	echo '    <tbody><tr>';
-	echo '<td>' . '<a href="index.php?stockid=' . $stock->id . '">' . $stock->id . '</a>';
+	echo '<td>' . '<a href="case.php?stockid=' . $stock->id . '">' . $stock->id . '</a>';
 	echo '<td>' . $stock->name;
 	echo '<td>' . $stock->industry;
 	echo '<td>' . ($stock->market=='sii'?'上市':'上櫃');
@@ -28,8 +33,8 @@ function show_stock_brief($stock, $price_rank, $price, $yoy_rank, $yoy)
 
 	if ($price_rank == -1)
 	{
-		echo '<td>';
-		echo '<td>';
+		//echo '<td>';
+		//echo '<td>';
 	}
 	else if ($price_rank < 100)
 	{
@@ -44,8 +49,8 @@ function show_stock_brief($stock, $price_rank, $price, $yoy_rank, $yoy)
 
 	if ($yoy_rank == -1)
 	{
-		echo '<td>';
-		echo '<td>';
+		//echo '<td>';
+		//echo '<td>';
 	}
 	else if ($yoy_rank < 100)
 	{
@@ -57,6 +62,25 @@ function show_stock_brief($stock, $price_rank, $price, $yoy_rank, $yoy)
 		echo '<td>' . percent($yoy);
 		echo '<td>' . ($yoy_rank+1);
 	}
+
+	echo_n('</tbody>');
+	echo_n('  </table><br>');
+}
+
+function show_stock_brief_case($stock)
+{
+	echo_n('  <table>');
+	echo_n('    <caption>股票簡介</caption>');
+	$thead = '    <thead><th>代號<th>名稱<th>行業別<th>上市櫃別<th>財務報表<th>上市櫃時間';
+	$thead = $thead . '</thead>';
+	echo_n($thead);
+	echo '    <tbody><tr>';
+	echo '<td>' . '<a href="index.php?stockid=' . $stock->id . '">' . $stock->id . '</a>';
+	echo '<td>' . $stock->name;
+	echo '<td>' . $stock->industry;
+	echo '<td>' . ($stock->market=='sii'?'上市':'上櫃');
+	echo '<td>' . ($stock->report=='cr'?'合併':'個別');
+	echo '<td>' . $stock->onyyyy . $stock->onmm;
 
 	echo_n('</tbody>');
 	echo_n('  </table><br>');
@@ -182,6 +206,111 @@ function show_xbrl($xbrls)
 	echo_n('  </table><br>');
 }
 
+function show_xbrl_bonddealer($xbrls)
+{
+	echo_n('  <table>');
+	echo_n('    <caption>財務報表</caption>');
+
+	echo '    <thead><th>季度';
+	foreach ($xbrls as $xbrl)
+		echo '<th>' . $xbrl->season;
+	echo_n('</thead>');
+	echo_n('    <tbody>');
+
+	echo '      <tr>';
+	echo '<td>每股盈餘';
+	foreach ($xbrls as $xbrl)
+		echo '<td>' . decimal2($xbrl->eps);
+	echo_n('');
+
+	echo '      <tr>';
+	echo '<td>每股盈餘年增率';
+	foreach ($xbrls as $xbrl)
+		echo '<td>' . percent(($xbrl->eps/$xbrl->eps_)-1);
+	echo_n('');
+
+	// echo '      <tr>';
+	// echo '<td>營收';
+	// foreach ($xbrls as $xbrl)
+	// 	echo '<td>' . decimal2($xbrl->revenue/100000000);
+	// echo_n('');
+
+	echo '      <tr>';
+	echo '<td>營收年增率';
+	foreach ($xbrls as $xbrl)
+		echo '<td>' . percent(($xbrl->revenue/$xbrl->revenue_)-1);
+	echo_n('');
+
+	// echo '      <tr>';
+	// echo '<td>營業利益';
+	// foreach ($xbrls as $xbrl)
+	// 	echo '<td>' . decimal2($xbrl->income/100000000);
+	// echo_n('');
+
+	echo '      <tr>';
+	echo '<td>營業利益年增率';
+	foreach ($xbrls as $xbrl)
+		echo '<td>' . percent(($xbrl->income/$xbrl->income_)-1);
+	echo_n('');
+
+	// echo '      <tr>';
+	// echo '<td>稅後淨利';
+	// foreach ($xbrls as $xbrl)
+	// 	echo '<td>' . decimal2($xbrl->nopat/100000000);
+	// echo_n('');
+
+	echo '      <tr>';
+	echo '<td>稅後淨利年增率';
+	foreach ($xbrls as $xbrl)
+		echo '<td>' . percent(($xbrl->nopat/$xbrl->nopat_)-1);
+	echo_n('');
+
+	echo '      <tr>';
+	echo '<td>營業利益率';
+	foreach ($xbrls as $xbrl)
+		echo '<td>' . percent($xbrl->income/$xbrl->revenue);
+	echo_n('');
+
+	// echo '      <tr>';
+	// echo '<td>股本';
+	// foreach ($xbrls as $xbrl)
+	// 	echo '<td>' . decimal2($xbrl->stock/100000000);
+	// echo_n('');
+
+	// echo '      <tr>';
+	// echo '<td>存貨';
+	// foreach ($xbrls as $xbrl)
+	// 	echo '<td>' . decimal2($xbrl->inventory/100000000);
+	// echo_n('');
+
+	// echo '      <tr>';
+	// echo '<td>存貨營收比';
+	// foreach ($xbrls as $xbrl)
+	// 	echo '<td>' . percent($xbrl->inventory/$xbrl->revenue);
+	// echo_n('');
+
+	// echo '      <tr>';
+	// echo '<td>營運活動現金流量';
+	// foreach ($xbrls as $xbrl)
+	// 	echo '<td>' . decimal2($xbrl->cashoa/100000000);
+	// echo_n('');
+
+	// echo '      <tr>';
+	// echo '<td>投資活動現金流量';
+	// foreach ($xbrls as $xbrl)
+	// 	echo '<td>' . decimal2($xbrl->cashia/100000000);
+	// echo_n('');
+
+	echo '      <tr>';
+	echo '<td>累積現金流量';
+	foreach ($xbrls as $xbrl)
+		echo '<td>' . decimal2($xbrl->cashoa/100000000+$xbrl->cashia/100000000);
+	echo_n('');
+
+	echo_n('    </tbody>');
+	echo_n('  </table><br>');
+}
+
 // 最近八月月營收
 function show_monthly_revenue($monthly_revenue)
 {
@@ -282,39 +411,6 @@ function show_frontend_updater($my_name)
 	global $observed_stocks;
 
 	echo_n('  <table>');
-	echo_n('    <caption>選股小幫手</caption>');
-	echo_n('    <tbody>');
-
-	echo_n('      <tr>');
-	echo_n('        <td>' . '高價股族群');
-	echo_n('        <td>' . '<input type=button value=" 前十檔 " onClick="self.location=' . "'" . $my_name . "?do=highpriceCheck&begin=0'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 11-20檔" onClick="self.location=' . "'" . $my_name . "?do=highpriceCheck&begin=10'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 21-30檔" onClick="self.location=' . "'" . $my_name . "?do=highpriceCheck&begin=20'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 31-40檔" onClick="self.location=' . "'" . $my_name . "?do=highpriceCheck&begin=30'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 41-50檔" onClick="self.location=' . "'" . $my_name . "?do=highpriceCheck&begin=40'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 51-60檔" onClick="self.location=' . "'" . $my_name . "?do=highpriceCheck&begin=50'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 61-70檔" onClick="self.location=' . "'" . $my_name . "?do=highpriceCheck&begin=60'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 71-80檔" onClick="self.location=' . "'" . $my_name . "?do=highpriceCheck&begin=70'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 81-90檔" onClick="self.location=' . "'" . $my_name . "?do=highpriceCheck&begin=80'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 91-100檔" onClick="self.location=' . "'" . $my_name . "?do=highpriceCheck&begin=90'" . '">');
-
-	echo_n('      <tr>');
-	echo_n('        <td>' . '月營收年增率');
-	echo_n('        <td>' . '<input type=button value=" 前十檔 " onClick="self.location=' . "'" . $my_name . "?do=monthyoyCheck&begin=0'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 11-20檔" onClick="self.location=' . "'" . $my_name . "?do=monthyoyCheck&begin=10'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 21-30檔" onClick="self.location=' . "'" . $my_name . "?do=monthyoyCheck&begin=20'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 31-40檔" onClick="self.location=' . "'" . $my_name . "?do=monthyoyCheck&begin=30'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 41-50檔" onClick="self.location=' . "'" . $my_name . "?do=monthyoyCheck&begin=40'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 51-60檔" onClick="self.location=' . "'" . $my_name . "?do=monthyoyCheck&begin=50'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 61-70檔" onClick="self.location=' . "'" . $my_name . "?do=monthyoyCheck&begin=60'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 71-80檔" onClick="self.location=' . "'" . $my_name . "?do=monthyoyCheck&begin=70'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 81-90檔" onClick="self.location=' . "'" . $my_name . "?do=monthyoyCheck&begin=80'" . '">');
-	echo_n('        <td>' . '<input type=button value=" 91-100檔" onClick="self.location=' . "'" . $my_name . "?do=monthyoyCheck&begin=90'" . '">');
-
-	echo_n('    </tbody>');
-	echo_n('  </table><br>');
-
-	echo_n('  <table>');
 	echo_n('    <caption>個股調查</caption>');
 	echo_n('    <tbody>');
 
@@ -349,6 +445,56 @@ function show_frontend_updater($my_name)
 
 	echo_n('    </tbody>');
 	echo_n('  </table>');
+	echo_n('  <br>');
+	echo_n('  <input type=button value="Frontend" onClick="self.location=' . "'index.php'" . '">');
+	echo_n('  <input type=button value="CaseStudy" onClick="self.location=' . "'case.php'" . '">');
+	echo_n('  <br>');
+	echo_n('  <br>');
+}
+
+// 網頁內容 (Case Study)
+function show_casestudy_updater($my_name)
+{
+	global $observed_stocks;
+
+	echo_n('  <table>');
+	echo_n('    <caption>個案研究</caption>');
+	echo_n('    <tbody>');
+
+	echo_n('      <tr>');
+	echo_n('        <td>' . '請輸入股票代號');
+	echo_n('        <td>');
+	echo_n('          <form action="' . $my_name . '" method="get">');
+	echo_n('　          <input size=4 type=text name="stockid" value="3008">');
+	echo_n('            <input type="submit" value="Submit">');
+	echo_n('          </form>');
+
+	echo_n('      <tr>');
+	echo_n('        <td>' . '請輸入股票名稱');
+	echo_n('        <td>');
+	echo_n('          <form action="' . $my_name . '" method="get">');
+	echo_n('　          <input size=4 type=text name="stockname" value="聯發科">');
+	echo_n('            <input type="submit" value="Submit">');
+	echo_n('          </form>');
+
+	echo_n('      <tr>');
+	echo_n('        <td>' . '請選擇股票名稱');
+	echo_n('        <td>');
+	echo_n('          <form action="' . $my_name . '" method="get">');
+	echo_n('            <select name="stockname">');
+	foreach($observed_stocks as $stock)
+	{
+		echo_n('              <option value="' . $stock . '">' . $stock . '</option>');
+	}
+	echo_n('            </select>');
+	echo_n('            <input type="submit" value="Submit">');
+	echo_n('          </form>');
+
+	echo_n('    </tbody>');
+	echo_n('  </table>');
+	echo_n('  <br>');
+	echo_n('  <input type=button value="Frontend" onClick="self.location=' . "'index.php'" . '">');
+	echo_n('  <input type=button value="CaseStudy" onClick="self.location=' . "'case.php'" . '">');
 	echo_n('  <br>');
 	echo_n('  <br>');
 }
