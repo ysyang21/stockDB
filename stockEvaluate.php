@@ -1139,9 +1139,9 @@ function update_stock_data_nopat_over_revenue_diff4($pepo, $date, $xdr_kline)
 	$pepo->xdr[$year_2] = query_xdr_highlow_by_year($year_2, $xdr_kline);
 	$pepo->xdr[$year_3] = query_xdr_highlow_by_year($year_3, $xdr_kline);
 	echo_v(DEBUG_VERBOSE, "[evaluate_stock] H: id " . $pepo->id . " idr high/low(year) = " .
-		$pepo->idr[$year_1]->high . "/" . $pepo->xdr[$year_1]->low . "(" . $year_1 . "), " .
-		$pepo->idr[$year_2]->high . "/" . $pepo->xdr[$year_2]->low . "(" . $year_2 . "), " .
-		$pepo->idr[$year_3]->high . "/" . $pepo->xdr[$year_3]->low . "(" . $year_3 . ")");
+		$pepo->xdr[$year_1]->high . "/" . $pepo->xdr[$year_1]->low . "(" . $year_1 . "), " .
+		$pepo->xdr[$year_2]->high . "/" . $pepo->xdr[$year_2]->low . "(" . $year_2 . "), " .
+		$pepo->xdr[$year_3]->high . "/" . $pepo->xdr[$year_3]->low . "(" . $year_3 . ")");
 
 	// I. Get EPS at year 2014-2011
 	$pepo->eps[$year_1] = query_year_eps($pepo->id, $year_1);
