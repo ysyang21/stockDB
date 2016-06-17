@@ -16,7 +16,7 @@ function show_stock_brief($stock, $price_rank, $price, $yoy_rank, $yoy)
 {
 	echo_n('  <table>');
 	echo_n('    <caption>股票簡介</caption>');
-	$thead = '    <thead><th>代號<th>名稱<th>行業別<th>上市櫃別<th>財務報表<th>上市櫃時間';
+	$thead = '    <thead><th>代號<th>名稱<th>行業別<th>上市櫃別<th>上市櫃時間';
 	if ($price_rank != -1)
 		$thead = $thead . '<th>股價<th>股價排名';
 	if ($yoy_rank != -1)
@@ -28,7 +28,6 @@ function show_stock_brief($stock, $price_rank, $price, $yoy_rank, $yoy)
 	echo '<td>' . $stock->name;
 	echo '<td>' . $stock->industry;
 	echo '<td>' . ($stock->market=='sii'?'上市':'上櫃');
-	echo '<td>' . ($stock->report=='cr'?'合併':'個別');
 	echo '<td>' . $stock->onyyyy . $stock->onmm;
 
 	if ($price_rank == -1)
@@ -71,7 +70,7 @@ function show_stock_brief_case($stock)
 {
 	echo_n('  <table>');
 	echo_n('    <caption>股票簡介</caption>');
-	$thead = '    <thead><th>代號<th>名稱<th>行業別<th>上市櫃別<th>財務報表<th>上市櫃時間';
+	$thead = '    <thead><th>代號<th>名稱<th>行業別<th>上市櫃別<th>上市櫃時間';
 	$thead = $thead . '</thead>';
 	echo_n($thead);
 	echo '    <tbody><tr>';
@@ -79,7 +78,6 @@ function show_stock_brief_case($stock)
 	echo '<td>' . $stock->name;
 	echo '<td>' . $stock->industry;
 	echo '<td>' . ($stock->market=='sii'?'上市':'上櫃');
-	echo '<td>' . ($stock->report=='cr'?'合併':'個別');
 	echo '<td>' . $stock->onyyyy . $stock->onmm;
 
 	echo_n('</tbody>');

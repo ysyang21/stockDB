@@ -46,14 +46,12 @@ class idData
 	public $name = '';
 	public $industry = '';
 	public $market = '';
-	public $type = '';
-	public $report = '';
 	public $ondate = '';
     public $onyyyy = '';
     public $onmm = '';
 }
 
-function query_id_data_all()
+function query_id_data()
 {
 	$iddata = array();
 
@@ -65,35 +63,11 @@ function query_id_data_all()
 		$iddata[$id] = new idData();
 		$iddata[$id]->id = $id;
 		$iddata[$id]->market = $row['market'];
-		$iddata[$id]->type = $row['type'];
-		$iddata[$id]->report = $row['report'];
 		$iddata[$id]->onyyyy = substr($row['ondate'], 0, 4);
 		$iddata[$id]->onmm = substr($row['ondate'], 5, 2);
 	}
 
-	echo_v(DEBUG_VERBOSE, "[query_id_data_all] There are " . count($iddata) . " stocks in table iddata.");
-	return $iddata;
-}
-
-function query_id_data()
-{
-	$iddata = array();
-
-	$query = "SELECT * FROM iddata WHERE ondate IS NOT NULL AND offdate IS NULL AND (market = 'sii' OR market = 'otc') AND industry != '存託憑證' AND type = 'ci'";
-	$result = mysql_query($query) or die('MySQL query error');
-
-	while($row = mysql_fetch_array($result)){
-		$id = $row['id'];
-		$iddata[$id] = new idData();
-		$iddata[$id]->id = $id;
-		$iddata[$id]->market = $row['market'];
-		$iddata[$id]->type = $row['type'];
-		$iddata[$id]->report = $row['report'];
-		$iddata[$id]->onyyyy = substr($row['ondate'], 0, 4);
-		$iddata[$id]->onmm = substr($row['ondate'], 5, 2);
-	}
-
-	echo_v(DEBUG_VERBOSE, "[query_id_data] There are " . count($iddata) . " ci stocks in table iddata.");
+	echo_v(DEBUG_VERBOSE, "[query_id_data] There are " . count($iddata) . " stocks in table iddata.");
 	return $iddata;
 }
 
@@ -101,7 +75,7 @@ function query_id_data_sii()
 {
 	$iddata = array();
 
-	$query = "SELECT * FROM iddata WHERE ondate IS NOT NULL AND offdate IS NULL AND market = 'sii' AND industry != '存託憑證' AND type = 'ci'";
+	$query = "SELECT * FROM iddata WHERE market = 'sii'";
 	$result = mysql_query($query) or die('MySQL query error');
 
 	while($row = mysql_fetch_array($result)){
@@ -109,17 +83,11 @@ function query_id_data_sii()
 		$iddata[$id] = new idData();
 		$iddata[$id]->id = $id;
 		$iddata[$id]->market = $row['market'];
-		$iddata[$id]->type = $row['type'];
-		$iddata[$id]->report = $row['report'];
 		$iddata[$id]->onyyyy = substr($row['ondate'], 0, 4);
 		$iddata[$id]->onmm = substr($row['ondate'], 5, 2);
 	}
 
-	// 勝華, sii, ci, cr, 重整
-	if (array_key_exists('2384', $iddata))
-		unset ($iddata['2384']);
-
-	echo_v(DEBUG_VERBOSE, "[query_id_data_sii] There are " . count($iddata) . " ci-sii stocks in table iddata.");
+	echo_v(DEBUG_VERBOSE, "[query_id_data_sii] There are " . count($iddata) . " sii stocks in table iddata.");
 	return $iddata;
 }
 
@@ -127,7 +95,7 @@ function query_id_data_otc()
 {
 	$iddata = array();
 
-	$query = "SELECT * FROM iddata WHERE ondate IS NOT NULL AND offdate IS NULL AND market = 'otc' AND industry != '存託憑證' AND type = 'ci'";
+	$query = "SELECT * FROM iddata WHERE market = 'otc'";
 	$result = mysql_query($query) or die('MySQL query error');
 
 	while($row = mysql_fetch_array($result)){
@@ -135,13 +103,11 @@ function query_id_data_otc()
 		$iddata[$id] = new idData();
 		$iddata[$id]->id = $id;
 		$iddata[$id]->market = $row['market'];
-		$iddata[$id]->type = $row['type'];
-		$iddata[$id]->report = $row['report'];
 		$iddata[$id]->onyyyy = substr($row['ondate'], 0, 4);
 		$iddata[$id]->onmm = substr($row['ondate'], 5, 2);
 	}
 
-	echo_v(DEBUG_VERBOSE, "[query_id_data_otc] There are " . count($iddata) . " ci-otc stocks in table iddata.");
+	echo_v(DEBUG_VERBOSE, "[query_id_data_otc] There are " . count($iddata) . " otc stocks in table iddata.");
 	return $iddata;
 }
 
@@ -149,7 +115,7 @@ function query_id_data_by_ys($year, $season)
 {
 	$iddata = array();
 
-	$query = "SELECT * FROM iddata WHERE ondate IS NOT NULL AND offdate IS NULL AND (market = 'sii' OR market = 'otc') AND industry != '存託憑證' AND type = 'ci'";
+	$query = "SELECT * FROM iddata";
 	$result = mysql_query($query) or die('MySQL query error');
 
 	while($row = mysql_fetch_array($result)){
@@ -162,18 +128,12 @@ function query_id_data_by_ys($year, $season)
 			$iddata[$id] = new idData();
 			$iddata[$id]->id = $id;
 			$iddata[$id]->market = $row['market'];
-			$iddata[$id]->type = $row['type'];
-			$iddata[$id]->report = $row['report'];
 			$iddata[$id]->onyyyy = $onyyyy;
 			$iddata[$id]->onmm = $onmm;
 		}
 	}
 
-	// 勝華, sii, ci, cr, 重整
-	if (array_key_exists('2384', $iddata))
-		unset ($iddata['2384']);
-	
-	echo_v(DEBUG_VERBOSE, "[query_id_data_by_ys] There are " . count($iddata) . " ci stocks living in " . $year . $season);
+	echo_v(DEBUG_VERBOSE, "[query_id_data_by_ys] There are " . count($iddata) . " active stocks in " . $year . $season);
 	return $iddata;
 }
 
@@ -181,7 +141,7 @@ function query_id_data_by_ym($year, $month)
 {
 	$iddata = array();
 
-	$query = "SELECT * FROM iddata WHERE ondate IS NOT NULL AND offdate IS NULL AND (market = 'sii' OR market = 'otc') AND industry != '存託憑證' AND type = 'ci'";
+	$query = "SELECT * FROM iddata";
 	$result = mysql_query($query) or die('MySQL query error');
 
 	while($row = mysql_fetch_array($result)){
@@ -194,25 +154,19 @@ function query_id_data_by_ym($year, $month)
 			$iddata[$id] = new idData();
 			$iddata[$id]->id = $id;
 			$iddata[$id]->market = $row['market'];
-			$iddata[$id]->type = $row['type'];
-			$iddata[$id]->report = $row['report'];
 			$iddata[$id]->onyyyy = $onyyyy;
 			$iddata[$id]->onmm = $onmm;
 		}
 	}
 
-	// 勝華, sii, ci, cr, 重整
-	if (array_key_exists('2384', $iddata))
-		unset ($iddata['2384']);
-
-	echo_v(DEBUG_VERBOSE, "[query_id_data_by_ym] There are " . count($iddata) . " ci stocks living in " . $year . $month);
+	echo_v(DEBUG_VERBOSE, "[query_id_data_by_ym] There are " . count($iddata) . " active stocks in " . $year . $month);
 
 	return $iddata;
 }
 
 function query_id_data_by_id($id)
 {
-	$query = "SELECT * FROM iddata WHERE id = " . $id . " AND ondate IS NOT NULL AND offdate IS NULL AND (market = 'sii' OR market = 'otc') AND industry != '存託憑證' AND type = 'ci'";;
+	$query = "SELECT * FROM iddata WHERE id = " . $id;
 	stopwatch_inter();
 	$result = mysql_query($query) or die('MySQL query error');
 
@@ -224,8 +178,6 @@ function query_id_data_by_id($id)
 			$stock->name = $row['name'];
 			$stock->industry = $row['industry'];
 			$stock->market = $row['market'];
-			$stock->type = $row['type'];
-			$stock->report = $row['report'];
 			$stock->ondate = $row['ondate'];
 			$stock->onyyyy = substr($row['ondate'], 0, 4);
 			$stock->onmm = substr($row['ondate'], 5, 2);
@@ -240,7 +192,7 @@ function query_id_data_by_id($id)
 function query_name_by_id($id)
 {
 	$name = '';
-	$query = "SELECT name FROM iddata WHERE id = " . $id . " AND ondate IS NOT NULL AND offdate IS NULL AND (market = 'sii' OR market = 'otc') AND industry != '存託憑證' AND type = 'ci'";
+	$query = "SELECT name FROM iddata WHERE id = " . $id;
 	$result = mysql_query($query) or die('MySQL query error');
 	while($row = mysql_fetch_array($result)){
 		$name = $row['name'];
@@ -254,7 +206,7 @@ function query_name_by_id($id)
 function query_id_by_name($name)
 {
 	$id = '';
-	$query = "SELECT id FROM iddata WHERE name = '" . $name . "' AND ondate IS NOT NULL AND offdate IS NULL AND (market = 'sii' OR market = 'otc') AND industry != '存託憑證' AND type = 'ci'";
+	$query = "SELECT id FROM iddata WHERE name = '" . $name . "'";
 	$result = mysql_query($query) or die('MySQL query error');
 	while($row = mysql_fetch_array($result)){
 		$id = $row['id'];
@@ -275,14 +227,12 @@ function stockIDQueryTest()
 	echo_v(LOG_VERBOSE, "**********************************************************************");
 	echo_v(LOG_VERBOSE, "");
 
-	$iddata = query_id_data_all();
-	echo_v(LOG_VERBOSE, "Number of all entries: " . count($iddata) . ".");
 	$iddata = query_id_data();
-	echo_v(LOG_VERBOSE, "Number of ci entries: " . count($iddata) . ".");
+	echo_v(LOG_VERBOSE, "Number of all entries: " . count($iddata) . ".");
 	$iddata = query_id_data_sii();
-	echo_v(LOG_VERBOSE, "Number of ci-sii entries: " . count($iddata) . ".");
+	echo_v(LOG_VERBOSE, "Number of sii entries: " . count($iddata) . ".");
 	$iddata = query_id_data_otc();
-	echo_v(LOG_VERBOSE, "Number of ci-otc entries: " . count($iddata) . ".");
+	echo_v(LOG_VERBOSE, "Number of otc entries: " . count($iddata) . ".");
 
 	$id_array = array("1101", "2330", "2333");
 	foreach($id_array as $id)

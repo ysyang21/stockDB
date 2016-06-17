@@ -223,6 +223,7 @@ define("JAN_FEB_MERGE", 1);
 define("OLDER_THAN", 2);
 
 $observed_stocks = array(
+	'寶成工業',
 	'統一超',
 	'新日興',
 	'可寧衛',

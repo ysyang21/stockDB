@@ -281,8 +281,10 @@ function query_month_revenue_yoys_sorted_on_month($month)
 	//$sql = "SELECT id, (thisMonth/yearAgo)-1 FROM monthdata WHERE month = '" . $month . "' ORDER BY (thisMonth/yearAgo) DESC";
 	// need to join following condition:
 	//$sql = "SELECT * FROM iddata WHERE ondate IS NOT NULL AND offdate IS NULL AND (market = 'sii' OR market = 'otc') AND industry != '存託憑證' AND type = 'ci'";
+	//$query = "SELECT m.id, (m.thisMonth/m.yearAgo)-1 FROM monthdata m INNER JOIN iddata i ON (m.id=i.id) WHERE m.month = '" . $month .
+	//		"' AND m.yearAgo != 0 AND i.industry != '存託憑證' AND i.type ='ci' ORDER BY (m.thisMonth/m.yearAgo) DESC";
 	$query = "SELECT m.id, (m.thisMonth/m.yearAgo)-1 FROM monthdata m INNER JOIN iddata i ON (m.id=i.id) WHERE m.month = '" . $month .
-			"' AND m.yearAgo != 0 AND i.industry != '存託憑證' AND i.type ='ci' ORDER BY (m.thisMonth/m.yearAgo) DESC";
+			"' AND m.yearAgo != 0 ORDER BY (m.thisMonth/m.yearAgo) DESC";
 	//echo_v(ALARM_VERBOSE, "[query_id_by_month_revenue_yoy_topN_from_start] sql = ". $sql);
 	stopwatch_inter();
 	$result = mysql_query($query) or die('MySQL query error');

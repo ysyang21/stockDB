@@ -426,7 +426,7 @@ function load_seasonly_xbrl($id)
 	for ($ii=$start;$ii<min(count($season_enum),$start+$len);$ii++)
 		array_push($season_list, $season_enum[$ii]);
 
-	$sql = "SELECT season, stock, revenue, income, nopat, eps, eps2, revenue_, income_, nopat_, eps_, eps2_, publish, inventory, income, cashoa, cashia FROM xbrldata WHERE id = " . $id .
+	$sql = "SELECT season, stock, revenue, income, nopat, eps, eps2, revenue_, income_, nopat_, eps_, eps2_, publish, inventory, cashoa, cashia FROM xbrldata WHERE id = " . $id .
 		" AND (season = " . $season_list[0];
 
 	for ($ii=1;$ii<$len;$ii++)
@@ -455,7 +455,6 @@ function load_seasonly_xbrl($id)
 		$xbrl->eps2_ = $row[$jj++];
 		$xbrl->publish = $row[$jj++];
 		$xbrl->inventory = $row[$jj++];
-		$xbrl->income = $row[$jj++];
 		$xbrl->cashoa = $row[$jj++];
 		$xbrl->cashia = $row[$jj++];
 		$jj = 0;
