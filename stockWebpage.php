@@ -589,7 +589,10 @@ function show_xbrl_group_c($xbrls)
 	for ($ii = 0; $ii<count($xbrls)-1;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
-		echo '<td>' . decimal2(($xbrl->nopbt+$xbrl->interestexpense)/$xbrl->interestexpense);
+		if ($xbrl->interestexpense != 0)
+			echo '<td>' . decimal2(($xbrl->nopbt+$xbrl->interestexpense)/$xbrl->interestexpense);
+		else
+			echo '<td>N/A';
 	}
 	echo_n('');
 
