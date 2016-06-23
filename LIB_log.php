@@ -195,7 +195,7 @@ function get_latest_scheduled_season($date)
 function percent($value)
 {
 	if (is_numeric($value))
-		return number_format($value*100, 2) . "%";
+		return number_format($value*100, 2);
 	else
 		return $value;
 }

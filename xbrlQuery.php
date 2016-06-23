@@ -15,21 +15,6 @@ include_once("LIB_mysql.php");
 
 include_once("stockDayQuery.php");
 
-class xbrlData
-{
-	public $season = "";
-	public $stock = 0;
-	public $revenue = 0;
-	public $nopat = 0;
-	public $eps = 0;
-	public $eps2 = 0;
-	public $publish = "";
-	public $inventory = 0;
-	public $income = 0;
-	public $cashoa = 0;
-	public $cashia = 0;
-}
-
 $id_seasonly_xbrl = [];
 
 function prepare_id_seasonly_xbrl($id)
@@ -410,6 +395,43 @@ function get_latest_xbrldata_season($id)
 	return $latest_season;
 }
 
+class xbrlData
+{
+	public $season = "";	// 季度
+
+	public $arn = 0;				// 應收帳款淨額-A5
+	public $arnr = 0;				// 應收帳款關係人淨額-A6
+	public $inventory = 0;			// 存貨-A9
+	public $othercurrentassets = 0;	// 其他流動資產-A13
+	public $currentassets = 0;		// 流動資產-A14
+	public $fixedassets = 0;		// 固定資產-A18
+	public $assets = 0;				// 資產-A25
+	public $currentliabilities = 0;	// 流動負債-A41
+	public $othernoncurrentliabilities = 0;	// 其他非流動負債-A23
+	public $noncurrentliabilities = 0;	// 非流動負債-A24
+	public $liabilities = 0;		// 負債-A54
+	public $stock = 0;				// 股本-A56
+	public $noncontrol = 0;			// 少數股權-A73
+	public $equity = 0;				// 淨值-A74
+
+	public $revenue = 0;	// 營業收入-B1
+	public $costs = 0;		// 營業成本-B2
+	public $profit = 0;		// 營業毛利-B5
+	public $income = 0;		// 營業利益-B11
+	public $nopbt = 0;		// 稅前淨利-B18
+	public $nopat = 0;		// 稅後淨利-B21
+	public $nopatc = 0;		// 稅後淨利業主-B29 or B21
+	public $eps = 0;		// 每股盈餘-B33
+	public $eps2 = 0;		// 稀釋每股盈餘-B34
+
+	public $interestexpense = 0; // 利息費用-C5
+	public $cashoa = 0;		// 營運活動現金流量-C34
+	public $cashia = 0;		// 投資活動現金流量-C49
+
+	public $publish = "";	// 財報公佈日
+}
+
+
 function load_seasonly_xbrl($id)
 {
 	global $season_enum;
@@ -417,7 +439,8 @@ function load_seasonly_xbrl($id)
 	$latest_season = get_latest_xbrldata_season($id);
 
 	$start = array_search($latest_season, $season_enum);
-	$len = 8 + (int)substr($latest_season, 4, 2);
+	// at least 8 seasons plus the seasons in the new year plus one season 
+	$len = 8 + (int)substr($latest_season, 4, 2) + 1;
 
 	// $start 指向 xbrldata 目前有資料的最新季報
 	// $len 為在這個routine當中要load的季報筆數, 目前設定為今年到現在的財報跟過去八季的財報
@@ -426,140 +449,230 @@ function load_seasonly_xbrl($id)
 	for ($ii=$start;$ii<min(count($season_enum),$start+$len);$ii++)
 		array_push($season_list, $season_enum[$ii]);
 
-	$sql = "SELECT season, stock, revenue, income, nopat, eps, eps2, revenue_, income_, nopat_, eps_, eps2_, publish, inventory, cashoa, cashia FROM xbrldata WHERE id = " . $id .
-		" AND (season = " . $season_list[0];
+	$xbrls = array();
+
+	// get 'current' xbrl for assigned year x season
+	$sql = "SELECT season, " .
+			"arn, arnr, inventory, othercurrentassets, currentassets, fixedassets, assets, " .
+			"currentliabilities, othernoncurrentliabilities, noncurrentliabilities, liabilities, stock, noncontrol, equity, " .
+			"revenue, costs, profit, income, nopbt, nopat, nopatc, eps, eps2, " .
+			"interestexpense, cashoa, cashia, " .
+			"publish " .
+			"FROM xbrldata WHERE id = " . $id . " AND period = 'current' AND (season = " . $season_list[0];
 
 	for ($ii=1;$ii<$len;$ii++)
 		$sql = $sql . " OR season = " . $season_list[$ii];
 
 	$sql = $sql . ") ORDER BY season DESC";
 
-	$result = mysql_query($sql) or die('MySQL query error');
-
-	$xbrls = array();
+	$result = mysql_query($sql) or die('MySQL query error' . $sql);
 
 	$jj = 0;
 	while($row = mysql_fetch_array($result)){
-		$xbrl = new xbrlData();
-		$xbrl->season = $row[$jj++];
-		$xbrl->stock = $row[$jj++];
-		$xbrl->revenue = $row[$jj++];
-		$xbrl->income = $row[$jj++];
-		$xbrl->nopat = $row[$jj++];
-		$xbrl->eps = $row[$jj++];
-		$xbrl->eps2 = $row[$jj++];
-		$xbrl->revenue_ = $row[$jj++];
-		$xbrl->income_ = $row[$jj++];
-		$xbrl->nopat_ = $row[$jj++];
-		$xbrl->eps_ = $row[$jj++];
-		$xbrl->eps2_ = $row[$jj++];
-		$xbrl->publish = $row[$jj++];
-		$xbrl->inventory = $row[$jj++];
-		$xbrl->cashoa = $row[$jj++];
-		$xbrl->cashia = $row[$jj++];
+		$season = $row[$jj++];
+		$xbrl = array();
+		$xbrl['current'] = new xbrlData();
+		$xbrl['corresp'] = new xbrlData();
+		$xbrl['current']->season = $season;
+
+		$xbrl['current']->arn = $row[$jj++];
+		$xbrl['current']->arnr = $row[$jj++];
+		$xbrl['current']->inventory = $row[$jj++];
+		$xbrl['current']->othercurrentassets = $row[$jj++];
+		$xbrl['current']->currentassets = $row[$jj++];
+		$xbrl['current']->fixedassets = $row[$jj++];
+		$xbrl['current']->assets = $row[$jj++];
+		$xbrl['current']->currentliabilities = $row[$jj++];
+		$xbrl['current']->othernoncurrentliabilities = $row[$jj++];
+		$xbrl['current']->noncurrentliabilities = $row[$jj++];
+		$xbrl['current']->liabilities = $row[$jj++];
+		$xbrl['current']->stock = $row[$jj++];
+		$xbrl['current']->noncontrol = $row[$jj++];
+		$xbrl['current']->equity = $row[$jj++];
+
+		$xbrl['current']->revenue = $row[$jj++];
+		$xbrl['current']->costs = $row[$jj++];
+		$xbrl['current']->profit = $row[$jj++];
+		$xbrl['current']->income = $row[$jj++];
+		$xbrl['current']->nopbt = $row[$jj++];
+		$xbrl['current']->nopat = $row[$jj++];
+		$xbrl['current']->nopatc = $row[$jj++];
+		$xbrl['current']->eps = $row[$jj++];
+		$xbrl['current']->eps2 = $row[$jj++];
+
+		$xbrl['current']->interestexpense = $row[$jj++];
+		$xbrl['current']->cashoa = $row[$jj++];
+		$xbrl['current']->cashia = $row[$jj++];
+
+		$xbrl['current']->publish = $row[$jj++];
+
 		$jj = 0;
 		array_push($xbrls, $xbrl);
+		//$xbrls[$season] = $xbrl;
 	}
 
-	//echo '<pre>';
-	//print_r($xbrls);
-	//echo '</pre>';
+	// get 'corresponding' xbrl for assigned year x season
+	$sql = "SELECT season, " .
+			"arn, arnr, inventory, othercurrentassets, currentassets, fixedassets, assets, " .
+			"currentliabilities, othernoncurrentliabilities, noncurrentliabilities, liabilities, stock, noncontrol, equity, " .
+			"revenue, costs, profit, income, nopbt, nopat, nopatc, eps, eps2, " .
+			"interestexpense, cashoa, cashia, " .
+			"publish " .
+			"FROM xbrldata WHERE id = " . $id . " AND period = 'corresp' AND (season = " . $season_list[0];
+
+	for ($ii=1;$ii<$len;$ii++)
+		$sql = $sql . " OR season = " . $season_list[$ii];
+
+	$sql = $sql . ") ORDER BY season DESC";
+
+	$result = mysql_query($sql) or die('MySQL query error' . $sql);
+
+	$jj = 0;
+	$ii = 0;
+	while($row = mysql_fetch_array($result)){
+		$season = $row[$jj++];
+		//$xbrl = $xbrls[$season];
+		$xbrl = $xbrls[$ii++];
+		$xbrl['corresp']->season = $season;
+
+		$xbrl['corresp']->arn = $row[$jj++];
+		$xbrl['corresp']->arnr = $row[$jj++];
+		$xbrl['corresp']->inventory = $row[$jj++];
+		$xbrl['corresp']->othercurrentassets = $row[$jj++];
+		$xbrl['corresp']->currentassets = $row[$jj++];
+		$xbrl['corresp']->fixedassets = $row[$jj++];
+		$xbrl['corresp']->assets = $row[$jj++];
+		$xbrl['corresp']->currentliabilities = $row[$jj++];
+		$xbrl['corresp']->othernoncurrentliabilities = $row[$jj++];
+		$xbrl['corresp']->noncurrentliabilities = $row[$jj++];
+		$xbrl['corresp']->liabilities = $row[$jj++];
+		$xbrl['corresp']->stock = $row[$jj++];
+		$xbrl['corresp']->noncontrol = $row[$jj++];
+		$xbrl['corresp']->equity = $row[$jj++];
+
+		$xbrl['corresp']->revenue = $row[$jj++];
+		$xbrl['corresp']->costs = $row[$jj++];
+		$xbrl['corresp']->profit = $row[$jj++];
+		$xbrl['corresp']->income = $row[$jj++];
+		$xbrl['corresp']->nopbt = $row[$jj++];
+		$xbrl['corresp']->nopat = $row[$jj++];
+		$xbrl['corresp']->nopatc = $row[$jj++];
+		$xbrl['corresp']->eps = $row[$jj++];
+		$xbrl['corresp']->eps2 = $row[$jj++];
+
+		$xbrl['corresp']->interestexpense = $row[$jj++];
+		$xbrl['corresp']->cashoa = $row[$jj++];
+		$xbrl['corresp']->cashia = $row[$jj++];
+
+		$xbrl['corresp']->publish = $row[$jj++];
+
+		$jj = 0;
+	}
 	
 	$count = count($xbrls);
 	for ($ii=0;$ii<$count;$ii++)
 	{
-		if ((int)substr($xbrls[$ii]->season, 0, 4) >= 2013) // ifrs
+		$season = $xbrls[$ii]['current']->season;
+
+		if ((int)substr($season, 0, 4) >= 2013) // ifrs
 		{
-			if (substr($xbrls[$ii]->season, 4, 2) == '04' and $count - $ii >=4)
+			if ((substr($season, 4, 2) == '04' and $count - $ii >1) or
+				(substr($season, 4, 2) == '03' and $count - $ii >1) or
+				(substr($season, 4, 2) == '02' and $count - $ii >1))
 			{
-				if (substr($xbrls[$ii+1]->season, 4, 2) == '03')
-				{
-					$xbrls[$ii]->revenue -= $xbrls[$ii+1]->revenue;
-					$xbrls[$ii]->income -= $xbrls[$ii+1]->income;
-					$xbrls[$ii]->nopat -= $xbrls[$ii+1]->nopat;
-					$xbrls[$ii]->eps -= $xbrls[$ii+1]->eps;
-					$xbrls[$ii]->eps2 -= $xbrls[$ii+1]->eps2;
-					$xbrls[$ii]->revenue_ -= $xbrls[$ii+1]->revenue_;
-					$xbrls[$ii]->income_ -= $xbrls[$ii+1]->income_;
-					$xbrls[$ii]->nopat_ -= $xbrls[$ii+1]->nopat_;
-					$xbrls[$ii]->eps_ -= $xbrls[$ii+1]->eps_;
-					$xbrls[$ii]->eps2_ -= $xbrls[$ii+1]->eps2_;
-				}
-				if (substr($xbrls[$ii+2]->season, 4, 2) == '02')
-				{
-					$xbrls[$ii]->revenue -= $xbrls[$ii+2]->revenue;
-					$xbrls[$ii]->income -= $xbrls[$ii+2]->income;
-					$xbrls[$ii]->nopat -= $xbrls[$ii+2]->nopat;
-					$xbrls[$ii]->eps -= $xbrls[$ii+2]->eps;
-					$xbrls[$ii]->eps2 -= $xbrls[$ii+2]->eps2;
-					$xbrls[$ii]->revenue_ -= $xbrls[$ii+2]->revenue_;
-					$xbrls[$ii]->income_ -= $xbrls[$ii+2]->income_;
-					$xbrls[$ii]->nopat_ -= $xbrls[$ii+2]->nopat_;
-					$xbrls[$ii]->eps_ -= $xbrls[$ii+2]->eps_;
-					$xbrls[$ii]->eps2_ -= $xbrls[$ii+2]->eps2_;
-				}
-				if (substr($xbrls[$ii+3]->season, 4, 2) == '01')
-				{
-					$xbrls[$ii]->revenue -= $xbrls[$ii+3]->revenue;
-					$xbrls[$ii]->income -= $xbrls[$ii+3]->income;
-					$xbrls[$ii]->nopat -= $xbrls[$ii+3]->nopat;
-					$xbrls[$ii]->eps -= $xbrls[$ii+3]->eps;
-					$xbrls[$ii]->eps2 -= $xbrls[$ii+3]->eps2;
-					$xbrls[$ii]->revenue_ -= $xbrls[$ii+3]->revenue_;
-					$xbrls[$ii]->income_ -= $xbrls[$ii+3]->income_;
-					$xbrls[$ii]->nopat_ -= $xbrls[$ii+3]->nopat_;
-					$xbrls[$ii]->eps_ -= $xbrls[$ii+3]->eps_;
-					$xbrls[$ii]->eps2_ -= $xbrls[$ii+3]->eps2_;
-				}
-			}	
+				$xbrls[$ii]['current']->interestexpense -= $xbrls[$ii+1]['current']->interestexpense;
+				$xbrls[$ii]['corresp']->interestexpense -= $xbrls[$ii+1]['corresp']->interestexpense;
+			}
+
+			if (substr($season, 4, 2) == '04' and $count - $ii >=4)
+			{
+				$xbrls[$ii]['current']->revenue -= $xbrls[$ii+1]['current']->revenue;
+				$xbrls[$ii]['current']->revenue -= $xbrls[$ii+2]['current']->revenue;
+				$xbrls[$ii]['current']->revenue -= $xbrls[$ii+3]['current']->revenue;
+				$xbrls[$ii]['current']->costs -= $xbrls[$ii+1]['current']->costs;
+				$xbrls[$ii]['current']->costs -= $xbrls[$ii+2]['current']->costs;
+				$xbrls[$ii]['current']->costs -= $xbrls[$ii+3]['current']->costs;
+				$xbrls[$ii]['current']->profit -= $xbrls[$ii+1]['current']->profit;
+				$xbrls[$ii]['current']->profit -= $xbrls[$ii+2]['current']->profit;
+				$xbrls[$ii]['current']->profit -= $xbrls[$ii+3]['current']->profit;
+				$xbrls[$ii]['current']->income -= $xbrls[$ii+1]['current']->income;
+				$xbrls[$ii]['current']->income -= $xbrls[$ii+2]['current']->income;
+				$xbrls[$ii]['current']->income -= $xbrls[$ii+3]['current']->income;
+				$xbrls[$ii]['current']->nopbt -= $xbrls[$ii+1]['current']->nopbt;
+				$xbrls[$ii]['current']->nopbt -= $xbrls[$ii+2]['current']->nopbt;
+				$xbrls[$ii]['current']->nopbt -= $xbrls[$ii+3]['current']->nopbt;
+				$xbrls[$ii]['current']->nopat -= $xbrls[$ii+1]['current']->nopat;
+				$xbrls[$ii]['current']->nopat -= $xbrls[$ii+2]['current']->nopat;
+				$xbrls[$ii]['current']->nopat -= $xbrls[$ii+3]['current']->nopat;
+				$xbrls[$ii]['current']->nopatc -= $xbrls[$ii+1]['current']->nopatc;
+				$xbrls[$ii]['current']->nopatc -= $xbrls[$ii+2]['current']->nopatc;
+				$xbrls[$ii]['current']->nopatc -= $xbrls[$ii+3]['current']->nopatc;
+				$xbrls[$ii]['current']->eps -= $xbrls[$ii+1]['current']->eps;
+				$xbrls[$ii]['current']->eps -= $xbrls[$ii+2]['current']->eps;
+				$xbrls[$ii]['current']->eps -= $xbrls[$ii+3]['current']->eps;
+				$xbrls[$ii]['current']->eps2 -= $xbrls[$ii+1]['current']->eps2;
+				$xbrls[$ii]['current']->eps2 -= $xbrls[$ii+2]['current']->eps2;
+				$xbrls[$ii]['current']->eps2 -= $xbrls[$ii+3]['current']->eps2;
+
+				$xbrls[$ii]['corresp']->revenue -= $xbrls[$ii+1]['corresp']->revenue;
+				$xbrls[$ii]['corresp']->revenue -= $xbrls[$ii+2]['corresp']->revenue;
+				$xbrls[$ii]['corresp']->revenue -= $xbrls[$ii+3]['corresp']->revenue;
+				$xbrls[$ii]['corresp']->costs -= $xbrls[$ii+1]['corresp']->costs;
+				$xbrls[$ii]['corresp']->costs -= $xbrls[$ii+2]['corresp']->costs;
+				$xbrls[$ii]['corresp']->costs -= $xbrls[$ii+3]['corresp']->costs;
+				$xbrls[$ii]['corresp']->profit -= $xbrls[$ii+1]['corresp']->profit;
+				$xbrls[$ii]['corresp']->profit -= $xbrls[$ii+2]['corresp']->profit;
+				$xbrls[$ii]['corresp']->profit -= $xbrls[$ii+3]['corresp']->profit;
+				$xbrls[$ii]['corresp']->income -= $xbrls[$ii+1]['corresp']->income;
+				$xbrls[$ii]['corresp']->income -= $xbrls[$ii+2]['corresp']->income;
+				$xbrls[$ii]['corresp']->income -= $xbrls[$ii+3]['corresp']->income;
+				$xbrls[$ii]['corresp']->nopbt -= $xbrls[$ii+1]['corresp']->nopbt;
+				$xbrls[$ii]['corresp']->nopbt -= $xbrls[$ii+2]['corresp']->nopbt;
+				$xbrls[$ii]['corresp']->nopbt -= $xbrls[$ii+3]['corresp']->nopbt;
+				$xbrls[$ii]['corresp']->nopat -= $xbrls[$ii+1]['corresp']->nopat;
+				$xbrls[$ii]['corresp']->nopat -= $xbrls[$ii+2]['corresp']->nopat;
+				$xbrls[$ii]['corresp']->nopat -= $xbrls[$ii+3]['corresp']->nopat;
+				$xbrls[$ii]['corresp']->nopatc -= $xbrls[$ii+1]['corresp']->nopatc;
+				$xbrls[$ii]['corresp']->nopatc -= $xbrls[$ii+2]['corresp']->nopatc;
+				$xbrls[$ii]['corresp']->nopatc -= $xbrls[$ii+3]['corresp']->nopatc;
+				$xbrls[$ii]['corresp']->eps -= $xbrls[$ii+1]['corresp']->eps;
+				$xbrls[$ii]['corresp']->eps -= $xbrls[$ii+2]['corresp']->eps;
+				$xbrls[$ii]['corresp']->eps -= $xbrls[$ii+3]['corresp']->eps;
+				$xbrls[$ii]['corresp']->eps2 -= $xbrls[$ii+1]['corresp']->eps2;
+				$xbrls[$ii]['corresp']->eps2 -= $xbrls[$ii+2]['corresp']->eps2;
+				$xbrls[$ii]['corresp']->eps2 -= $xbrls[$ii+3]['corresp']->eps2;
+			}
 		}
 		else // gaap
 		{
-			if (substr($xbrls[$ii]->season, 4, 2) == '04' and $count - $ii >=1)
+			if ((substr($season, 4, 2) == '04' and $count - $ii >1) or
+				(substr($season, 4, 2) == '03' and $count - $ii >1) or
+				(substr($season, 4, 2) == '02' and $count - $ii >1))
 			{
-				$xbrls[$ii]->revenue -= $xbrls[$ii+1]->revenue;
-				$xbrls[$ii]->income -= $xbrls[$ii+1]->income;
-				$xbrls[$ii]->nopat -= $xbrls[$ii+1]->nopat;
-				$xbrls[$ii]->eps -= $xbrls[$ii+1]->eps;
-				$xbrls[$ii]->eps2 -= $xbrls[$ii+1]->eps2;
-				$xbrls[$ii]->revenue_ -= $xbrls[$ii+1]->revenue_;
-				$xbrls[$ii]->income_ -= $xbrls[$ii+1]->income_;
-				$xbrls[$ii]->nopat_ -= $xbrls[$ii+1]->nopat_;
-				$xbrls[$ii]->eps_ -= $xbrls[$ii+1]->eps_;
-				$xbrls[$ii]->eps2_ -= $xbrls[$ii+1]->eps2_;
-			}
-			if (substr($xbrls[$ii]->season, 4, 2) == '03' and $count - $ii >=1)
-			{
-				$xbrls[$ii]->revenue -= $xbrls[$ii+1]->revenue;
-				$xbrls[$ii]->income -= $xbrls[$ii+1]->income;
-				$xbrls[$ii]->nopat -= $xbrls[$ii+1]->nopat;
-				$xbrls[$ii]->eps -= $xbrls[$ii+1]->eps;
-				$xbrls[$ii]->eps2 -= $xbrls[$ii+1]->eps2;
-				$xbrls[$ii]->revenue_ -= $xbrls[$ii+1]->revenue_;
-				$xbrls[$ii]->income_ -= $xbrls[$ii+1]->income_;
-				$xbrls[$ii]->nopat_ -= $xbrls[$ii+1]->nopat_;
-				$xbrls[$ii]->eps_ -= $xbrls[$ii+1]->eps_;
-				$xbrls[$ii]->eps2_ -= $xbrls[$ii+1]->eps2_;
-			}
-			if (substr($xbrls[$ii]->season, 4, 2) == '02' and $count - $ii >=1)
-			{
-				$xbrls[$ii]->revenue -= $xbrls[$ii+1]->revenue;
-				$xbrls[$ii]->income -= $xbrls[$ii+1]->income;
-				$xbrls[$ii]->nopat -= $xbrls[$ii+1]->nopat;
-				$xbrls[$ii]->eps -= $xbrls[$ii+1]->eps;
-				$xbrls[$ii]->eps2 -= $xbrls[$ii+1]->eps2;
-				$xbrls[$ii]->revenue_ -= $xbrls[$ii+1]->revenue_;
-				$xbrls[$ii]->income_ -= $xbrls[$ii+1]->income_;
-				$xbrls[$ii]->nopat_ -= $xbrls[$ii+1]->nopat_;
-				$xbrls[$ii]->eps_ -= $xbrls[$ii+1]->eps_;
-				$xbrls[$ii]->eps2_ -= $xbrls[$ii+1]->eps2_;
+				$xbrls[$ii]['current']->revenue -= $xbrls[$ii+1]['current']->revenue;
+				$xbrls[$ii]['current']->costs -= $xbrls[$ii+1]['current']->costs;
+				$xbrls[$ii]['current']->profit -= $xbrls[$ii+1]['current']->profit;
+				$xbrls[$ii]['current']->income -= $xbrls[$ii+1]['current']->income;
+				$xbrls[$ii]['current']->interestexpense -= $xbrls[$ii+1]['current']->interestexpense;
+				$xbrls[$ii]['current']->nopbt -= $xbrls[$ii+1]['current']->nopbt;
+				$xbrls[$ii]['current']->nopat -= $xbrls[$ii+1]['current']->nopat;
+				$xbrls[$ii]['current']->nopatc -= $xbrls[$ii+1]['current']->nopatc;
+				$xbrls[$ii]['current']->eps -= $xbrls[$ii+1]['current']->eps;
+				$xbrls[$ii]['current']->eps2 -= $xbrls[$ii+1]['current']->eps2;
+
+				$xbrls[$ii]['corresp']->revenue -= $xbrls[$ii+1]['corresp']->revenue;
+				$xbrls[$ii]['corresp']->costs -= $xbrls[$ii+1]['corresp']->costs;
+				$xbrls[$ii]['corresp']->profit -= $xbrls[$ii+1]['corresp']->profit;
+				$xbrls[$ii]['corresp']->income -= $xbrls[$ii+1]['corresp']->income;
+				$xbrls[$ii]['corresp']->interestexpense -= $xbrls[$ii+1]['corresp']->interestexpense;
+				$xbrls[$ii]['corresp']->nopbt -= $xbrls[$ii+1]['corresp']->nopbt;
+				$xbrls[$ii]['corresp']->nopat -= $xbrls[$ii+1]['corresp']->nopat;
+				$xbrls[$ii]['corresp']->nopatc -= $xbrls[$ii+1]['corresp']->nopatc;
+				$xbrls[$ii]['corresp']->eps -= $xbrls[$ii+1]['corresp']->eps;
+				$xbrls[$ii]['corresp']->eps2 -= $xbrls[$ii+1]['corresp']->eps2;
 			}
 		}
 	}
-
-	//echo '<pre>';
-	//print_r($xbrls);
-	//echo '</pre>';
 
 	return $xbrls;
 }
