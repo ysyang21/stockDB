@@ -212,6 +212,7 @@ function show_xbrl_bonddealer($xbrls)
 	echo '    <thead><th>季度';
 	for ($ii = 0; $ii<count($xbrls)-1;$ii++)
 		echo '<th>' . $xbrls[$ii]['current']->season;
+	echo '<th>公式';
 	echo_n('</thead>');
 	echo_n('    <tbody>');
 
@@ -219,6 +220,7 @@ function show_xbrl_bonddealer($xbrls)
 	echo '<td>每股盈餘';
 	for ($ii = 0; $ii<count($xbrls)-1;$ii++)
 		echo '<td>' . decimal2($xbrls[$ii]['current']->eps);
+	echo '<td>1.b';
 	echo_n('');
 
 	echo '      <tr>';
@@ -228,6 +230,7 @@ function show_xbrl_bonddealer($xbrls)
 		$xbrl = $xbrls[$ii];
 		echo '<td>' . percent(($xbrl['current']->eps/$xbrl['corresp']->eps)-1);
 	}
+	echo '<td>(每股盈餘EPS[i] / 每股盈餘EPS[i+4])*100%-1';
 	echo_n('');
 
 	echo '      <tr>';
@@ -237,6 +240,7 @@ function show_xbrl_bonddealer($xbrls)
 		$xbrl = $xbrls[$ii];
 		echo '<td>' . percent(($xbrl['current']->revenue/$xbrl['corresp']->revenue)-1);
 	}
+	echo '<td>2.1';
 	echo_n('');
 
 	echo '      <tr>';
@@ -246,6 +250,7 @@ function show_xbrl_bonddealer($xbrls)
 		$xbrl = $xbrls[$ii];
 		echo '<td>' . percent(($xbrl['current']->income/$xbrl['corresp']->income)-1);
 	}
+	echo '<td>2.2';
 	echo_n('');
 
 	echo '      <tr>';
@@ -255,6 +260,7 @@ function show_xbrl_bonddealer($xbrls)
 		$xbrl = $xbrls[$ii];
 		echo '<td>' . percent(($xbrl['current']->nopat/$xbrl['corresp']->nopat)-1);
 	}
+	echo '<td>2.4';
 	echo_n('');
 
 	echo '      <tr>';
@@ -264,6 +270,7 @@ function show_xbrl_bonddealer($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . percent($xbrl->income/$xbrl->revenue);
 	}
+	echo '<td>1.2';
 	echo_n('');
 
 	echo '      <tr>';
@@ -273,6 +280,7 @@ function show_xbrl_bonddealer($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2(($xbrl->cashoa+$xbrl->cashia)/100000000);
 	}
+	echo '<td>營業活動之淨現金流入流出CashFlowFromUsedInOperatingActivities + 投資活動之淨現金流入流出CashFlowFromUsedInInvestingActivities';
 	echo_n('');
 
 	echo '      <tr>';
@@ -283,6 +291,7 @@ function show_xbrl_bonddealer($xbrls)
 		$xbrl_1 = $xbrls[$ii+1]['current'];
 		echo '<td>' . decimal2($xbrl->costs*2/($xbrl->inventory+$xbrl_1->inventory));
 	}
+	echo '<td>4.2';
 	echo_n('');
 
 	echo_n('    </tbody>');
@@ -332,6 +341,7 @@ function show_xbrl_group_a($xbrls)
 	echo '    <thead><th>季度';
 	for ($ii = 0; $ii<count($xbrls)-1;$ii++)
 		echo '<th>' . $xbrls[$ii]['current']->season;
+	echo '<th>公式';
 	echo_n('</thead>');
 	echo_n('    <tbody>');
 
@@ -342,6 +352,7 @@ function show_xbrl_group_a($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . percent($xbrl->profit/$xbrl->revenue);
 	}
+	echo '<td>營業毛利Profit / 營業收入Revenue';
 	echo_n('');
 
 	echo '      <tr>';
@@ -351,6 +362,7 @@ function show_xbrl_group_a($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . percent($xbrl->income/$xbrl->revenue);
 	}
+	echo '<td>營業利益Income / 營業收入Revenue';
 	echo_n('');
 
 	echo '      <tr>';
@@ -360,6 +372,7 @@ function show_xbrl_group_a($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . percent($xbrl->nopbt/$xbrl->revenue);
 	}
+	echo '<td>稅前淨利Nopbt / 營業收入Revenue';
 	echo_n('');
 
 	echo '      <tr>';
@@ -369,6 +382,7 @@ function show_xbrl_group_a($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . percent($xbrl->nopat/$xbrl->revenue);
 	}
+	echo '<td>稅後淨利Nopat / 營業收入Revenue';
 	echo_n('');
 
 	echo '      <tr>';
@@ -378,6 +392,7 @@ function show_xbrl_group_a($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2(($xbrl->equity-$xbrl->noncontrol)*10/$xbrl->stock);
 	}
+	echo '<td>股東權益(Equity-Noncontrol) / 期末股本(Stock/10)';
 	echo_n('');
 
 	echo '      <tr>';
@@ -387,6 +402,7 @@ function show_xbrl_group_a($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2($xbrl->revenue*10/$xbrl->stock);
 	}
+	echo '<td>營業收入Revenue / 期末股本(Stock/10)';
 	echo_n('');
 
 	echo '      <tr>';
@@ -396,6 +412,7 @@ function show_xbrl_group_a($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2($xbrl->income*10/$xbrl->stock);
 	}
+	echo '<td>營業利益Income / 期末股本(Stock/10)';
 	echo_n('');
 
 	echo '      <tr>';
@@ -405,6 +422,7 @@ function show_xbrl_group_a($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2($xbrl->nopbt*10/$xbrl->stock);
 	}
+	echo '<td>稅前淨利Nopbt / 期末股本(Stock/10)';
 	echo_n('');
 
 	echo '      <tr>';
@@ -415,6 +433,7 @@ function show_xbrl_group_a($xbrls)
 		$xbrl_1 = $xbrls[$ii+1]['current'];
 	 	echo '<td>' . percent($xbrl->nopat*2/($xbrl->equity+$xbrl_1->equity));
 	}
+	echo '<td>稅後淨利Nopat / 期初期末平均股東權益Equity[i,i+1]/2';
 	echo_n('');
 
 	echo '      <tr>';
@@ -426,6 +445,7 @@ function show_xbrl_group_a($xbrls)
 		$taxrate = ($xbrl->nopbt - $xbrl->nopat) / $xbrl->nopbt;
 	 	echo '<td>' . percent(($xbrl->nopat+$xbrl->interestexpense*(1-$taxrate))*2/($xbrl->assets+$xbrl_1->assets));
 	}
+	echo '<td>稅後息前淨利Nopat-InterestsExpense*(1-(Nopbt-Nopat)/Nopbt) / 期初期末平均資產Assets[i,i+1]/2';
 	echo_n('');
 
 	echo '      <tr>';
@@ -435,6 +455,7 @@ function show_xbrl_group_a($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2($xbrl->eps);
 	}
+	echo '<td>每股盈餘EPS';
 	echo_n('');
 
 	echo_n('    </tbody>');
@@ -463,6 +484,7 @@ function show_xbrl_group_b($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<th>' . $xbrl->season;
 	}
+	echo '<th>公式';
 	echo_n('</thead>');
 	echo_n('    <tbody>');
 
@@ -473,6 +495,7 @@ function show_xbrl_group_b($xbrls)
 		$xbrl = $xbrls[$ii];
 		echo '<td>' . percent(($xbrl['current']->revenue/$xbrl['corresp']->revenue)-1);
 	}
+	echo '<td>(營業收入Revenue[i] / 去年同期營業收入Revenue[i+4])*100%-1';
 	echo_n('');
 
 	echo '      <tr>';
@@ -482,6 +505,7 @@ function show_xbrl_group_b($xbrls)
 		$xbrl = $xbrls[$ii];
 		echo '<td>' . percent(($xbrl['current']->income/$xbrl['corresp']->income)-1);
 	}
+	echo '<td>(營業利益Income[i] / 去年同期營業利益Income[i+4])*100%-1';
 	echo_n('');
 
 	echo '      <tr>';
@@ -491,6 +515,7 @@ function show_xbrl_group_b($xbrls)
 		$xbrl = $xbrls[$ii];
 		echo '<td>' . percent(($xbrl['current']->nopbt/$xbrl['corresp']->nopbt)-1);
 	}
+	echo '<td>(稅前淨利Nopbt[i] / 去年同期稅前淨利Nopbt[i+4])*100%-1';
 	echo_n('');
 
 	echo '      <tr>';
@@ -500,6 +525,7 @@ function show_xbrl_group_b($xbrls)
 		$xbrl = $xbrls[$ii];
 		echo '<td>' . percent(($xbrl['current']->nopat/$xbrl['corresp']->nopat)-1);
 	}
+	echo '<td>(稅後淨利Nopat[i] / 去年同期稅後淨利Nopat[i+4])*100%-1';
 	echo_n('');
 
 	echo '      <tr>';
@@ -509,6 +535,7 @@ function show_xbrl_group_b($xbrls)
 		$xbrl = $xbrls[$ii];
 		echo '<td>' . percent(($xbrl['current']->assets/$xbrl['corresp']->assets)-1);
 	}
+	echo '<td>(總資產Assets[i] / 去年同期總資產Assets[i+4])*100%-1';
 	echo_n('');
 
 	echo '      <tr>';
@@ -518,6 +545,7 @@ function show_xbrl_group_b($xbrls)
 		$xbrl = $xbrls[$ii];
 		echo '<td>' . percent(($xbrl['current']->equity/$xbrl['corresp']->equity)-1);
 	}
+	echo '<td bgcolor="yellow">(股東權益Equity[i] / 去年同期股東權益Equity[i+4])*100%-1';
 	echo_n('');
 
 	echo '      <tr>';
@@ -527,6 +555,7 @@ function show_xbrl_group_b($xbrls)
 		$xbrl = $xbrls[$ii];
 		echo '<td>' . percent(($xbrl['current']->fixedassets/$xbrl['corresp']->fixedassets)-1);
 	}
+	echo '<td bgcolor="yellow">(固定資產FixedAssets[i] / 去年同期固定資產FixedAssets[i+4])*100%-1';
 	echo_n('');
 
 	echo_n('    </tbody>');
@@ -554,6 +583,7 @@ function show_xbrl_group_c($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<th>' . $xbrl->season;
 	}
+	echo '<th>公式';
 	echo_n('</thead>');
 	echo_n('    <tbody>');
 
@@ -564,6 +594,7 @@ function show_xbrl_group_c($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . percent($xbrl->currentassets/$xbrl->currentliabilities);
 	}
+	echo '<td>流動資產CurrentAssets / 流動負債CurrentLiabilities';
 	echo_n('');
 
 	echo '      <tr>';
@@ -573,6 +604,7 @@ function show_xbrl_group_c($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . percent(($xbrl->currentassets-$xbrl->inventory-$xbrl->othercurrentassets)/$xbrl->currentliabilities);
 	}
+	echo '<td>速動資產(CurrentAssets-Inventory-OtherCurrentAssets) / 流動負債CurrentLiabilities';
 	echo_n('');
 
 	echo '      <tr>';
@@ -582,6 +614,7 @@ function show_xbrl_group_c($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . percent($xbrl->liabilities/$xbrl->assets);
 	}
+	echo '<td>負債總額Liabilities / 資產總額Assets';
 	echo_n('');
 
 	echo '      <tr>';
@@ -594,6 +627,7 @@ function show_xbrl_group_c($xbrls)
 		else
 			echo '<td>N/A';
 	}
+	echo '<td>稅前息前淨利(Nopbt+InterestsExpense) / 利息費用InterestExpense';
 	echo_n('');
 
 	echo_n('    </tbody>');
@@ -625,6 +659,7 @@ function show_xbrl_group_d($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<th>' . $xbrl->season;
 	}
+	echo '<th>公式';
 	echo_n('</thead>');
 	echo_n('    <tbody>');
 
@@ -636,6 +671,7 @@ function show_xbrl_group_d($xbrls)
 		$xbrl_1 = $xbrls[$ii+1]['current'];
 		echo '<td>' . decimal2($xbrl->revenue*2/($xbrl->arn+$xbrl->arnr+$xbrl_1->arn+$xbrl_1->arnr));
 	}
+	echo '<td>營業收入(reveune) / 期初期末平均應收帳款(AccountsReceivableNet[i,i+1] + AccountReceivableRelatedPartiesNet[i,i+1])/2';
 	echo_n('');
 
 	echo '      <tr>';
@@ -646,6 +682,7 @@ function show_xbrl_group_d($xbrls)
 		$xbrl_1 = $xbrls[$ii+1]['current'];
 		echo '<td>' . decimal2($xbrl->costs*2/($xbrl->inventory+$xbrl_1->inventory));
 	}
+	echo '<td>銷貨成本(Costs) / 期初期末平均存貨(Inventory[i,i+1])/2';
 	echo_n('');
 
 	echo '      <tr>';
@@ -655,6 +692,7 @@ function show_xbrl_group_d($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2($xbrl->revenue/$xbrl->fixedassets);
 	}
+	echo '<td>營業收入Revenue / 固定資產FixedAssets';
 	echo_n('');
 
 	echo '      <tr>';
@@ -664,6 +702,7 @@ function show_xbrl_group_d($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2($xbrl->revenue/$xbrl->assets);
 	}
+	echo '<td>營業收入Revenue / 總資產Assets';
 	echo_n('');
 
 	echo '      <tr>';
@@ -673,6 +712,7 @@ function show_xbrl_group_d($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2($xbrl->revenue/$xbrl->equity);
 	}
+	echo '<td>營業收入Revenue / 股東權益Equity';
 	echo_n('');
 
 	echo_n('    </tbody>');
@@ -696,6 +736,7 @@ function show_xbrl_group_e($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<th>' . $xbrl->season;
 	}
+	echo '<th>公式';
 	echo_n('</thead>');
 	echo_n('    <tbody>');
 
@@ -706,6 +747,7 @@ function show_xbrl_group_e($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . percent($xbrl->liabilities/$xbrl->equity);
 	}
+	echo '<td>負債總額Liabilities / 股東權益Equity';
 	echo_n('');
 
 	echo '      <tr>';
@@ -715,6 +757,7 @@ function show_xbrl_group_e($xbrls)
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . percent(($xbrl->equity+$xbrl->noncurrentliabilities-$xbrl->othernoncurrentliabilities)/$xbrl->fixedassets);
 	}
+	echo '<td bgcolor="yellow">長期資金(Equity-NonCurrentLiabilities-OtherNonCurrentLiabilities) / 固定資產FixedAssets';
 	echo_n('');
 
 	echo_n('    </tbody>');
