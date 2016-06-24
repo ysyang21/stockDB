@@ -13,12 +13,6 @@ Descriptions:
 include_once("LIB_log.php");
 include_once("LIB_mysql.php");
 
-class monthData
-{
-	public $thisMonth = array();
-	public $yearAgo = array();
-}
-
 $id_monthly_revenue = [];
 
 function prepare_id_monthly_revenue($id)
@@ -300,6 +294,13 @@ function query_month_revenue_yoys_sorted_on_month($month)
 	return $yoys;
 }
 
+class monthData
+{
+	public $month = ''; // '201201' .. '201912'
+	public $current = 0; // monthly revenue of current month
+	public $corresp = 0; // monthly revenue of correspoinding month exactly 12 months ago
+}
+
 // find 12 latest monthly revenue data in the database monthdata and print out
 // this routine can be used to show the last update time
 function load_monthly_revenue($id)
@@ -312,7 +313,7 @@ function load_monthly_revenue($id)
 	// 1. monthdata for some month exists,
 	// 2. yearmonth_enum exhausts
 	// probe if monthdata for last month is available
-	$ii = 0;
+	$found = FALSE;
 	$start = array_search($year.$month, $yearmonth_enum);
 	do
 	{
@@ -320,11 +321,11 @@ function load_monthly_revenue($id)
 		$query = "SELECT month FROM monthdata WHERE id = " . $id . " AND month = " . $possible_yearmonth;
 		$result = mysql_query($query) or die('MySQL query error');
 		while($row = mysql_fetch_array($result)){
-			$ii++;
+			$found = TRUE;
 		}
 		$start++;
 	}
-	while ($ii==0 and $start!=count($yearmonth_enum));
+	while (!$found and $start!=count($yearmonth_enum));
 
 	if ($start==count($yearmonth_enum))
 		return null;
@@ -333,7 +334,7 @@ function load_monthly_revenue($id)
 	$start--;
 
 	$month_list = array();
-	for ($ii=$start;$ii<min(count($yearmonth_enum), $start+12);$ii++)
+	for ($ii=$start;$ii<min(count($yearmonth_enum), $start+18);$ii++)
 	{
 		array_push($month_list, $yearmonth_enum[$ii]);
 	}
@@ -344,13 +345,17 @@ function load_monthly_revenue($id)
 	$query = $query . ") ORDER BY month DESC";
 	$result = mysql_query($query) or die('MySQL query error');
 
-	$month = new monthData();
+	$months = array();
+	$ii=0;
 	while($row = mysql_fetch_array($result)){
-		$month->thisMonth[$row[0]] = $row[1];
-		$month->yearAgo[$row[0]] = $row[2];
+		$months[$ii] = new monthData();
+		$months[$ii]->month = $row[0];
+		$months[$ii]->current = $row[1];
+		$months[$ii]->corresp = $row[2];
+		$ii++;
 	}
 
-	return $month;
+	return $months;
 }
 
 function query_id_by_month_revenue_yoy_topN_from_start($month, $start, $topN)

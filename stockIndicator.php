@@ -41,7 +41,7 @@ function stockIndicators($id) //, $since_date, $id_prices, $id_yoys, $sii_kline)
 
 	// 最近至少八季財務報表
 	$xbrls = load_seasonly_xbrl($id);
-	show_xbrl_bonddealer($xbrls);
+	show_xbrl_core($xbrls);
 
 	show_xbrl_group_a($xbrls);
 	show_xbrl_group_b($xbrls);

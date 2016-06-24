@@ -431,7 +431,6 @@ class xbrlData
 	public $publish = "";	// 財報公佈日
 }
 
-
 function load_seasonly_xbrl($id)
 {
 	global $season_enum;
@@ -439,8 +438,9 @@ function load_seasonly_xbrl($id)
 	$latest_season = get_latest_xbrldata_season($id);
 
 	$start = array_search($latest_season, $season_enum);
-	// at least 8 seasons plus the seasons in the new year plus one season 
-	$len = 8 + (int)substr($latest_season, 4, 2) + 1;
+	// at least 8 seasons plus the seasons in the new year plus 4 seasons,
+	// which is for the need of calculating finantial indexes
+	$len = 8 + (int)substr($latest_season, 4, 2) + 4;
 
 	// $start 指向 xbrldata 目前有資料的最新季報
 	// $len 為在這個routine當中要load的季報筆數, 目前設定為今年到現在的財報跟過去八季的財報
