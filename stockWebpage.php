@@ -256,17 +256,27 @@ function show_monthly_revenue($months)
 	echo_n('');
 
 	echo '      <tr>';
-	echo '<td>營收年增率(%)';
+	echo '<td>月營收年增率遞增';
 	for ($ii=0;$ii<count($months)-$monthly_revenue_offset;$ii++)
 	{
 		for ($jj=$ii;$jj<$ii+2;$jj++)
 		{
-			if ($months[$jj]->current < 0)
+			if (($months[$jj]->corresp==0) or ($months[$jj]->corresp==0))
 			{
 				$verdict->月營收年增率遞增 = FALSE;
 				break;
 			}
-			if (($months[$jj]->corresp==0) or ($months[$jj]->corresp==0))
+			if (($months[$jj]->current<0) or ($months[$jj]->corresp<0))
+			{
+				$verdict->月營收年增率遞增 = FALSE;
+				break;
+			}
+			if (($months[$jj+1]->corresp==0) or ($months[$jj+1]->corresp==0))
+			{
+				$verdict->月營收年增率遞增 = FALSE;
+				break;
+			}
+			if (($months[$jj+1]->current<0) or ($months[$jj+1]->corresp<0))
 			{
 				$verdict->月營收年增率遞增 = FALSE;
 				break;
