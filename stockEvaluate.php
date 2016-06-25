@@ -1560,7 +1560,7 @@ echo_v(LOG_VERBOSE, ($t4-$t3) . " ms to ". "EVALUATE_STOCK_PRICE" . "[" . __FUNC
 
 	// 最近十二個月月營收
 	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr("load_monthly_revenue") . "[" . __FUNCTION__ . "]");
-	$month = load_monthly_revenue($id);
+	$month = load_monthly_revenue($id, 12);
 	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr("load_monthly_revenue") . "[" . __FUNCTION__ . "]");
 	show_monthly_revenue($month);
 

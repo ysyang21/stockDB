@@ -2,7 +2,7 @@
 
 /*
 Filename:
-	stockEvaluate.php
+	stockIndicators.php
 
 Usage:
 
@@ -23,7 +23,7 @@ function stockIndicators($id) //, $since_date, $id_prices, $id_yoys, $sii_kline)
 	
 	if ($stock == null)
 	{
-		echo_v(ERROR_VERBOSE, "[stockEvaluateTest] stock id " . $id . " is not found!");
+		echo_v(ERROR_VERBOSE, "[stockIndicators] stock id " . $id . " is not found!");
 		return;
 	}
 
@@ -36,7 +36,7 @@ function stockIndicators($id) //, $since_date, $id_prices, $id_yoys, $sii_kline)
 	show_stock_brief_case($stock);
 
 	// 最近十二個月月營收
-	$month = load_monthly_revenue($id);
+	$month = load_monthly_revenue($id, 18);
 	show_monthly_revenue($month);
 
 	// 最近至少八季財務報表

@@ -303,7 +303,7 @@ class monthData
 
 // find 12 latest monthly revenue data in the database monthdata and print out
 // this routine can be used to show the last update time
-function load_monthly_revenue($id)
+function load_monthly_revenue($id, $mon_num)
 {
 	global $yearmonth_enum;
 	$year = date('Y');
@@ -334,7 +334,7 @@ function load_monthly_revenue($id)
 	$start--;
 
 	$month_list = array();
-	for ($ii=$start;$ii<min(count($yearmonth_enum), $start+18);$ii++)
+	for ($ii=$start;$ii<min(count($yearmonth_enum), $start+($mon_num+3));$ii++)
 	{
 		array_push($month_list, $yearmonth_enum[$ii]);
 	}
