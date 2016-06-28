@@ -11,6 +11,8 @@ Descriptions:
 	This file is used to implement UI for both backend and frontend of stock price evaluation system.
 */
 
+include_once("stockVerdict.php");
+
 // 股票簡介及近況
 function show_stock_brief($stock, $price_rank, $price, $yoy_rank, $yoy)
 {
@@ -153,9 +155,9 @@ function show_yearly_xbrl($xbrly)
 	echo_n('  <table>');
 	echo_n('    <caption>財務報表(合併年報或個別年報)</caption>');
 
-	echo '    <thead><th>季度';
+	echo '    <thead><th>年度';
 	for ($ii = 0; $ii<count($xbrly);$ii++)
-		echo '<th>' . $xbrly[$ii]->season;
+		echo '<th>' . substr($xbrly[$ii]->season, 0, 4);
 	echo_n('</thead>');
 	echo_n('    <tbody>');
 
@@ -277,82 +279,12 @@ function show_seasonly_xbrl($xbrls)
 	echo_n('  </table><br>');
 }
 
-class verdictsData
-{
-	public $season = "";	// 季度
-
-	public $每股盈餘為正 = TRUE;
-	public $每股盈餘成長 = TRUE;
-	public $營收成長 = TRUE;
-	public $營業利益成長 = TRUE;
-	public $稅後淨利成長 = TRUE;
-	public $營業利益率穩定 = TRUE;
-	public $累計現金流量正遞增 = TRUE;
-	public $存貨週轉率沒下降 = TRUE;
-}
-
-class verdictmData
-{
-	public $month = "";	// 月份
-
-	public $月營收年增率遞增 = TRUE;
-}
-
 $monthly_revenue_offset = 2;
 
-function calculate_verdictm($months)
-{
-	global $monthly_revenue_offset;
-
-	$verdictm = array();
-
-	for ($ii=0;$ii<count($months);$ii++)
-	{
-		$verdictm[$ii] = new verdictmData();
-		$verdictm[$ii]->month = $months[$ii]->month;
-	}
-
-	for ($ii=0;$ii<count($months)-$monthly_revenue_offset;$ii++)
-	{
-		for ($jj=$ii;$jj<$ii+2;$jj++)
-		{
-			if (($months[$jj]->corresp==0) or ($months[$jj]->corresp==0))
-			{
-				$verdictm[$ii]->月營收年增率遞增 = FALSE;
-				break;
-			}
-			if (($months[$jj]->current<0) or ($months[$jj]->corresp<0))
-			{
-				$verdictm[$ii]->月營收年增率遞增 = FALSE;
-				break;
-			}
-			if (($months[$jj+1]->corresp==0) or ($months[$jj+1]->corresp==0))
-			{
-				$verdictm[$ii]->月營收年增率遞增 = FALSE;
-				break;
-			}
-			if (($months[$jj+1]->current<0) or ($months[$jj+1]->corresp<0))
-			{
-				$verdictm[$ii]->月營收年增率遞增 = FALSE;
-				break;
-			}
-			if ($months[$jj]->current/$months[$jj]->corresp < $months[$jj+1]->current/$months[$jj+1]->corresp)
-			{
-				$verdictm[$ii]->月營收年增率遞增 = FALSE;
-				break;
-			}
-		}
-	}
-
-	return $verdictm;
-}
-
 // 最近八月月營收
-function show_monthly_revenue($months)
+function show_monthly_revenue($months, $verdictm = null)
 {
 	global $monthly_revenue_offset;
-
-	$verdictm = calculate_verdictm($months);
 
 	echo_n('  <table>');
 	echo_n('    <caption>月營收</caption>');
@@ -387,7 +319,10 @@ function show_monthly_revenue($months)
 	{
 		if ($months[$ii]->corresp > 0) // avoid devide by zero or negative/negative case
 		{
-			echo ($verdictm[$ii]->月營收年增率遞增?'<td bgcolor="red">':'<td>')  . percent(($months[$ii]->current / $months[$ii]->corresp) - 1);
+			if ($verdictm != null)
+				echo ($verdictm[$ii]->月營收年增率遞增?'<td bgcolor="red">':'<td>')  . percent(($months[$ii]->current / $months[$ii]->corresp) - 1);
+			else
+				echo '<td>' . percent(($months[$ii]->current / $months[$ii]->corresp) - 1);
 		}
 		else if ($months[$ii]->corresp == 0)
 		{
@@ -404,259 +339,8 @@ function show_monthly_revenue($months)
 	echo_n('  </table><br>');
 }
 
-function calculate_verdicts($xbrls)
+function show_xbrl_core($xbrls, $verdicts)
 {
-	$verdicts = array();
-
-	for ($ii=0;$ii<count($xbrls);$ii++)
-	{
-		$verdicts[$ii] = new verdictsData();
-		$verdicts[$ii]->season = $xbrls[$ii]['current']->season;
-	}
-
-	for ($ii=0;$ii<count($xbrls)-4;$ii++)
-	{
-		for ($jj=$ii;$jj<$ii+4;$jj++)
-		{
-			if ($xbrls[$jj]['current']->eps < 0) {
-				$verdicts[$ii]->每股盈餘為正 = FALSE;
-				break;
-			}
-		}
-
-		for ($jj=$ii;$jj<$ii+3;$jj++)
-		{
-			if (($xbrls[$jj]['current']->eps==0) or ($xbrls[$jj]['corresp']->eps==0))
-			{
-				$verdicts[$ii]->每股盈餘成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->eps<0) or ($xbrls[$jj]['corresp']->eps<0))
-			{
-				$verdicts[$ii]->每股盈餘成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->eps < $xbrls[$jj]['corresp']->eps)) {
-				$verdicts[$ii]->每股盈餘成長 = FALSE;
-				break;
-			}
-		}
-
-		for ($jj=$ii;$jj<$ii+3;$jj++)
-		{
-			if (($xbrls[$jj]['current']->revenue==0) or ($xbrls[$jj]['corresp']->revenue==0))
-			{
-				$verdicts[$ii]->營收成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->revenue<0) or ($xbrls[$jj]['corresp']->revenue<0))
-			{
-				$verdicts[$ii]->營收成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->revenue < $xbrls[$jj]['corresp']->revenue)) {
-				$verdicts[$ii]->營收成長 = FALSE;
-				break;
-			}
-		}
-
-		for ($jj=$ii;$jj<$ii+3;$jj++)
-		{
-			if (($xbrls[$jj]['current']->income==0) or ($xbrls[$jj]['corresp']->income==0))
-			{
-				$verdicts[$ii]->營業利益成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->income<0) or ($xbrls[$jj]['corresp']->income<0))
-			{
-				$verdicts[$ii]->營業利益成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->income < $xbrls[$jj]['corresp']->income)) {
-				$verdicts[$ii]->營業利益成長 = FALSE;
-				break;
-			}
-		}
-
-		for ($jj=$ii;$jj<$ii+3;$jj++)
-		{
-			if (($xbrls[$jj]['current']->nopat==0) or ($xbrls[$jj]['corresp']->nopat==0))
-			{
-				$verdicts[$ii]->稅後淨利成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->nopat<0) or ($xbrls[$jj]['corresp']->nopat<0))
-			{
-				$verdicts[$ii]->稅後淨利成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->nopat < $xbrls[$jj]['corresp']->nopat)) {
-				$verdicts[$ii]->稅後淨利成長 = FALSE;
-				break;
-			}
-		}
-
-		for ($jj=$ii;$jj<$ii+3;$jj++)
-		{
-			$current_income = $xbrls[$jj]['current']->income;
-			$current_revenue = $xbrls[$jj]['current']->revenue;
-
-			if ($current_income == 0 or $current_revenue == 0) {
-				$verdicts[$ii]->營業利益率穩定 = FALSE;
-				break;
-			}
-
-			if ($current_income < 0 or $current_revenue < 0) {
-				$verdicts[$ii]->營業利益率穩定 = FALSE;
-				break;
-			}
-
-			$earlier_income = $xbrls[$jj+1]['current']->income;
-			$earlier_revenue = $xbrls[$jj+1]['current']->revenue;
-
-			if ($earlier_income == 0 or $earlier_revenue == 0) {
-				$verdicts[$ii]->營業利益率穩定 = FALSE;
-				break;
-			}
-
-			if ($earlier_income < 0 or $earlier_revenue < 0) {
-				$verdicts[$ii]->營業利益率穩定 = FALSE;
-				break;
-			}
-
-			$current_rate = $current_income/$current_revenue;
-			$earlier_rate = $earlier_income/$earlier_revenue;
-
-			if ($current_rate == 0 or $earlier_rate == 0) {
-				$verdicts[$ii]->營業利益率穩定 = FALSE;
-				break;
-			}
-
-			if ($current_rate < 0 or $earlier_rate < 0) {
-				$verdicts[$ii]->營業利益率穩定 = FALSE;
-				break;
-			}
-
-			if (($current_rate / $earlier_rate) < 0.85) {
-				$verdicts[$ii]->營業利益率穩定 = FALSE;
-				break;
-			}
-		}
-
-		for ($jj=$ii;$jj<$ii+4;$jj++)
-		{
-			$current = $xbrls[$ii]['current'];
-			$earlier = $xbrls[$ii+1]['current'];
-			$earlierer = $xbrls[$ii+2]['current'];
-
-			$current_inventories = ($current->inventory+$earlier->inventory)/2;
-			$earlier_inventories = ($earlier->inventory+$earlierer->inventory)/2;
-
-			if ($current->costs == 0 or $current_inventories == 0) {
-				$verdicts[$ii]->存貨週轉率沒下降 = FALSE;
-				break;
-			}
-
-			if ($current->costs < 0 or $current_inventories < 0) {
-				$verdicts[$ii]->存貨週轉率沒下降 = FALSE;
-				break;
-			}
-
-			if ($earlier->costs == 0 or $earlier_inventories == 0) {
-				$verdicts[$ii]->存貨週轉率沒下降 = FALSE;
-				break;
-			}
-
-			if ($earlier->costs < 0 or $earlier_inventories < 0) {
-				$verdicts[$ii]->存貨週轉率沒下降 = FALSE;
-				break;
-			}
-
-			$current_turnover = $current->costs/$current_inventories;
-			$earlier_turnover = $earlier->costs/$earlier_inventories;
-
-			if ($current_turnover == 0 or $earlier_turnover == 0) {
-				$verdicts[$ii]->存貨週轉率沒下降 = FALSE;
-				break;
-			}
-
-			if ($current_turnover < 0 or $earlier_turnover < 0) {
-				$verdicts[$ii]->存貨週轉率沒下降 = FALSE;
-				break;
-			}
-
-			if (($current_turnover / $earlier_turnover) < 0.85) {
-				$verdicts[$ii]->存貨週轉率沒下降 = FALSE;
-				break;
-			}
-		}
-	}
-
-	$start_season = $xbrls[0]['current']->season;
-	if ('04' == substr($start_season, 4, 2))
-	{
-		if ($start->cashoa+$start->cashia < 0)
-		{
-			$verdicts[0]->累計現金流量正遞增 = FALSE;
-		}
-		else
-		{
-			for ($ii=0;$ii<3;$ii++)
-			{
-				$current = $xbrls[$ii]['current'];
-				$earlier = $xbrls[$ii+1]['current'];
-				if ( ($current->cashoa+$current->cashia) < ($earlier->cashoa+$earlier->cashia) )
-				{
-					$verdicts[0]->累計現金流量正遞增 = FALSE;
-					break;
-				}
-			}
-		}
-	}
-	else if ('03' == substr($start_season, 4, 2))
-	{
-		for ($ii=0;$ii<2;$ii++)
-		{
-			$current = $xbrls[$ii]['current'];
-			$earlier = $xbrls[$ii+1]['current'];
-			if ( ($current->cashoa+$current->cashia) < ($earlier->cashoa+$earlier->cashia) )
-			{
-				$verdicts[0]->累計現金流量正遞增 = FALSE;
-				break;
-			}
-		}
-	}
-	else if ('02' == substr($start_season, 4, 2))
-	{
-		$current = $xbrls[$ii]['current'];
-		$earlier = $xbrls[$ii+1]['current'];
-		if ( ($current->cashoa+$current->cashia) < ($earlier->cashoa+$earlier->cashia) )
-		{
-			$verdicts[0]->累計現金流量正遞增 = FALSE;
-			break;
-		}
-	}
-	else if ('01' == substr($start_season, 4, 2))
-	{
-		for ($ii=1;$ii<4;$ii++)
-		{
-			$current = $xbrls[$ii]['current'];
-			$earlier = $xbrls[$ii+1]['current'];
-			if ( ($current->cashoa+$current->cashia) < ($earlier->cashoa+$earlier->cashia) )
-			{
-				$verdicts[0]->累計現金流量正遞增 = FALSE;
-				break;
-			}
-		}
-	}
-
-	return $verdicts;
-}
-
-function show_xbrl_core($xbrls)
-{
-	$verdicts = calculate_verdicts($xbrls);
-
 	echo_n('  <table>');
 	echo_n('    <caption>核心財務指標</caption>');
 
@@ -1504,7 +1188,7 @@ function show_webpage_header($stage)
 	echo_n('<html>');
 	echo_n('  <head>');
 	echo_n('    <title>Pepo Project ' . $stage . '</title>');
-	echo_n('      <style>');
+	echo_n('      <style type="text/css">');
 	echo_n('        table {border-collapse: collapse; border: inset;}');
 	echo_n('        tbody {border: solid outset;}');
 	echo_n('        th {}');
@@ -1514,26 +1198,43 @@ function show_webpage_header($stage)
 	echo_n('        input {}');
 	echo_n('        .long {color:#0000FF;}');
 	echo_n('        form {margin: 1 1; padding: 0;}');
+	for ($ii=16;$ii>=8;$ii--)
+		echo_n("        .stock$ii {clear:both; margin:0 auto;}");
+	echo_n ('        .container {position:relative; display:none}');
+	echo_n ('        .highlight {background:green;}');
 	echo_n('      </style>');
 	echo_n('    <script type="text/javascript" src="https://www.google.com/jsapi"></script>');
 	echo_n('    <script type="text/javascript" src="./jquery-1.3.1.js"></script>');
 
-	echo_n('    <script>');
-	echo_n('		function writeMessage(canvas, message) {');
-	echo_n('			var context = canvas.getContext("2d");');
-	echo_n('			context.clearRect(0, 0, canvas.width, canvas.height);');
-	echo_n('			context.font = "18pt Calibri";');
-	echo_n('			context.fillStyle = "black";');
-	echo_n('			context.fillText(message, 10, 25);');
-	echo_n('		}');
-	echo_n('		function getMousePos(canvas, evt) {');
-	echo_n('			var rect = canvas.getBoundingClientRect();');
-	echo_n('			return {');
-	echo_n('				x: evt.clientX - rect.left,');
-	echo_n('				y: evt.clientY - rect.top');
-	echo_n('			};');
-	echo_n('		}');
+	echo_n('    <script type="text/javascript">');
+	for ($ii=16;$ii>=8;$ii--)
+	{
+		echo_n('        $(document).ready(function(){');
+		echo_n('	        $(".' . "stock$ii" . '").click(function(){');
+		echo_n('                ($(".' . "stock$ii" . '").hasClass("highlight")) ?');
+		echo_n('        	        ($(".' . "stock$ii" . '").removeClass("highlight").children().hide().end().children("a").show()) :');
+		echo_n('        	        ($(".' . "stock$ii" . '").addClass("highlight").children().show());');
+		echo_n('	        });');
+		echo_n('        });');	
+	}
 	echo_n('    </script>');
+
+	// echo_n('    <script>');
+	// echo_n('		function writeMessage(canvas, message) {');
+	// echo_n('			var context = canvas.getContext("2d");');
+	// echo_n('			context.clearRect(0, 0, canvas.width, canvas.height);');
+	// echo_n('			context.font = "18pt Calibri";');
+	// echo_n('			context.fillStyle = "black";');
+	// echo_n('			context.fillText(message, 10, 25);');
+	// echo_n('		}');
+	// echo_n('		function getMousePos(canvas, evt) {');
+	// echo_n('			var rect = canvas.getBoundingClientRect();');
+	// echo_n('			return {');
+	// echo_n('				x: evt.clientX - rect.left,');
+	// echo_n('				y: evt.clientY - rect.top');
+	// echo_n('			};');
+	// echo_n('		}');
+	// echo_n('    </script>');
 
 	echo_n('  </head>');
 	echo_n('  <body>');
