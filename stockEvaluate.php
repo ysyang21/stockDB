@@ -1551,9 +1551,9 @@ echo_v(LOG_VERBOSE, ($t4-$t3) . " ms to ". "EVALUATE_STOCK_PRICE" . "[" . __FUNC
 
 	// 最近至少八季財務報表
 	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr("load_seasonly_xbrl") . "[" . __FUNCTION__ . "]");
-	$xbrls = load_seasonly_xbrl($id);
+	$xbrls = load_seasonly_xbrl($id, 4);
 	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr("load_seasonly_xbrl") . "[" . __FUNCTION__ . "]");
-	show_xbrl($xbrls);
+	show_seasonly_xbrl($xbrls);
 
 	//echo '    </tbody>' . "\n";
 	//echo '  </table><br>' . "\n";

@@ -35,14 +35,19 @@ function stockIndicators($id) //, $since_date, $id_prices, $id_yoys, $sii_kline)
 	// 股票簡介及近況
 	show_stock_brief_case($stock);
 
-	// 最近十二個月月營收
-	$month = load_monthly_revenue($id, 18);
-	show_monthly_revenue($month);
+	// 最近(m+8+8)季財務報表
+	$xbrls = load_seasonly_xbrl($id, 8);
 
-	// 最近至少八季財務報表
-	$xbrls = load_seasonly_xbrl($id);
+	// 最近幾年財務年表
+	$xbrly = load_yearly_xbrl($id, 8);
+
+	// 最近18個月月營收報表
+	$months = load_monthly_revenue($id, 18);
+
+	show_yearly_xbrl($xbrly);
+	show_seasonly_xbrl($xbrls);
+	show_monthly_revenue($months);
 	show_xbrl_core($xbrls);
-
 	show_xbrl_group_a($xbrls);
 	show_xbrl_group_b($xbrls);
 	show_xbrl_group_c($xbrls);

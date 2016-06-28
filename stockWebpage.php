@@ -145,58 +145,131 @@ function show_idr_per($pepos)
 	echo_n('  </table><br>');
 }
 
-// 最近至少八季財務報表
+$xbrl_offset = 4;
 
-function show_xbrl($xbrls)
+// 最近至少兩年財務報表
+function show_yearly_xbrl($xbrly)
 {
 	echo_n('  <table>');
-	echo_n('    <caption>財務報表</caption>');
+	echo_n('    <caption>財務報表(合併年報或個別年報)</caption>');
 
 	echo '    <thead><th>季度';
-	for ($ii = 0; $ii<count($xbrls)-1;$ii++)
+	for ($ii = 0; $ii<count($xbrly);$ii++)
+		echo '<th>' . $xbrly[$ii]->season;
+	echo_n('</thead>');
+	echo_n('    <tbody>');
+
+	echo '      <tr>';
+	echo '<td>營收(億)';
+	for ($ii = 0; $ii<count($xbrly);$ii++)
+		echo '<td>' . decimal2($xbrly[$ii]->revenue/100000000);
+	echo_n('');
+
+	echo '      <tr>';
+	echo '<td>營業利益(億)';
+	for ($ii = 0; $ii<count($xbrly);$ii++)
+		echo '<td>' . decimal2($xbrly[$ii]->income/100000000);
+	echo_n('');
+
+	echo '      <tr>';
+	echo '<td>稅後淨利(億)';
+	for ($ii = 0; $ii<count($xbrly);$ii++)
+		echo '<td>' . decimal2($xbrly[$ii]->nopat/100000000);
+	echo_n('');
+
+	echo '      <tr>';
+	echo '<td>EPS';
+	for ($ii = 0; $ii<count($xbrly);$ii++)
+		echo '<td>' . decimal2($xbrly[$ii]->eps);
+	echo_n('');
+
+	echo '      <tr>';
+	echo '<td>存貨(億)';
+	for ($ii = 0; $ii<count($xbrly);$ii++)
+		echo '<td>' . decimal2($xbrly[$ii]->inventory/100000000);
+	echo_n('');
+
+	echo '      <tr>';
+	echo '<td>存貨營收比';
+	for ($ii = 0; $ii<count($xbrly);$ii++)
+		echo '<td>' . percent($xbrly[$ii]->inventory/$xbrly[$ii]->revenue);
+	echo_n('');
+
+	echo '      <tr>';
+	echo '<td>期末股本(億)';
+	for ($ii = 0; $ii<count($xbrly);$ii++)
+		echo '<td>' . decimal2($xbrly[$ii]->stock/100000000);
+	echo_n('');
+
+	echo '      <tr>';
+	echo '<td>財報公布日';
+	for ($ii = 0; $ii<count($xbrly);$ii++)
+		echo '<td>' . $xbrly[$ii]->publish;
+	echo_n('');
+
+	echo_n('    </tbody>');
+	echo_n('  </table><br>');
+}
+
+// 最近至少八季財務報表
+function show_seasonly_xbrl($xbrls)
+{
+	global $xbrl_offset;
+
+	echo_n('  <table>');
+	echo_n('    <caption>財務報表(單季合併或單季個別)</caption>');
+
+	echo '    <thead><th>季度';
+	for ($ii = 0; $ii<count($xbrls)-$xbrl_offset;$ii++)
 		echo '<th>' . $xbrls[$ii]['current']->season;
 	echo_n('</thead>');
 	echo_n('    <tbody>');
 
 	echo '      <tr>';
-	echo '<td>股本(億)';
-	for ($ii = 0; $ii<count($xbrls)-1;$ii++)
-		echo '<td>' . decimal2($xbrls[$ii]['current']->stock/100000000);
-	echo_n('');
-
-	echo '      <tr>';
 	echo '<td>營收(億)';
-	for ($ii = 0; $ii<count($xbrls)-1;$ii++)
+	for ($ii = 0; $ii<count($xbrls)-$xbrl_offset;$ii++)
 		echo '<td>' . decimal2($xbrls[$ii]['current']->revenue/100000000);
 	echo_n('');
 
 	echo '      <tr>';
+	echo '<td>營業利益(億)';
+	for ($ii = 0; $ii<count($xbrls)-$xbrl_offset;$ii++)
+		echo '<td>' . decimal2($xbrls[$ii]['current']->income/100000000);
+	echo_n('');
+
+	echo '      <tr>';
 	echo '<td>稅後淨利(億)';
-	for ($ii = 0; $ii<count($xbrls)-1;$ii++)
+	for ($ii = 0; $ii<count($xbrls)-$xbrl_offset;$ii++)
 		echo '<td>' . decimal2($xbrls[$ii]['current']->nopat/100000000);
 	echo_n('');
 
 	echo '      <tr>';
 	echo '<td>EPS';
-	for ($ii = 0; $ii<count($xbrls)-1;$ii++)
+	for ($ii = 0; $ii<count($xbrls)-$xbrl_offset;$ii++)
 		echo '<td>' . decimal2($xbrls[$ii]['current']->eps);
 	echo_n('');
 
 	echo '      <tr>';
 	echo '<td>存貨(億)';
-	for ($ii = 0; $ii<count($xbrls)-1;$ii++)
+	for ($ii = 0; $ii<count($xbrls)-$xbrl_offset;$ii++)
 		echo '<td>' . decimal2($xbrls[$ii]['current']->inventory/100000000);
 	echo_n('');
 
 	echo '      <tr>';
 	echo '<td>存貨營收比';
-	for ($ii = 0; $ii<count($xbrls)-1;$ii++)
+	for ($ii = 0; $ii<count($xbrls)-$xbrl_offset;$ii++)
 		echo '<td>' . percent($xbrls[$ii]['current']->inventory/$xbrls[$ii]['current']->revenue);
 	echo_n('');
 
 	echo '      <tr>';
+	echo '<td>期末股本(億)';
+	for ($ii = 0; $ii<count($xbrls)-$xbrl_offset;$ii++)
+		echo '<td>' . decimal2($xbrls[$ii]['current']->stock/100000000);
+	echo_n('');
+
+	echo '      <tr>';
 	echo '<td>財報公布日';
-	for ($ii = 0; $ii<count($xbrls)-1;$ii++)
+	for ($ii = 0; $ii<count($xbrls)-$xbrl_offset;$ii++)
 		echo '<td>' . $xbrls[$ii]['current']->publish;
 	echo_n('');
 
@@ -204,7 +277,7 @@ function show_xbrl($xbrls)
 	echo_n('  </table><br>');
 }
 
-class verdictData
+class verdictsData
 {
 	public $season = "";	// 季度
 
@@ -214,19 +287,72 @@ class verdictData
 	public $營業利益成長 = TRUE;
 	public $稅後淨利成長 = TRUE;
 	public $營業利益率穩定 = TRUE;
-	public $月營收年增率遞增 = TRUE;
 	public $累計現金流量正遞增 = TRUE;
 	public $存貨週轉率沒下降 = TRUE;
 }
 
+class verdictmData
+{
+	public $month = "";	// 月份
+
+	public $月營收年增率遞增 = TRUE;
+}
+
 $monthly_revenue_offset = 2;
+
+function calculate_verdictm($months)
+{
+	global $monthly_revenue_offset;
+
+	$verdictm = array();
+
+	for ($ii=0;$ii<count($months);$ii++)
+	{
+		$verdictm[$ii] = new verdictmData();
+		$verdictm[$ii]->month = $months[$ii]->month;
+	}
+
+	for ($ii=0;$ii<count($months)-$monthly_revenue_offset;$ii++)
+	{
+		for ($jj=$ii;$jj<$ii+2;$jj++)
+		{
+			if (($months[$jj]->corresp==0) or ($months[$jj]->corresp==0))
+			{
+				$verdictm[$ii]->月營收年增率遞增 = FALSE;
+				break;
+			}
+			if (($months[$jj]->current<0) or ($months[$jj]->corresp<0))
+			{
+				$verdictm[$ii]->月營收年增率遞增 = FALSE;
+				break;
+			}
+			if (($months[$jj+1]->corresp==0) or ($months[$jj+1]->corresp==0))
+			{
+				$verdictm[$ii]->月營收年增率遞增 = FALSE;
+				break;
+			}
+			if (($months[$jj+1]->current<0) or ($months[$jj+1]->corresp<0))
+			{
+				$verdictm[$ii]->月營收年增率遞增 = FALSE;
+				break;
+			}
+			if ($months[$jj]->current/$months[$jj]->corresp < $months[$jj+1]->current/$months[$jj+1]->corresp)
+			{
+				$verdictm[$ii]->月營收年增率遞增 = FALSE;
+				break;
+			}
+		}
+	}
+
+	return $verdictm;
+}
 
 // 最近八月月營收
 function show_monthly_revenue($months)
 {
 	global $monthly_revenue_offset;
 
-	$verdict = new verdictData();
+	$verdictm = calculate_verdictm($months);
 
 	echo_n('  <table>');
 	echo_n('    <caption>月營收</caption>');
@@ -259,38 +385,9 @@ function show_monthly_revenue($months)
 	echo '<td>月營收年增率遞增';
 	for ($ii=0;$ii<count($months)-$monthly_revenue_offset;$ii++)
 	{
-		for ($jj=$ii;$jj<$ii+2;$jj++)
-		{
-			if (($months[$jj]->corresp==0) or ($months[$jj]->corresp==0))
-			{
-				$verdict->月營收年增率遞增 = FALSE;
-				break;
-			}
-			if (($months[$jj]->current<0) or ($months[$jj]->corresp<0))
-			{
-				$verdict->月營收年增率遞增 = FALSE;
-				break;
-			}
-			if (($months[$jj+1]->corresp==0) or ($months[$jj+1]->corresp==0))
-			{
-				$verdict->月營收年增率遞增 = FALSE;
-				break;
-			}
-			if (($months[$jj+1]->current<0) or ($months[$jj+1]->corresp<0))
-			{
-				$verdict->月營收年增率遞增 = FALSE;
-				break;
-			}
-			if ($months[$jj]->current/$months[$jj]->corresp < $months[$jj+1]->current/$months[$jj+1]->corresp)
-			{
-				$verdict->月營收年增率遞增 = FALSE;
-				break;
-			}
-		}
-
 		if ($months[$ii]->corresp > 0) // avoid devide by zero or negative/negative case
 		{
-			echo ($verdict->月營收年增率遞增?'<td bgcolor="red">':'<td>')  . percent(($months[$ii]->current / $months[$ii]->corresp) - 1);
+			echo ($verdictm[$ii]->月營收年增率遞增?'<td bgcolor="red">':'<td>')  . percent(($months[$ii]->current / $months[$ii]->corresp) - 1);
 		}
 		else if ($months[$ii]->corresp == 0)
 		{
@@ -300,7 +397,6 @@ function show_monthly_revenue($months)
 		{
 			echo '<td>' . 'DIV/-';
 		}
-		$verdict->月營收年增率遞增 = TRUE;
 	}
 	echo_n('');
 
@@ -308,9 +404,258 @@ function show_monthly_revenue($months)
 	echo_n('  </table><br>');
 }
 
+function calculate_verdicts($xbrls)
+{
+	$verdicts = array();
+
+	for ($ii=0;$ii<count($xbrls);$ii++)
+	{
+		$verdicts[$ii] = new verdictsData();
+		$verdicts[$ii]->season = $xbrls[$ii]['current']->season;
+	}
+
+	for ($ii=0;$ii<count($xbrls)-4;$ii++)
+	{
+		for ($jj=$ii;$jj<$ii+4;$jj++)
+		{
+			if ($xbrls[$jj]['current']->eps < 0) {
+				$verdicts[$ii]->每股盈餘為正 = FALSE;
+				break;
+			}
+		}
+
+		for ($jj=$ii;$jj<$ii+3;$jj++)
+		{
+			if (($xbrls[$jj]['current']->eps==0) or ($xbrls[$jj]['corresp']->eps==0))
+			{
+				$verdicts[$ii]->每股盈餘成長 = FALSE;
+				break;
+			}
+			if (($xbrls[$jj]['current']->eps<0) or ($xbrls[$jj]['corresp']->eps<0))
+			{
+				$verdicts[$ii]->每股盈餘成長 = FALSE;
+				break;
+			}
+			if (($xbrls[$jj]['current']->eps < $xbrls[$jj]['corresp']->eps)) {
+				$verdicts[$ii]->每股盈餘成長 = FALSE;
+				break;
+			}
+		}
+
+		for ($jj=$ii;$jj<$ii+3;$jj++)
+		{
+			if (($xbrls[$jj]['current']->revenue==0) or ($xbrls[$jj]['corresp']->revenue==0))
+			{
+				$verdicts[$ii]->營收成長 = FALSE;
+				break;
+			}
+			if (($xbrls[$jj]['current']->revenue<0) or ($xbrls[$jj]['corresp']->revenue<0))
+			{
+				$verdicts[$ii]->營收成長 = FALSE;
+				break;
+			}
+			if (($xbrls[$jj]['current']->revenue < $xbrls[$jj]['corresp']->revenue)) {
+				$verdicts[$ii]->營收成長 = FALSE;
+				break;
+			}
+		}
+
+		for ($jj=$ii;$jj<$ii+3;$jj++)
+		{
+			if (($xbrls[$jj]['current']->income==0) or ($xbrls[$jj]['corresp']->income==0))
+			{
+				$verdicts[$ii]->營業利益成長 = FALSE;
+				break;
+			}
+			if (($xbrls[$jj]['current']->income<0) or ($xbrls[$jj]['corresp']->income<0))
+			{
+				$verdicts[$ii]->營業利益成長 = FALSE;
+				break;
+			}
+			if (($xbrls[$jj]['current']->income < $xbrls[$jj]['corresp']->income)) {
+				$verdicts[$ii]->營業利益成長 = FALSE;
+				break;
+			}
+		}
+
+		for ($jj=$ii;$jj<$ii+3;$jj++)
+		{
+			if (($xbrls[$jj]['current']->nopat==0) or ($xbrls[$jj]['corresp']->nopat==0))
+			{
+				$verdicts[$ii]->稅後淨利成長 = FALSE;
+				break;
+			}
+			if (($xbrls[$jj]['current']->nopat<0) or ($xbrls[$jj]['corresp']->nopat<0))
+			{
+				$verdicts[$ii]->稅後淨利成長 = FALSE;
+				break;
+			}
+			if (($xbrls[$jj]['current']->nopat < $xbrls[$jj]['corresp']->nopat)) {
+				$verdicts[$ii]->稅後淨利成長 = FALSE;
+				break;
+			}
+		}
+
+		for ($jj=$ii;$jj<$ii+3;$jj++)
+		{
+			$current_income = $xbrls[$jj]['current']->income;
+			$current_revenue = $xbrls[$jj]['current']->revenue;
+
+			if ($current_income == 0 or $current_revenue == 0) {
+				$verdicts[$ii]->營業利益率穩定 = FALSE;
+				break;
+			}
+
+			if ($current_income < 0 or $current_revenue < 0) {
+				$verdicts[$ii]->營業利益率穩定 = FALSE;
+				break;
+			}
+
+			$earlier_income = $xbrls[$jj+1]['current']->income;
+			$earlier_revenue = $xbrls[$jj+1]['current']->revenue;
+
+			if ($earlier_income == 0 or $earlier_revenue == 0) {
+				$verdicts[$ii]->營業利益率穩定 = FALSE;
+				break;
+			}
+
+			if ($earlier_income < 0 or $earlier_revenue < 0) {
+				$verdicts[$ii]->營業利益率穩定 = FALSE;
+				break;
+			}
+
+			$current_rate = $current_income/$current_revenue;
+			$earlier_rate = $earlier_income/$earlier_revenue;
+
+			if ($current_rate == 0 or $earlier_rate == 0) {
+				$verdicts[$ii]->營業利益率穩定 = FALSE;
+				break;
+			}
+
+			if ($current_rate < 0 or $earlier_rate < 0) {
+				$verdicts[$ii]->營業利益率穩定 = FALSE;
+				break;
+			}
+
+			if (($current_rate / $earlier_rate) < 0.85) {
+				$verdicts[$ii]->營業利益率穩定 = FALSE;
+				break;
+			}
+		}
+
+		for ($jj=$ii;$jj<$ii+4;$jj++)
+		{
+			$current = $xbrls[$ii]['current'];
+			$earlier = $xbrls[$ii+1]['current'];
+			$earlierer = $xbrls[$ii+2]['current'];
+
+			$current_inventories = ($current->inventory+$earlier->inventory)/2;
+			$earlier_inventories = ($earlier->inventory+$earlierer->inventory)/2;
+
+			if ($current->costs == 0 or $current_inventories == 0) {
+				$verdicts[$ii]->存貨週轉率沒下降 = FALSE;
+				break;
+			}
+
+			if ($current->costs < 0 or $current_inventories < 0) {
+				$verdicts[$ii]->存貨週轉率沒下降 = FALSE;
+				break;
+			}
+
+			if ($earlier->costs == 0 or $earlier_inventories == 0) {
+				$verdicts[$ii]->存貨週轉率沒下降 = FALSE;
+				break;
+			}
+
+			if ($earlier->costs < 0 or $earlier_inventories < 0) {
+				$verdicts[$ii]->存貨週轉率沒下降 = FALSE;
+				break;
+			}
+
+			$current_turnover = $current->costs/$current_inventories;
+			$earlier_turnover = $earlier->costs/$earlier_inventories;
+
+			if ($current_turnover == 0 or $earlier_turnover == 0) {
+				$verdicts[$ii]->存貨週轉率沒下降 = FALSE;
+				break;
+			}
+
+			if ($current_turnover < 0 or $earlier_turnover < 0) {
+				$verdicts[$ii]->存貨週轉率沒下降 = FALSE;
+				break;
+			}
+
+			if (($current_turnover / $earlier_turnover) < 0.85) {
+				$verdicts[$ii]->存貨週轉率沒下降 = FALSE;
+				break;
+			}
+		}
+	}
+
+	$start_season = $xbrls[0]['current']->season;
+	if ('04' == substr($start_season, 4, 2))
+	{
+		if ($start->cashoa+$start->cashia < 0)
+		{
+			$verdicts[0]->累計現金流量正遞增 = FALSE;
+		}
+		else
+		{
+			for ($ii=0;$ii<3;$ii++)
+			{
+				$current = $xbrls[$ii]['current'];
+				$earlier = $xbrls[$ii+1]['current'];
+				if ( ($current->cashoa+$current->cashia) < ($earlier->cashoa+$earlier->cashia) )
+				{
+					$verdicts[0]->累計現金流量正遞增 = FALSE;
+					break;
+				}
+			}
+		}
+	}
+	else if ('03' == substr($start_season, 4, 2))
+	{
+		for ($ii=0;$ii<2;$ii++)
+		{
+			$current = $xbrls[$ii]['current'];
+			$earlier = $xbrls[$ii+1]['current'];
+			if ( ($current->cashoa+$current->cashia) < ($earlier->cashoa+$earlier->cashia) )
+			{
+				$verdicts[0]->累計現金流量正遞增 = FALSE;
+				break;
+			}
+		}
+	}
+	else if ('02' == substr($start_season, 4, 2))
+	{
+		$current = $xbrls[$ii]['current'];
+		$earlier = $xbrls[$ii+1]['current'];
+		if ( ($current->cashoa+$current->cashia) < ($earlier->cashoa+$earlier->cashia) )
+		{
+			$verdicts[0]->累計現金流量正遞增 = FALSE;
+			break;
+		}
+	}
+	else if ('01' == substr($start_season, 4, 2))
+	{
+		for ($ii=1;$ii<4;$ii++)
+		{
+			$current = $xbrls[$ii]['current'];
+			$earlier = $xbrls[$ii+1]['current'];
+			if ( ($current->cashoa+$current->cashia) < ($earlier->cashoa+$earlier->cashia) )
+			{
+				$verdicts[0]->累計現金流量正遞增 = FALSE;
+				break;
+			}
+		}
+	}
+
+	return $verdicts;
+}
+
 function show_xbrl_core($xbrls)
 {
-	$verdict = new verdictData();
+	$verdicts = calculate_verdicts($xbrls);
 
 	echo_n('  <table>');
 	echo_n('    <caption>核心財務指標</caption>');
@@ -326,20 +671,8 @@ function show_xbrl_core($xbrls)
 	echo '<td>近四季eps>0';
 	for ($ii=0;$ii<count($xbrls)-4;$ii++)
 	{
-		for ($jj=$ii;$jj<$ii+4;$jj++)
-		{
-			if ($xbrls[$jj]['current']->eps < 0) {
-				$verdict->每股盈餘為正 = FALSE;
-				break;
-			}
-		}
-		echo ($verdict->每股盈餘為正?'<td bgcolor="red">':'<td>') . decimal2($xbrls[$ii]['current']->eps);
-		$verdict->每股盈餘為正 = TRUE;
+		echo ($verdicts[$ii]->每股盈餘為正?'<td bgcolor="red">':'<td>') . decimal2($xbrls[$ii]['current']->eps);
 	}
-	// for ($ii=count($xbrls)-4;$ii<count($xbrls)-1;$ii++)
-	// {
-	// 	echo '<td>' . decimal2($xbrls[$ii]['current']->eps);
-	// }
 	echo '<td>1.b';
 	echo_n('');
 
@@ -347,27 +680,9 @@ function show_xbrl_core($xbrls)
 	echo '<td>近三季yoy(eps)>0';
 	for ($ii=0;$ii<count($xbrls)-4;$ii++)
 	{
-		for ($jj=$ii;$jj<$ii+3;$jj++)
-		{
-			if (($xbrls[$jj]['current']->eps==0) or ($xbrls[$jj]['corresp']->eps==0))
-			{
-				$verdict->每股盈餘成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->eps<0) or ($xbrls[$jj]['corresp']->eps<0))
-			{
-				$verdict->每股盈餘成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->eps < $xbrls[$jj]['corresp']->eps)) {
-				$verdict->每股盈餘成長 = FALSE;
-				break;
-			}
-		}
-
 		if ($xbrls[$ii]['corresp']->eps > 0) // avoid devide by zero or negative/negative case
 		{
-			echo ($verdict->每股盈餘成長?'<td bgcolor="red">':'<td>') . percent(($xbrls[$ii]['current']->eps/$xbrls[$ii]['corresp']->eps)-1);
+			echo ($verdicts[$ii]->每股盈餘成長?'<td bgcolor="red">':'<td>') . percent(($xbrls[$ii]['current']->eps/$xbrls[$ii]['corresp']->eps)-1);
 		}
 		else if ($xbrls[$ii]['corresp']->eps == 0)
 		{
@@ -377,12 +692,7 @@ function show_xbrl_core($xbrls)
 		{
 			echo '<td>' . 'DIV/-';
 		}
-		$verdict->每股盈餘成長 = TRUE;
 	}
-	// for ($ii=count($xbrls)-3;$ii<count($xbrls)-1;$ii++)
-	// {
-	// 	echo '<td>' . percent(($xbrls[$ii]['current']->eps/$xbrls[$ii]['corresp']->eps)-1);
-	// }
 	echo '<td>(每股盈餘EPS[i] / 每股盈餘EPS[i+4])*100%-1';
 	echo_n('');
 
@@ -390,27 +700,9 @@ function show_xbrl_core($xbrls)
 	echo '<td>近三季yoy(營收)>0';
 	for ($ii=0;$ii<count($xbrls)-4;$ii++)
 	{
-		for ($jj=$ii;$jj<$ii+3;$jj++)
-		{
-			if (($xbrls[$jj]['current']->revenue==0) or ($xbrls[$jj]['corresp']->revenue==0))
-			{
-				$verdict->營收成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->revenue<0) or ($xbrls[$jj]['corresp']->revenue<0))
-			{
-				$verdict->營收成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->revenue < $xbrls[$jj]['corresp']->revenue)) {
-				$verdict->營收成長 = FALSE;
-				break;
-			}
-		}
-
 		if ($xbrls[$ii]['corresp']->revenue > 0) // avoid devide by zero or negative/negative case
 		{
-			echo ($verdict->營收成長?'<td bgcolor="red">':'<td>') . percent(($xbrls[$ii]['current']->revenue/$xbrls[$ii]['corresp']->revenue)-1);
+			echo ($verdicts[$ii]->營收成長?'<td bgcolor="red">':'<td>') . percent(($xbrls[$ii]['current']->revenue/$xbrls[$ii]['corresp']->revenue)-1);
 		}
 		else if ($xbrls[$ii]['corresp']->revenue == 0)
 		{
@@ -420,12 +712,7 @@ function show_xbrl_core($xbrls)
 		{
 			echo '<td>' . 'DIV/-';
 		}
-		$verdict->營收成長 = TRUE;
 	}
-	// for ($ii=count($xbrls)-3;$ii<count($xbrls)-1;$ii++)
-	// {
-	// 	echo '<td>' . percent(($xbrls[$ii]['current']->revenue/$xbrls[$ii]['corresp']->revenue)-1);
-	// }
 	echo '<td>2.1';
 	echo_n('');
 
@@ -433,27 +720,9 @@ function show_xbrl_core($xbrls)
 	echo '<td>近三季yoy(營業利益)>0';
 	for ($ii=0;$ii<count($xbrls)-4;$ii++)
 	{
-		for ($jj=$ii;$jj<$ii+3;$jj++)
-		{
-			if (($xbrls[$jj]['current']->income==0) or ($xbrls[$jj]['corresp']->income==0))
-			{
-				$verdict->營業利益成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->income<0) or ($xbrls[$jj]['corresp']->income<0))
-			{
-				$verdict->營業利益成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->income < $xbrls[$jj]['corresp']->income)) {
-				$verdict->營業利益成長 = FALSE;
-				break;
-			}
-		}
-
 		if ($xbrls[$ii]['corresp']->income > 0) // avoid devide by zero or negative/negative case
 		{
-			echo ($verdict->營業利益成長?'<td bgcolor="red">':'<td>') . percent(($xbrls[$ii]['current']->income/$xbrls[$ii]['corresp']->income)-1);
+			echo ($verdicts[$ii]->營業利益成長?'<td bgcolor="red">':'<td>') . percent(($xbrls[$ii]['current']->income/$xbrls[$ii]['corresp']->income)-1);
 		}
 		else if ($xbrls[$ii]['corresp']->income == 0)
 		{
@@ -463,12 +732,7 @@ function show_xbrl_core($xbrls)
 		{
 			echo '<td>' . 'DIV/-';
 		}
-		$verdict->營業利益成長 = TRUE;
 	}
-	// for ($ii=count($xbrls)-3;$ii<count($xbrls)-1;$ii++)
-	// {
-	// 	echo '<td>' . percent(($xbrls[$ii]['current']->income/$xbrls[$ii]['corresp']->income)-1);
-	// }
 	echo '<td>2.2';
 	echo_n('');
 
@@ -476,27 +740,9 @@ function show_xbrl_core($xbrls)
 	echo '<td>近三季yoy(稅後淨利)>0';
 	for ($ii=0;$ii<count($xbrls)-4;$ii++)
 	{
-		for ($jj=$ii;$jj<$ii+3;$jj++)
-		{
-			if (($xbrls[$jj]['current']->nopat==0) or ($xbrls[$jj]['corresp']->nopat==0))
-			{
-				$verdict->稅後淨利成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->nopat<0) or ($xbrls[$jj]['corresp']->nopat<0))
-			{
-				$verdict->稅後淨利成長 = FALSE;
-				break;
-			}
-			if (($xbrls[$jj]['current']->nopat < $xbrls[$jj]['corresp']->nopat)) {
-				$verdict->稅後淨利成長 = FALSE;
-				break;
-			}
-		}
-
 		if ($xbrls[$ii]['corresp']->nopat > 0) // avoid devide by zero or negative/negative case
 		{
-			echo ($verdict->稅後淨利成長?'<td bgcolor="red">':'<td>') . percent(($xbrls[$ii]['current']->nopat/$xbrls[$ii]['corresp']->nopat)-1);
+			echo ($verdicts[$ii]->稅後淨利成長?'<td bgcolor="red">':'<td>') . percent(($xbrls[$ii]['current']->nopat/$xbrls[$ii]['corresp']->nopat)-1);
 		}
 		else if ($xbrls[$ii]['corresp']->nopat == 0)
 		{
@@ -506,12 +752,7 @@ function show_xbrl_core($xbrls)
 		{
 			echo '<td>' . 'DIV/-';
 		}
-		$verdict->稅後淨利成長 = TRUE;
 	}
-	// for ($ii=count($xbrls)-3;$ii<count($xbrls)-1;$ii++)
-	// {
-	// 	echo '<td>' . percent(($xbrls[$ii]['current']->nopat/$xbrls[$ii]['corresp']->nopat)-1);
-	// }
 	echo '<td>2.4';
 	echo_n('');
 
@@ -519,56 +760,9 @@ function show_xbrl_core($xbrls)
 	echo '<td>近三季營業利益率穩定';
 	for ($ii=0;$ii<count($xbrls)-4;$ii++)
 	{
-		for ($jj=$ii;$jj<$ii+3;$jj++)
-		{
-			$current_income = $xbrls[$jj]['current']->income;
-			$current_revenue = $xbrls[$jj]['current']->revenue;
-
-			if ($current_income == 0 or $current_revenue == 0) {
-				$verdict->營業利益率穩定 = FALSE;
-				break;
-			}
-
-			if ($current_income < 0 or $current_revenue < 0) {
-				$verdict->營業利益率穩定 = FALSE;
-				break;
-			}
-
-			$earlier_income = $xbrls[$jj+1]['current']->income;
-			$earlier_revenue = $xbrls[$jj+1]['current']->revenue;
-
-			if ($earlier_income == 0 or $earlier_revenue == 0) {
-				$verdict->營業利益率穩定 = FALSE;
-				break;
-			}
-
-			if ($earlier_income < 0 or $earlier_revenue < 0) {
-				$verdict->營業利益率穩定 = FALSE;
-				break;
-			}
-
-			$current_rate = $current_income/$current_revenue;
-			$earlier_rate = $earlier_income/$earlier_revenue;
-
-			if ($current_rate == 0 or $earlier_rate == 0) {
-				$verdict->營業利益率穩定 = FALSE;
-				break;
-			}
-
-			if ($current_rate < 0 or $earlier_rate < 0) {
-				$verdict->營業利益率穩定 = FALSE;
-				break;
-			}
-
-			if (($current_rate / $earlier_rate) < 0.85) {
-				$verdict->營業利益率穩定 = FALSE;
-				break;
-			}
-		}
-
 		if ($xbrls[$ii]['current']->revenue > 0) // avoid devide by zero or negative/negative case
 		{
-		echo ($verdict->營業利益率穩定?'<td bgcolor="red">':'<td>') . percent($xbrls[$ii]['current']->income/$xbrls[$ii]['current']->revenue);
+			echo ($verdicts[$ii]->營業利益率穩定?'<td bgcolor="red">':'<td>') . percent($xbrls[$ii]['current']->income/$xbrls[$ii]['current']->revenue);
 		}
 			else if ($xbrls[$ii]['current']->revenue == 0)
 		{
@@ -578,75 +772,12 @@ function show_xbrl_core($xbrls)
 		{
 			echo '<td>' . 'DIV/-';
 		}
-		$verdict->營業利益率穩定 = TRUE;
 	}
-	// for ($ii=count($xbrls)-3;$ii<count($xbrls)-1;$ii++)
-	// {
-	// 	echo '<td>' . percent($xbrls[$ii]['current']->income/$xbrls[$ii]['current']->revenue);
-	// }
 	echo '<td>1.2';
 	echo_n('');
 
-	$start_season = $xbrls[0]['current']->season;
-	if ('04' == substr($start_season, 4, 2))
-	{
-		if ($start->cashoa+$start->cashia < 0)
-		{
-			$verdict->累計現金流量正遞增 = FALSE;
-		}
-		else
-		{
-			for ($ii=0;$ii<3;$ii++)
-			{
-				$current = $xbrls[$ii]['current'];
-				$earlier = $xbrls[$ii+1]['current'];
-				if ( ($current->cashoa+$current->cashia) < ($earlier->cashoa+$earlier->cashia) )
-				{
-					$verdict->累計現金流量正遞增 = FALSE;
-					break;
-				}
-			}
-		}
-	}
-	else if ('03' == substr($start_season, 4, 2))
-	{
-		for ($ii=0;$ii<2;$ii++)
-		{
-			$current = $xbrls[$ii]['current'];
-			$earlier = $xbrls[$ii+1]['current'];
-			if ( ($current->cashoa+$current->cashia) < ($earlier->cashoa+$earlier->cashia) )
-			{
-				$verdict->累計現金流量正遞增 = FALSE;
-				break;
-			}
-		}
-	}
-	else if ('02' == substr($start_season, 4, 2))
-	{
-		$current = $xbrls[$ii]['current'];
-		$earlier = $xbrls[$ii+1]['current'];
-		if ( ($current->cashoa+$current->cashia) < ($earlier->cashoa+$earlier->cashia) )
-		{
-			$verdict->累計現金流量正遞增 = FALSE;
-			break;
-		}
-	}
-	else if ('01' == substr($start_season, 4, 2))
-	{
-		for ($ii=1;$ii<4;$ii++)
-		{
-			$current = $xbrls[$ii]['current'];
-			$earlier = $xbrls[$ii+1]['current'];
-			if ( ($current->cashoa+$current->cashia) < ($earlier->cashoa+$earlier->cashia) )
-			{
-				$verdict->累計現金流量正遞增 = FALSE;
-				break;
-			}
-		}
-	}
-
 	echo '      <tr>';
-	echo ($verdict->累計現金流量正遞增?'<td bgcolor="red">':'<td>') . '累計自由現金流量正遞增';
+	echo ($verdicts[0]->累計現金流量正遞增?'<td bgcolor="red">':'<td>') . '累計自由現金流量正遞增';
 	for ($ii=0;$ii<count($xbrls)-4;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
@@ -660,58 +791,10 @@ function show_xbrl_core($xbrls)
 	echo '<td>近四季存貨週轉率穩定';
 	for ($ii=0;$ii<count($xbrls)-4;$ii++)
 	{
-		for ($jj=$ii;$jj<$ii+4;$jj++)
-		{
-			$current = $xbrls[$ii]['current'];
-			$earlier = $xbrls[$ii+1]['current'];
-			$earlierer = $xbrls[$ii+2]['current'];
-
-			$current_inventories = ($current->inventory+$earlier->inventory)/2;
-			$earlier_inventories = ($earlier->inventory+$earlierer->inventory)/2;
-
-			if ($current->costs == 0 or $current_inventories == 0) {
-				$verdict->存貨週轉率沒下降 = FALSE;
-				break;
-			}
-
-			if ($current->costs < 0 or $current_inventories < 0) {
-				$verdict->存貨週轉率沒下降 = FALSE;
-				break;
-			}
-
-			if ($earlier->costs == 0 or $earlier_inventories == 0) {
-				$verdict->存貨週轉率沒下降 = FALSE;
-				break;
-			}
-
-			if ($earlier->costs < 0 or $earlier_inventories < 0) {
-				$verdict->存貨週轉率沒下降 = FALSE;
-				break;
-			}
-
-			$current_turnover = $current->costs/$current_inventories;
-			$earlier_turnover = $earlier->costs/$earlier_inventories;
-
-			if ($current_turnover == 0 or $earlier_turnover == 0) {
-				$verdict->存貨週轉率沒下降 = FALSE;
-				break;
-			}
-
-			if ($current_turnover < 0 or $earlier_turnover < 0) {
-				$verdict->存貨週轉率沒下降 = FALSE;
-				break;
-			}
-
-			if (($current_turnover / $earlier_turnover) < 0.85) {
-				$verdict->存貨週轉率沒下降 = FALSE;
-				break;
-			}
-		}
-
 		$current_inventory = ($xbrls[$ii]['current']->inventory+$xbrls[$ii+1]['current']->inventory)/2;
 		if ($current_inventory > 0)
 		{
-			echo ($verdict->存貨週轉率沒下降?'<td bgcolor="red">':'<td>') . decimal2($xbrls[$ii]['current']->costs/$current_inventory);
+			echo ($verdicts[$ii]->存貨週轉率沒下降?'<td bgcolor="red">':'<td>') . decimal2($xbrls[$ii]['current']->costs/$current_inventory);
 		}
 		else if ($current_inventory == 0)
 		{
@@ -721,12 +804,7 @@ function show_xbrl_core($xbrls)
 		{
 			echo '<td>' . 'DIV/-';
 		}
-		$verdict->存貨週轉率沒下降 = TRUE;
 	}
-	// for ($ii=count($xbrls)-4;$ii<count($xbrls)-1;$ii++)
-	// {
-	// 	echo '<td>' . decimal2($xbrls[$ii]['current']->costs*2/($xbrls[$ii]['current']->inventory+$xbrls[$ii+1]['current']->inventory));
-	// }
 	echo '<td>4.2';
 	echo_n('');
 
@@ -768,17 +846,16 @@ function show_xbrl_core($xbrls)
 // 		(ROA) Return on total assets
 // 1.b 每股盈餘 = 稅後淨利 / 期末股本
 // 		(EPS) Earning Per Share
-$xbrl_group_offset = 4;
 
 function show_xbrl_group_a($xbrls)
 {
-	global $xbrl_group_offset;
+	global $xbrl_offset;
 
 	echo_n('  <table>');
 	echo_n('    <caption>獲利能力</caption>');
 
 	echo '    <thead><th>季度';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 		echo '<th>' . $xbrls[$ii]['current']->season;
 	echo '<th>公式';
 	echo_n('</thead>');
@@ -786,7 +863,7 @@ function show_xbrl_group_a($xbrls)
 
 	echo '      <tr>';
 	echo '<td>1.1 營業毛利率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		if ($xbrl->revenue > 0)
@@ -801,7 +878,7 @@ function show_xbrl_group_a($xbrls)
 
 	echo '      <tr>';
 	echo '<td>1.2 營業利益率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		if ($xbrl->revenue > 0)
@@ -816,7 +893,7 @@ function show_xbrl_group_a($xbrls)
 
 	echo '      <tr>';
 	echo '<td>1.3 稅前淨利率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		if ($xbrl->revenue > 0)
@@ -831,7 +908,7 @@ function show_xbrl_group_a($xbrls)
 
 	echo '      <tr>';
 	echo '<td>1.4 稅後淨利率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		if ($xbrl->revenue > 0)
@@ -846,7 +923,7 @@ function show_xbrl_group_a($xbrls)
 
 	echo '      <tr>';
 	echo '<td>1.5 每股淨值';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2(($xbrl->equity-$xbrl->noncontrol)*10/$xbrl->stock);
@@ -856,7 +933,7 @@ function show_xbrl_group_a($xbrls)
 
 	echo '      <tr>';
 	echo '<td>1.6 每股營業額';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2($xbrl->revenue*10/$xbrl->stock);
@@ -866,7 +943,7 @@ function show_xbrl_group_a($xbrls)
 
 	echo '      <tr>';
 	echo '<td>1.7 每股營業利益';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2($xbrl->income*10/$xbrl->stock);
@@ -876,7 +953,7 @@ function show_xbrl_group_a($xbrls)
 
 	echo '      <tr>';
 	echo '<td>1.8 每股稅前淨利';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2($xbrl->nopbt*10/$xbrl->stock);
@@ -886,7 +963,7 @@ function show_xbrl_group_a($xbrls)
 
 	echo '      <tr>';
 	echo '<td>1.9 股東權益報酬率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		$xbrl_1 = $xbrls[$ii+1]['current'];
@@ -897,7 +974,7 @@ function show_xbrl_group_a($xbrls)
 
 	echo '      <tr>';
 	echo '<td>1.a 資產報酬率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		$xbrl_1 = $xbrls[$ii+1]['current'];
@@ -909,7 +986,7 @@ function show_xbrl_group_a($xbrls)
 
 	echo '      <tr>';
 	echo '<td>1.b 每股盈餘';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2($xbrl->eps);
@@ -934,13 +1011,13 @@ function show_xbrl_group_a($xbrls)
 
 function show_xbrl_group_b($xbrls)
 {
-	global $xbrl_group_offset;
+	global $xbrl_offset;
 
 	echo_n('  <table>');
 	echo_n('    <caption>經營績效</caption>');
 
 	echo '    <thead><th>季度';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<th>' . $xbrl->season;
@@ -951,7 +1028,7 @@ function show_xbrl_group_b($xbrls)
 
 	echo '      <tr>';
 	echo '<td>2.1 營收年增率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii];
 		if ($xbrl['corresp']->revenue > 0)
@@ -966,7 +1043,7 @@ function show_xbrl_group_b($xbrls)
 
 	echo '      <tr>';
 	echo '<td>2.2 營業利益年增率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii];
 		if ($xbrl['corresp']->income > 0)
@@ -981,7 +1058,7 @@ function show_xbrl_group_b($xbrls)
 
 	echo '      <tr>';
 	echo '<td>2.3 稅前淨利年增率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii];
 		if ($xbrl['corresp']->nopbt > 0)
@@ -996,7 +1073,7 @@ function show_xbrl_group_b($xbrls)
 
 	echo '      <tr>';
 	echo '<td>2.4 稅後淨利年增率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii];
 		if ($xbrl['corresp']->nopat > 0)
@@ -1011,7 +1088,7 @@ function show_xbrl_group_b($xbrls)
 
 	echo '      <tr>';
 	echo '<td>2.5 總資產年增率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii];
 		if ($xbrl['corresp']->assets > 0)
@@ -1026,7 +1103,7 @@ function show_xbrl_group_b($xbrls)
 
 	echo '      <tr>';
 	echo '<td>2.6 淨值年增率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii];
 		if ($xbrl['corresp']->equity > 0)
@@ -1041,7 +1118,7 @@ function show_xbrl_group_b($xbrls)
 
 	echo '      <tr>';
 	echo '<td>2.7 固定資產年增率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii];
 		if ($xbrl['corresp']->fixedassets > 0)
@@ -1070,13 +1147,13 @@ function show_xbrl_group_b($xbrls)
 
 function show_xbrl_group_c($xbrls)
 {
-	global $xbrl_group_offset;
+	global $xbrl_offset;
 
 	echo_n('  <table>');
 	echo_n('    <caption>償債能力</caption>');
 
 	echo '    <thead><th>季度';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<th>' . $xbrl->season;
@@ -1087,7 +1164,7 @@ function show_xbrl_group_c($xbrls)
 
 	echo '      <tr>';
 	echo '<td>3.1 流動比率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . percent($xbrl->currentassets/$xbrl->currentliabilities);
@@ -1097,7 +1174,7 @@ function show_xbrl_group_c($xbrls)
 
 	echo '      <tr>';
 	echo '<td>3.2 速動比率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . percent(($xbrl->currentassets-$xbrl->inventory-$xbrl->othercurrentassets)/$xbrl->currentliabilities);
@@ -1107,7 +1184,7 @@ function show_xbrl_group_c($xbrls)
 
 	echo '      <tr>';
 	echo '<td>3.3 負債比率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . percent($xbrl->liabilities/$xbrl->assets);
@@ -1117,7 +1194,7 @@ function show_xbrl_group_c($xbrls)
 
 	echo '      <tr>';
 	echo '<td>3.4 利息保障倍數';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		if ($xbrl->interestexpense != 0)
@@ -1148,13 +1225,13 @@ function show_xbrl_group_c($xbrls)
 
 function show_xbrl_group_d($xbrls)
 {
-	global $xbrl_group_offset;
+	global $xbrl_offset;
 
 	echo_n('  <table>');
 	echo_n('    <caption>經營能力</caption>');
 
 	echo '    <thead><th>季度';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<th>' . $xbrl->season;
@@ -1165,7 +1242,7 @@ function show_xbrl_group_d($xbrls)
 
 	echo '      <tr>';
 	echo '<td>4.1 應收帳款週轉率(次)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		$xbrl_1 = $xbrls[$ii+1]['current'];
@@ -1180,7 +1257,7 @@ function show_xbrl_group_d($xbrls)
 
 	echo '      <tr>';
 	echo '<td>4.2 存貨週轉率(次)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		$xbrl_1 = $xbrls[$ii+1]['current'];
@@ -1195,7 +1272,7 @@ function show_xbrl_group_d($xbrls)
 
 	echo '      <tr>';
 	echo '<td>4.3 固定資產週轉率(次)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		if ($xbrl->fixedassets > 0)
@@ -1208,7 +1285,7 @@ function show_xbrl_group_d($xbrls)
 
 	echo '      <tr>';
 	echo '<td>4.4 總資產週轉率(次)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2($xbrl->revenue/$xbrl->assets);
@@ -1218,7 +1295,7 @@ function show_xbrl_group_d($xbrls)
 
 	echo '      <tr>';
 	echo '<td>4.6 淨值週轉率(次)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . decimal2($xbrl->revenue/$xbrl->equity);
@@ -1238,13 +1315,13 @@ function show_xbrl_group_d($xbrls)
 
 function show_xbrl_group_e($xbrls)
 {
-	global $xbrl_group_offset;
+	global $xbrl_offset;
 
 	echo_n('  <table>');
 	echo_n('    <caption>資本結構</caption>');
 
 	echo '    <thead><th>季度';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<th>' . $xbrl->season;
@@ -1255,7 +1332,7 @@ function show_xbrl_group_e($xbrls)
 
 	echo '      <tr>';
 	echo '<td>5.1 負債對淨值比率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		echo '<td>' . percent($xbrl->liabilities/$xbrl->equity);
@@ -1265,7 +1342,7 @@ function show_xbrl_group_e($xbrls)
 
 	echo '      <tr>';
 	echo '<td>5.2 長期資金適合率(%)';
-	for ($ii=0;$ii<count($xbrls)-$xbrl_group_offset;$ii++)
+	for ($ii=0;$ii<count($xbrls)-$xbrl_offset;$ii++)
 	{
 		$xbrl = $xbrls[$ii]['current'];
 		if ($xbrl->fixedassets > 0)

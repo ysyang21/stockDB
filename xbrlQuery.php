@@ -431,16 +431,16 @@ class xbrlData
 	public $publish = "";	// 財報公佈日
 }
 
-function load_seasonly_xbrl($id)
+function load_seasonly_xbrl($id, $num)
 {
 	global $season_enum;
 
 	$latest_season = get_latest_xbrldata_season($id);
 
 	$start = array_search($latest_season, $season_enum);
-	// at least 8 seasons plus the seasons in the new year plus 4 seasons,
+	// # of seasons in current year + 8 seasons + $num seasons,
 	// which is for the need of calculating finantial indexes
-	$len = 8 + (int)substr($latest_season, 4, 2) + 4;
+	$len = 8 + (int)substr($latest_season, 4, 2) + $num;
 
 	// $start 指向 xbrldata 目前有資料的最新季報
 	// $len 為在這個routine當中要load的季報筆數, 目前設定為今年到現在的財報跟過去八季的財報
@@ -675,6 +675,91 @@ function load_seasonly_xbrl($id)
 	}
 
 	return $xbrls;
+}
+
+function load_yearly_xbrl($id, $num)
+{
+	global $season_enum;
+
+	$latest_season = get_latest_xbrldata_season($id);
+
+	$start = array_search($latest_season, $season_enum);
+	// # of seasons in current year + 8 seasons + $num seasons,
+	// which is for the need of calculating finantial indexes
+	$len = 8 + (int)substr($latest_season, 4, 2) + $num;
+
+	// $start 指向 xbrldata 目前有資料的最新季報
+	// $len 為在這個routine當中要load的季報筆數, 目前設定為今年到現在的財報跟過去八季的財報
+
+	$season_list = array();
+	for ($ii=$start;$ii<min(count($season_enum),$start+$len);$ii++)
+		array_push($season_list, $season_enum[$ii]);
+
+	$xbrly = array();
+
+	// get 'current' xbrl for assigned year x season
+	$sql = "SELECT season, " .
+			"arn, arnr, inventory, othercurrentassets, currentassets, fixedassets, assets, " .
+			"currentliabilities, othernoncurrentliabilities, noncurrentliabilities, liabilities, stock, noncontrol, equity, " .
+			"revenue, costs, profit, income, nopbt, nopat, nopatc, eps, eps2, " .
+			"interestexpense, cashoa, cashia, " .
+			"publish " .
+			"FROM xbrldata WHERE id = " . $id . " AND period = 'current' AND (season = " . $season_list[0];
+
+	for ($ii=1;$ii<$len;$ii++)
+		$sql = $sql . " OR season = " . $season_list[$ii];
+
+	$sql = $sql . ") ORDER BY season DESC";
+
+	$result = mysql_query($sql) or die('MySQL query error' . $sql);
+
+	$jj = 0;
+	while($row = mysql_fetch_array($result)){
+		$season = $row[$jj++];
+		if (substr($season, 4, 2) != '04')
+		{
+			$jj = 0;
+			continue;
+		}
+		$xbrl = new xbrlData();
+		$xbrl->season = $season;
+
+		$xbrl->arn = $row[$jj++];
+		$xbrl->arnr = $row[$jj++];
+		$xbrl->inventory = $row[$jj++];
+		$xbrl->othercurrentassets = $row[$jj++];
+		$xbrl->currentassets = $row[$jj++];
+		$xbrl->fixedassets = $row[$jj++];
+		$xbrl->assets = $row[$jj++];
+		$xbrl->currentliabilities = $row[$jj++];
+		$xbrl->othernoncurrentliabilities = $row[$jj++];
+		$xbrl->noncurrentliabilities = $row[$jj++];
+		$xbrl->liabilities = $row[$jj++];
+		$xbrl->stock = $row[$jj++];
+		$xbrl->noncontrol = $row[$jj++];
+		$xbrl->equity = $row[$jj++];
+
+		$xbrl->revenue = $row[$jj++];
+		$xbrl->costs = $row[$jj++];
+		$xbrl->profit = $row[$jj++];
+		$xbrl->income = $row[$jj++];
+		$xbrl->nopbt = $row[$jj++];
+		$xbrl->nopat = $row[$jj++];
+		$xbrl->nopatc = $row[$jj++];
+		$xbrl->eps = $row[$jj++];
+		$xbrl->eps2 = $row[$jj++];
+
+		$xbrl->interestexpense = $row[$jj++];
+		$xbrl->cashoa = $row[$jj++];
+		$xbrl->cashia = $row[$jj++];
+
+		$xbrl->publish = $row[$jj++];
+
+		$jj = 0;
+		array_push($xbrly, $xbrl);
+	}
+
+	return $xbrly;
 }
 
 ?>
