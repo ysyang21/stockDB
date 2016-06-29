@@ -1188,20 +1188,25 @@ function show_webpage_header($stage)
 	echo_n('<html>');
 	echo_n('  <head>');
 	echo_n('    <title>Pepo Project ' . $stage . '</title>');
+	echo_n('    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">');
 	echo_n('      <style type="text/css">');
-	echo_n('        .t1{border-collapse: collapse;}');
-	echo_n('        #header {margin:0 auto;}');
+	echo_n('      .t1{border-collapse: collapse; border: inset;}');
+	echo_n('      #header {margin:0 auto;}');
 	for ($ii=16;$ii>=8;$ii--)
-		echo_n("        .stock$ii {clear:both; margin:0 auto;}");
-	echo_n ('        .container {position:relative; display:inline}');
-	echo_n ('        .highlight {background:green;}');
-	echo_n('        tbody {border: solid outset;}');
-	echo_n('        th {}');
-	echo_n('        td {border: solid thin; text-align: left; padding: 2;}');
-	echo_n('        .good {color:#FF0000;}');
-	echo_n('        input {}');
-	echo_n('        .long {color:#0000FF;}');
-	echo_n('        form {margin: 1 1; padding: 0;}');
+		echo_n("      .stock$ii {clear:both; margin:0 auto;}");
+	echo_n('      .container {position:relative; display:inline}');
+	echo_n('      .highlight {background:#00FF00;}');
+	echo_n('      tbody {border: solid outset;}');
+	echo_n('      th {}');
+	echo_n('      td {border: solid thin; text-align: left; padding: 2;}');
+	echo_n('      .good {color:#FF0000;}');
+	echo_n('      input {}');
+	echo_n('      .long {color:#0000FF;}');
+	echo_n('      form {margin: 1 1; padding: 0;}');
+	echo_n('      .profile {float:left; margin:10px 10px 0 10px;}');
+	echo_n('      .xbrls {float:left; margin:10px 10px 0 10px;}');
+	echo_n('      .xbrly {float:left; margin:10px 10px 0 10px;}');
+	echo_n('      .monthly {float:left; margin:10px 10px 0 10px;}');
 	echo_n('        #footer {clear:both; margin:0 auto;}');
 	echo_n('      </style>');
 	echo_n('    <script type="text/javascript" src="https://www.google.com/jsapi"></script>');
@@ -1240,17 +1245,43 @@ function show_webpage_header($stage)
 	echo_n('  </head>');
 	echo_n('  <body>');
 
-	echo_n ("<header'>");
+	echo_n ("<div id='header'>");
 	date_default_timezone_set ("Asia/Taipei");
 	if (isset($_SERVER['HTTP_USER_AGENT'])) echo "<pre>";
 	echo_v(NO_VERBOSE, "Start time: " . date("Y-m-d") . " " . date("h:i:sa"));
 	if (isset($_SERVER['HTTP_USER_AGENT'])) echo "</pre>";
 	$t1 = round(microtime(true) * 1000);
-	echo_n ("</header>");
+	echo_n ("</div>");
 
 	return $t1;
 }
 
+// 網頁尾
+function show_webpage_tail($t1)
+{
+	if(isset($_GET['do']) && isset($_GET['begin']) && function_exists($_GET['do'])) // index5
+		call_user_func($_GET['do'], $_GET['begin']);
+	else if(isset($_GET['do']) && isset($_GET['grade']) && function_exists($_GET['do'])) // index5
+		call_user_func($_GET['do'], $_GET['grade']);
+	else if(isset($_GET['do']) && function_exists($_GET['do'])) // index, index2, index5
+		call_user_func($_GET['do']);
+	else if(isset($_GET['stockid'])) // index, case
+		stockIDCheck($_GET['stockid']);
+	else if(isset($_GET['stockname'])) // index, case
+		nameCheck($_GET['stockname']);
+
+	echo_n ("<div id='footer'>");
+	if (isset($_SERVER['HTTP_USER_AGENT'])) echo "<pre>";
+	$t2 = round(microtime(true) * 1000);
+	echo_v(NO_VERBOSE, "End time: " . date("Y-m-d") . " " . date("h:i:sa"));
+	echo_v(NO_VERBOSE, "Duration: " . ($t2 - $t1) . "ms");
+	if (isset($_SERVER['HTTP_USER_AGENT'])) echo "</pre>";
+	echo_n ("</div>");
+
+	echo_n('  </body>');
+	echo_n('</html>');
+	echo_n('');
+}
 
 // 周線
 function show_ma5()
@@ -1556,31 +1587,6 @@ function show_stock_bar_chart($id, $prices)
 	echo_n('    }');
 	echo_n('  </script>');
 	echo_n('  <div id="bar_chart_div_' . $id . '"></div>');
-}
-
-// 網頁尾
-function show_webpage_tail($t1)
-{
-	if(isset($_GET['do']) && isset($_GET['begin']) && function_exists($_GET['do'])) // index, index5
-		call_user_func($_GET['do'], $_GET['begin']);
-	else if(isset($_GET['do']) && function_exists($_GET['do'])) // index, index2, index5
-		call_user_func($_GET['do']);
-	else if(isset($_GET['stockid'])) // index, case
-		stockIDCheck($_GET['stockid']);
-	else if(isset($_GET['stockname'])) // index, case
-		nameCheck($_GET['stockname']);
-
-	echo_n ("<footer>");
-	if (isset($_SERVER['HTTP_USER_AGENT'])) echo "<pre>";
-	$t2 = round(microtime(true) * 1000);
-	echo_v(NO_VERBOSE, "End time: " . date("Y-m-d") . " " . date("h:i:sa"));
-	echo_v(NO_VERBOSE, "Duration: " . ($t2 - $t1) . "ms");
-	if (isset($_SERVER['HTTP_USER_AGENT'])) echo "</pre>";
-	echo_n ("</footer>");
-
-	echo_n('  </body>');
-	echo_n('</html>');
-	echo_n('');
 }
 
 ?>

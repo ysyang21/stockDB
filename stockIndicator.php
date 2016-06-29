@@ -31,7 +31,9 @@ function stockIndicators($id)
 	echo_n ("<div class='container'>");
 
 	// 股票簡介及近況
+	echo_n ("<div class='profile'>");
 	show_stock_brief_case($stock);
+	echo_n ("</div>"); // end of profile
 
 	// 最近(n+2)財務年表
 	$xbrly = load_yearly_xbrl($id, 4);
@@ -44,16 +46,34 @@ function stockIndicators($id)
 	$months = load_monthly_revenue($id, 18);
 	$verdictm = calculate_verdictm($months);
 
+	echo_n ("<div class='xbrls'>");
 	show_xbrl_core($xbrls, $verdicts);
+	echo_n ("</div>"); // end of xbrls
+	echo_n ("<div class='monthly'>");
 	show_monthly_revenue($months, $verdictm);
-
+	echo_n ("</div>"); // end of monthly
+	echo_n ("<div class='xbrly'>");
 	show_yearly_xbrl($xbrly);
+	echo_n ("</div>"); // end of xbrly
+	echo_n ("<div class='xbrls'>");
 	show_seasonly_xbrl($xbrls);
+	echo_n ("</div>"); // end of xbrls
+
+	echo_n ("<div class='xbrls'>");
 	show_xbrl_group_a($xbrls);
+	echo_n ("</div>"); // end of xbrls
+	echo_n ("<div class='xbrls'>");
 	show_xbrl_group_b($xbrls);
+	echo_n ("</div>"); // end of xbrls
+	echo_n ("<div class='xbrls'>");
 	show_xbrl_group_c($xbrls);
+	echo_n ("</div>"); // end of xbrls
+	echo_n ("<div class='xbrls'>");
 	show_xbrl_group_d($xbrls);
+	echo_n ("</div>"); // end of xbrls
+	echo_n ("<div class='xbrls'>");
 	show_xbrl_group_e($xbrls);
+	echo_n ("</div>"); // end of xbrls
 
 	echo_n ("</div>"); // end of container
 }
