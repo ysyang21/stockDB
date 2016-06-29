@@ -28,10 +28,7 @@ function stockIndicators($id)
 		return;
 	}
 
-	echo '  <table>' . "\n";
-	echo '    <tbody>' . "\n";
-	echo '      <tr>' . "\n";
-	echo '        <td>' . "\n";
+	echo_n ("<div class='container'>");
 
 	// 股票簡介及近況
 	show_stock_brief_case($stock);
@@ -47,20 +44,18 @@ function stockIndicators($id)
 	$months = load_monthly_revenue($id, 18);
 	$verdictm = calculate_verdictm($months);
 
+	show_xbrl_core($xbrls, $verdicts);
+	show_monthly_revenue($months, $verdictm);
+
 	show_yearly_xbrl($xbrly);
 	show_seasonly_xbrl($xbrls);
-	show_monthly_revenue($months, $verdictm);
-	show_xbrl_core($xbrls, $verdicts);
 	show_xbrl_group_a($xbrls);
 	show_xbrl_group_b($xbrls);
 	show_xbrl_group_c($xbrls);
 	show_xbrl_group_d($xbrls);
 	show_xbrl_group_e($xbrls);
 
-	echo '        </td>' . "\n";
-	echo '      </tr>' . "\n";
-	echo '    </tbody>' . "\n";
-	echo '  </table><br>' . "\n";
+	echo_n ("</div>"); // end of container
 }
 
 function stockIndicatorsVerdict($id)

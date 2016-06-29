@@ -87,37 +87,13 @@ function monthyoyCheck($begin)
 		stockEvaluateTest($id, Day1, $id_day_prices, $id_monthly_revenue_yoys, $sii_kline);
 }
 
-date_default_timezone_set ("Asia/Taipei");
-header('Content-Type: text/html; charset=utf-8');
-
-if (isset($_SERVER['HTTP_USER_AGENT'])) echo "<pre>";
-echo_v(NO_VERBOSE, "Start time: " . date("Y-m-d") . " " . date("h:i:sa"));
-if (isset($_SERVER['HTTP_USER_AGENT'])) echo "</pre>";
-
-$t1 = round(microtime(true) * 1000);
-
 // 網頁頭
-show_webpage_header('FrontEnd');
+$t1 = show_webpage_header('FrontEnd');
 
 // 網頁內容
 show_frontend_updater(basename(__FILE__));
 
-if(isset($_GET['do']) && isset($_GET['begin']) && function_exists($_GET['do']))
-	call_user_func($_GET['do'], $_GET['begin']);
-else if(isset($_GET['do']) && function_exists($_GET['do']))
-	call_user_func($_GET['do']);
-else if(isset($_GET['stockid']))
-	stockIDCheck($_GET['stockid']);
-else if(isset($_GET['stockname']))
-	nameCheck($_GET['stockname']);
-
 // 網頁尾
-show_webpage_tail();
-
-if (isset($_SERVER['HTTP_USER_AGENT'])) echo "<pre>";
-$t2 = round(microtime(true) * 1000);
-echo_v(NO_VERBOSE, "End time: " . date("Y-m-d") . " " . date("h:i:sa"));
-echo_v(NO_VERBOSE, "Duration: " . ($t2 - $t1) . "ms");
-if (isset($_SERVER['HTTP_USER_AGENT'])) echo "</pre>";
+show_webpage_tail($t1);
 
 ?>

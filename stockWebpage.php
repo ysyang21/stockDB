@@ -16,7 +16,7 @@ include_once("stockVerdict.php");
 // 股票簡介及近況
 function show_stock_brief($stock, $price_rank, $price, $yoy_rank, $yoy)
 {
-	echo_n('  <table>');
+	echo_n('  <table class="t1">');
 	echo_n('    <caption>股票簡介</caption>');
 	$thead = '    <thead><th>代號<th>名稱<th>行業別<th>上市櫃別<th>上市櫃時間';
 	if ($price_rank != -1)
@@ -70,7 +70,7 @@ function show_stock_brief($stock, $price_rank, $price, $yoy_rank, $yoy)
 
 function show_stock_brief_case($stock)
 {
-	echo_n('  <table>');
+	echo_n('  <table class="t1">');
 	echo_n('    <caption>股票簡介</caption>');
 	$thead = '    <thead><th>代號<th>名稱<th>行業別<th>上市櫃別<th>上市櫃時間';
 	$thead = $thead . '</thead>';
@@ -92,7 +92,7 @@ function show_idr_per($pepos)
 	$pepo_latest = count($pepos)-1;
 
 	// 四年還原股價高低檔 / 四年EPS / 四年本益比高低檔
-	echo_n('  <table>');
+	echo_n('  <table class="t1">');
 	echo_n('    <caption>歷史資料(*為今年推估值)</caption>');
 	echo '    <thead><th>年度';
 	echo '<th>' . substr(date('Y'), 0, 4) . "*";
@@ -152,7 +152,7 @@ $xbrl_offset = 4;
 // 最近至少兩年財務報表
 function show_yearly_xbrl($xbrly)
 {
-	echo_n('  <table>');
+	echo_n('  <table class="t1">');
 	echo_n('    <caption>財務報表(合併年報或個別年報)</caption>');
 
 	echo '    <thead><th>年度';
@@ -218,7 +218,7 @@ function show_seasonly_xbrl($xbrls)
 {
 	global $xbrl_offset;
 
-	echo_n('  <table>');
+	echo_n('  <table class="t1">');
 	echo_n('    <caption>財務報表(單季合併或單季個別)</caption>');
 
 	echo '    <thead><th>季度';
@@ -286,7 +286,7 @@ function show_monthly_revenue($months, $verdictm = null)
 {
 	global $monthly_revenue_offset;
 
-	echo_n('  <table>');
+	echo_n('  <table class="t1">');
 	echo_n('    <caption>月營收</caption>');
 
 	echo '    <thead><th>月份';
@@ -341,7 +341,7 @@ function show_monthly_revenue($months, $verdictm = null)
 
 function show_xbrl_core($xbrls, $verdicts)
 {
-	echo_n('  <table>');
+	echo_n('  <table class="t1">');
 	echo_n('    <caption>核心財務指標</caption>');
 
 	echo '    <thead><th>季度';
@@ -535,7 +535,7 @@ function show_xbrl_group_a($xbrls)
 {
 	global $xbrl_offset;
 
-	echo_n('  <table>');
+	echo_n('  <table class="t1">');
 	echo_n('    <caption>獲利能力</caption>');
 
 	echo '    <thead><th>季度';
@@ -697,7 +697,7 @@ function show_xbrl_group_b($xbrls)
 {
 	global $xbrl_offset;
 
-	echo_n('  <table>');
+	echo_n('  <table class="t1">');
 	echo_n('    <caption>經營績效</caption>');
 
 	echo '    <thead><th>季度';
@@ -833,7 +833,7 @@ function show_xbrl_group_c($xbrls)
 {
 	global $xbrl_offset;
 
-	echo_n('  <table>');
+	echo_n('  <table class="t1">');
 	echo_n('    <caption>償債能力</caption>');
 
 	echo '    <thead><th>季度';
@@ -911,7 +911,7 @@ function show_xbrl_group_d($xbrls)
 {
 	global $xbrl_offset;
 
-	echo_n('  <table>');
+	echo_n('  <table class="t1">');
 	echo_n('    <caption>經營能力</caption>');
 
 	echo '    <thead><th>季度';
@@ -1001,7 +1001,7 @@ function show_xbrl_group_e($xbrls)
 {
 	global $xbrl_offset;
 
-	echo_n('  <table>');
+	echo_n('  <table class="t1">');
 	echo_n('    <caption>資本結構</caption>');
 
 	echo '    <thead><th>季度';
@@ -1044,7 +1044,7 @@ function show_xbrl_group_e($xbrls)
 // 股價評估過程
 function show_stock_evaluation($pepos)
 {
-	echo_n('  <table>');
+	echo_n('  <table class="t1">');
 	echo_n('    <caption>股價評估過程(*為今年推估值)</caption>');
 	echo_n('    <thead><th>評估日期<th>去年營收(億)<th>營收年增率*<th>今年營收(億)*<th>稅後淨利率*<th>稅後淨利(億)*<th>股本(億)*<th>EPS*' .
 	    '<th>股價高低點<th>當日收盤<th>上下檔風險*<th>溫度計*</thead>');
@@ -1090,7 +1090,7 @@ function show_frontend_updater($my_name)
 {
 	global $observed_stocks;
 
-	echo_n('  <table>');
+	echo_n('  <table class="t1">');
 	echo_n('    <caption>個股調查</caption>');
 	echo_n('    <tbody>');
 
@@ -1137,7 +1137,7 @@ function show_casestudy_updater($my_name)
 {
 	global $observed_stocks;
 
-	echo_n('  <table>');
+	echo_n('  <table class="t1">');
 	echo_n('    <caption>個案研究</caption>');
 	echo_n('    <tbody>');
 
@@ -1189,19 +1189,20 @@ function show_webpage_header($stage)
 	echo_n('  <head>');
 	echo_n('    <title>Pepo Project ' . $stage . '</title>');
 	echo_n('      <style type="text/css">');
-	echo_n('        table {border-collapse: collapse; border: inset;}');
+	echo_n('        .t1{border-collapse: collapse;}');
+	echo_n('        #header {margin:0 auto;}');
+	for ($ii=16;$ii>=8;$ii--)
+		echo_n("        .stock$ii {clear:both; margin:0 auto;}");
+	echo_n ('        .container {position:relative; display:inline}');
+	echo_n ('        .highlight {background:green;}');
 	echo_n('        tbody {border: solid outset;}');
 	echo_n('        th {}');
-//	echo_n('        .small {font-size:xx-small;}');
 	echo_n('        td {border: solid thin; text-align: left; padding: 2;}');
 	echo_n('        .good {color:#FF0000;}');
 	echo_n('        input {}');
 	echo_n('        .long {color:#0000FF;}');
 	echo_n('        form {margin: 1 1; padding: 0;}');
-	for ($ii=16;$ii>=8;$ii--)
-		echo_n("        .stock$ii {clear:both; margin:0 auto;}");
-	echo_n ('        .container {position:relative; display:none}');
-	echo_n ('        .highlight {background:green;}');
+	echo_n('        #footer {clear:both; margin:0 auto;}');
 	echo_n('      </style>');
 	echo_n('    <script type="text/javascript" src="https://www.google.com/jsapi"></script>');
 	echo_n('    <script type="text/javascript" src="./jquery-1.3.1.js"></script>');
@@ -1238,6 +1239,16 @@ function show_webpage_header($stage)
 
 	echo_n('  </head>');
 	echo_n('  <body>');
+
+	echo_n ("<header'>");
+	date_default_timezone_set ("Asia/Taipei");
+	if (isset($_SERVER['HTTP_USER_AGENT'])) echo "<pre>";
+	echo_v(NO_VERBOSE, "Start time: " . date("Y-m-d") . " " . date("h:i:sa"));
+	if (isset($_SERVER['HTTP_USER_AGENT'])) echo "</pre>";
+	$t1 = round(microtime(true) * 1000);
+	echo_n ("</header>");
+
+	return $t1;
 }
 
 
@@ -1548,8 +1559,25 @@ function show_stock_bar_chart($id, $prices)
 }
 
 // 網頁尾
-function show_webpage_tail()
+function show_webpage_tail($t1)
 {
+	if(isset($_GET['do']) && isset($_GET['begin']) && function_exists($_GET['do'])) // index, index5
+		call_user_func($_GET['do'], $_GET['begin']);
+	else if(isset($_GET['do']) && function_exists($_GET['do'])) // index, index2, index5
+		call_user_func($_GET['do']);
+	else if(isset($_GET['stockid'])) // index, case
+		stockIDCheck($_GET['stockid']);
+	else if(isset($_GET['stockname'])) // index, case
+		nameCheck($_GET['stockname']);
+
+	echo_n ("<footer>");
+	if (isset($_SERVER['HTTP_USER_AGENT'])) echo "<pre>";
+	$t2 = round(microtime(true) * 1000);
+	echo_v(NO_VERBOSE, "End time: " . date("Y-m-d") . " " . date("h:i:sa"));
+	echo_v(NO_VERBOSE, "Duration: " . ($t2 - $t1) . "ms");
+	if (isset($_SERVER['HTTP_USER_AGENT'])) echo "</pre>";
+	echo_n ("</footer>");
+
 	echo_n('  </body>');
 	echo_n('</html>');
 	echo_n('');
