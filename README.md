@@ -28,4 +28,6 @@ Terms and Conditions:
     are not intended to amount to investment advice nor should they be relied
     on in making your investment or other decision.
 
+[2016/06/30] v0.02 --> verdict feature added
 [2016/05/24] v0.01 --> first full release
+[2016/04/13] start using github for this project

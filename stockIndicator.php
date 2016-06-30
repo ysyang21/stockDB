@@ -97,4 +97,51 @@ function stockIndicatorsVerdict($id)
 	return $verdicts;
 }
 
+function gradedStocks($showgrade = '-1')
+{
+	$ids = array_keys(query_id_data());
+
+	$jj = 1;
+	$gradings = array();
+	foreach($ids as $id)
+	{
+		if ($id == '')
+			continue;
+
+		$verdicts = stockIndicatorsVerdict($id);
+		if ($verdicts != null and $verdicts[0]->verdict>=8)
+			$gradings[$id] = $verdicts[0]->verdict;
+
+		// if ($jj>=10)
+		// 	break;
+		$jj++;
+	}
+
+	arsort($gradings);
+
+	$first = array_values($gradings)[0];
+	$last = end($gradings);
+
+	for ($ii=$first;$ii>=$last;$ii--)
+	{
+		if ($ii == (int)$showgrade or '-1'== $showgrade)
+			echo_n ("<div class='stock$ii'><a>$ii 分(按我可重複收合或展開)</a></div>");
+	}
+
+	$jj = 1;
+	foreach($gradings as $id => $grading)
+	{
+		if ($grading == $showgrade or '-1'== $showgrade)
+		{
+			echo_n ("<div class='stock" . $gradings[$id] . "'>");
+			stockIndicators($id);
+			echo_n ("</div>"); // end of stockx
+
+			if ($jj>=10)
+				break;
+			$jj++;
+		}
+	}
+}
+
 ?>
