@@ -42,6 +42,12 @@ function stockIndicators($id)
 	$xbrls = load_seasonly_xbrl($id, 8);
 	$verdicts = calculate_verdicts($xbrls);
 
+	$since_date = $xbrls[0]['current']->publish;
+	$prices = query_day_price_lochs_by_id_since($id, $since_date);
+	echo_n ("<div class='xbrls'>");
+	show_stock_candlestick_chart($id, $prices);
+	echo_n ("</div>"); // end of xbrls
+
 	// 最近18個月月營收報表
 	$months = load_monthly_revenue($id, 18);
 	$verdictm = calculate_verdictm($months);
