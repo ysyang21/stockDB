@@ -115,7 +115,7 @@ function gradedStocks($showgrade = '-1')
 			continue;
 
 		$verdicts = stockIndicatorsVerdict($id);
-		if ($verdicts != null and $verdicts[0]->verdict>=8)
+		if ($verdicts != null and $verdicts[0]->verdict>8)
 			$gradings[$id] = $verdicts[0]->verdict;
 
 		// if ($jj>=10)

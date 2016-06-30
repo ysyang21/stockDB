@@ -1126,10 +1126,6 @@ function show_frontend_updater($my_name)
 	echo_n('    </tbody>');
 	echo_n('  </table>');
 	echo_n('  <br>');
-	echo_n('  <input type=button value="Frontend" onClick="self.location=' . "'index.php'" . '">');
-	echo_n('  <input type=button value="CaseStudy" onClick="self.location=' . "'case.php'" . '">');
-	echo_n('  <br>');
-	echo_n('  <br>');
 }
 
 // 網頁內容 (Case Study)
@@ -1173,50 +1169,59 @@ function show_casestudy_updater($my_name)
 	echo_n('    </tbody>');
 	echo_n('  </table>');
 	echo_n('  <br>');
+
 	echo_n('  <table class="t1">');
-	echo_n('    <caption>電腦挑土豆</caption>');
+	echo_n('    <caption style="color:red">各財務指標的權值分配</caption>');
 	echo_n('    <tbody>');
-
 	echo_n('      <tr>');
-	echo_n('        <td style="color:red">' . '按一下要等一分鐘左右結果才會出來, 請耐心等待');
-	echo_n('        <td>' . '<input type=button value="Grading 16" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=16'" . '">');
-	echo_n('        <td>' . '<input type=button value="Grading 15" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=15'" . '">');
-	echo_n('        <td>' . '<input type=button value="Grading 14" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=14'" . '">');
-	echo_n('        <td>' . '<input type=button value="Grading 13" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=13'" . '">');
-	echo_n('        <td>' . '<input type=button value="Grading 12" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=12'" . '">');
-	echo_n('        <td>' . '<input type=button value="Grading 11" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=11'" . '">');
-	echo_n('        <td>' . '<input type=button value="Grading 10" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=10'" . '">');
-	echo_n('        <td>' . '<input type=button value="Grading 9" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=9'" . '">');
-//	echo_n('        <td>' . '<input type=button value="Grading 8" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=8'" . '">');
-//	echo_n('        <td>' . '<input type=button value="Grading All" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks'" . '">');
-	echo_n('      <tr>');
-	echo_n('        <td>' . '各個財務指標的權值分配');
-	echo_n('        <td>' . '每股盈餘為正');
-	echo_n('        <td>' . '每股盈餘成長');
-	echo_n('        <td>' . '營收成長');
-	echo_n('        <td>' . '營業利益成長');
-	echo_n('        <td>' . '稅後淨利成長');
-	echo_n('        <td>' . '營業利益率穩定');
-	echo_n('        <td>' . '存貨週轉率沒下降');
-	echo_n('        <td>' . '滿分');
-
-	echo_n('      <tr>');
+	echo_n('        <td>' . '核心財務指標');
 	echo_n('        <td>' . '分數');
+	echo_n('      <tr>');
+	echo_n('        <td>' . '近四季每股盈餘為正');
 	echo_n('        <td>' . '8');
+	echo_n('      <tr>');
+	echo_n('        <td>' . '近三季每股盈餘成長');
 	echo_n('        <td>' . '1');
+	echo_n('      <tr>');
+	echo_n('        <td>' . '近三季營收成長');
 	echo_n('        <td>' . '1');
+	echo_n('      <tr>');
+	echo_n('        <td>' . '近三季營業利益成長');
 	echo_n('        <td>' . '1');
+	echo_n('      <tr>');
+	echo_n('        <td>' . '近三季稅後淨利成長');
 	echo_n('        <td>' . '1');
+	echo_n('      <tr>');
+	echo_n('        <td>' . '近三季營業利益率穩定');
 	echo_n('        <td>' . '2');
+	echo_n('      <tr>');
+	echo_n('        <td>' . '近四季存貨週轉率沒下降');
 	echo_n('        <td>' . '2');
+	echo_n('      <tr>');
+	echo_n('        <td>' . '滿分');
 	echo_n('        <td>' . '16');
 
 	echo_n('    </tbody>');
 	echo_n('  </table>');
 	echo_n('  <br>');
-	echo_n('  <input type=button value="Frontend" onClick="self.location=' . "'index.php'" . '">');
-	echo_n('  <input type=button value="CaseStudy" onClick="self.location=' . "'case.php'" . '">');
-	echo_n('  <br>');
+
+	echo_n('  <table class="t1">');
+	echo_n('    <caption style="color:red">電腦挑土豆(按一下要等兩分半鐘左右才會算出來, 請耐心等待)</caption>');
+	echo_n('    <tbody>');
+	echo_n('      <tr>');
+	echo_n('        <td>' . '分數群組');
+	echo_n('        <td>' . '<input type=button value="16分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=16'" . '">');
+	echo_n('        <td>' . '<input type=button value="15分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=15'" . '">');
+	echo_n('        <td>' . '<input type=button value="14分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=14'" . '">');
+	echo_n('        <td>' . '<input type=button value="13分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=13'" . '">');
+	echo_n('        <td>' . '<input type=button value="12分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=12'" . '">');
+	echo_n('        <td>' . '<input type=button value="11分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=11'" . '">');
+	echo_n('        <td>' . '<input type=button value="10分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=10'" . '">');
+	echo_n('        <td>' . '<input type=button value="9分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=9'" . '">');
+//	echo_n('        <td>' . '<input type=button value="8" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=8'" . '">');
+//	echo_n('        <td>' . '<input type=button value="All" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks'" . '">');
+	echo_n('    </tbody>');
+	echo_n('  </table>');
 	echo_n('  <br>');
 }
 
@@ -1286,6 +1291,9 @@ function show_webpage_header($stage)
 	echo_n('  </head>');
 	echo_n('  <body>');
 
+	echo_n('  <input type=button value="Frontend" onClick="self.location=' . "'index.php'" . '">');
+	echo_n('  <input type=button value="CaseStudy" onClick="self.location=' . "'case.php'" . '">');
+
 	echo_n ("<div id='header'>");
 	date_default_timezone_set ("Asia/Taipei");
 	if (isset($_SERVER['HTTP_USER_AGENT'])) echo "<pre>";
@@ -1318,6 +1326,9 @@ function show_webpage_tail($t1)
 	echo_v(NO_VERBOSE, "Duration: " . ($t2 - $t1) . "ms");
 	if (isset($_SERVER['HTTP_USER_AGENT'])) echo "</pre>";
 	echo_n ("</div>");
+
+	echo_n('  <input type=button value="Frontend" onClick="self.location=' . "'index.php'" . '">');
+	echo_n('  <input type=button value="CaseStudy" onClick="self.location=' . "'case.php'" . '">');
 
 	echo_n('  </body>');
 	echo_n('</html>');
