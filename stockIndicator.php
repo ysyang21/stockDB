@@ -46,6 +46,7 @@ function stockIndicators($id)
 	$prices = query_day_price_lochs_by_id_since($id, $since_date);
 	echo_n ("<div class='xbrls'>");
 	show_stock_candlestick_chart($id, $prices);
+	show_stock_bar_chart($id, $prices);
 	echo_n ("</div>"); // end of xbrls
 
 	// 最近18個月月營收報表
@@ -58,28 +59,29 @@ function stockIndicators($id)
 	echo_n ("<div class='monthly'>");
 	show_monthly_revenue($months, $verdictm);
 	echo_n ("</div>"); // end of monthly
-	echo_n ("<div class='xbrly'>");
-	show_yearly_xbrl($xbrly);
-	echo_n ("</div>"); // end of xbrly
-	echo_n ("<div class='xbrls'>");
-	show_seasonly_xbrl($xbrls);
-	echo_n ("</div>"); // end of xbrls
 
-	echo_n ("<div class='xbrls'>");
-	show_xbrl_group_a($xbrls);
-	echo_n ("</div>"); // end of xbrls
-	echo_n ("<div class='xbrls'>");
-	show_xbrl_group_b($xbrls);
-	echo_n ("</div>"); // end of xbrls
-	echo_n ("<div class='xbrls'>");
-	show_xbrl_group_c($xbrls);
-	echo_n ("</div>"); // end of xbrls
-	echo_n ("<div class='xbrls'>");
-	show_xbrl_group_d($xbrls);
-	echo_n ("</div>"); // end of xbrls
-	echo_n ("<div class='xbrls'>");
-	show_xbrl_group_e($xbrls);
-	echo_n ("</div>"); // end of xbrls
+	// echo_n ("<div class='xbrly'>");
+	// show_yearly_xbrl($xbrly);
+	// echo_n ("</div>"); // end of xbrly
+	// echo_n ("<div class='xbrls'>");
+	// show_seasonly_xbrl($xbrls);
+	// echo_n ("</div>"); // end of xbrls
+
+	// echo_n ("<div class='xbrls'>");
+	// show_xbrl_group_a($xbrls);
+	// echo_n ("</div>"); // end of xbrls
+	// echo_n ("<div class='xbrls'>");
+	// show_xbrl_group_b($xbrls);
+	// echo_n ("</div>"); // end of xbrls
+	// echo_n ("<div class='xbrls'>");
+	// show_xbrl_group_c($xbrls);
+	// echo_n ("</div>"); // end of xbrls
+	// echo_n ("<div class='xbrls'>");
+	// show_xbrl_group_d($xbrls);
+	// echo_n ("</div>"); // end of xbrls
+	// echo_n ("<div class='xbrls'>");
+	// show_xbrl_group_e($xbrls);
+	// echo_n ("</div>"); // end of xbrls
 
 	echo_n ("</div>"); // end of container
 }
@@ -109,14 +111,23 @@ function gradedStocks($showgrade = '-1')
 
 	$jj = 1;
 	$gradings = array();
+	$statics = array();
 	foreach($ids as $id)
 	{
 		if ($id == '')
 			continue;
 
 		$verdicts = stockIndicatorsVerdict($id);
-		if ($verdicts != null and $verdicts[0]->verdict>8)
-			$gradings[$id] = $verdicts[0]->verdict;
+		// It is possible that $verdicts is a null, so need a check here
+		if ($verdicts != null) // and $latest_verdict_of_this_id>8)
+		{
+			$latest_verdict_of_this_id = $verdicts[0]->verdict;
+			$gradings[$id] = $latest_verdict_of_this_id;
+			if (array_key_exists($latest_verdict_of_this_id, $statics))
+				$statics[$latest_verdict_of_this_id]++;
+			else
+				$statics[$latest_verdict_of_this_id]=1;
+		}
 
 		// if ($jj>=10)
 		// 	break;
@@ -131,7 +142,10 @@ function gradedStocks($showgrade = '-1')
 	for ($ii=$first;$ii>=$last;$ii--)
 	{
 		if ($ii == (int)$showgrade or '-1'== $showgrade)
-			echo_n ("<div class='stock$ii'><a>$ii 分(按我可重複收合或展開)</a></div>");
+		{
+			if (array_key_exists($ii, $statics))
+				echo_n ("<div class='stock$ii'><a>$ii 分(共" . $statics[$ii] . "個)(按我可重複收合或展開)</a></div>");
+		}
 	}
 
 	$jj = 1;
@@ -143,8 +157,8 @@ function gradedStocks($showgrade = '-1')
 			stockIndicators($id);
 			echo_n ("</div>"); // end of stockx
 
-			if ($jj>=10)
-				break;
+			// if ($jj>=10)
+			// 	break;
 			$jj++;
 		}
 	}

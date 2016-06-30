@@ -1210,16 +1210,9 @@ function show_casestudy_updater($my_name)
 	echo_n('    <tbody>');
 	echo_n('      <tr>');
 	echo_n('        <td>' . '分數群組');
-	echo_n('        <td>' . '<input type=button value="16分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=16'" . '">');
-	echo_n('        <td>' . '<input type=button value="15分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=15'" . '">');
-	echo_n('        <td>' . '<input type=button value="14分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=14'" . '">');
-	echo_n('        <td>' . '<input type=button value="13分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=13'" . '">');
-	echo_n('        <td>' . '<input type=button value="12分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=12'" . '">');
-	echo_n('        <td>' . '<input type=button value="11分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=11'" . '">');
-	echo_n('        <td>' . '<input type=button value="10分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=10'" . '">');
-	echo_n('        <td>' . '<input type=button value="9分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=9'" . '">');
-//	echo_n('        <td>' . '<input type=button value="8" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=8'" . '">');
-//	echo_n('        <td>' . '<input type=button value="All" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks'" . '">');
+	for ($ii=16;$ii>8;$ii--)
+		echo_n('        <td>' . '<input type=button value="' . $ii . '分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=16'" . '">');
+	// echo_n('        <td>' . '<input type=button value="All" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks'" . '">');
 	echo_n('    </tbody>');
 	echo_n('  </table>');
 	echo_n('  <br>');
@@ -1238,7 +1231,7 @@ function show_webpage_header($stage)
 	echo_n('      <style type="text/css">');
 	echo_n('      .t1{border-collapse: collapse; border: inset;}');
 	echo_n('      #header {margin:0 auto;}');
-	for ($ii=16;$ii>=8;$ii--)
+	for ($ii=16;$ii>8;$ii--)
 		echo_n("      .stock$ii {clear:both; margin:0 auto;}");
 	echo_n('      .container {position:relative; display:inline}');
 	echo_n('      .highlight {background:#00FF00;}');
@@ -1259,7 +1252,7 @@ function show_webpage_header($stage)
 	echo_n('    <script type="text/javascript" src="./jquery-1.3.1.js"></script>');
 
 	echo_n('    <script type="text/javascript">');
-	for ($ii=16;$ii>=8;$ii--)
+	for ($ii=16;$ii>8;$ii--)
 	{
 		echo_n('        $(document).ready(function(){');
 		echo_n('	        $(".' . "stock$ii" . '").click(function(){');
@@ -1441,8 +1434,10 @@ function show_sii_candlestick_chart($prices)
 	echo_n('        legend: { position: "none"},');
 	//	echo_n('        hAxis: { title: "日期"},');
 	//	echo_n('        vAxis: { title: "股價"},');
-	echo_n('        height: 500,');
-	echo_n('        width: 1000,');
+	// echo_n('        height: 500,');
+	// echo_n('        width: 1000,');
+	echo_n("        height: " . (count($prices)>300 ? count($prices) : 300) . ",");
+	echo_n("        width: " . (count($prices)>300 ? count($prices)*2 : 600) . ",");
 	echo_n('        chartArea: {');
 	echo_n('          left: "8%",');
 	echo_n('          width: "90%",');
@@ -1495,8 +1490,10 @@ function show_stock_candlestick_chart($id, $prices)
 	echo_n('        legend: { position: "none"},');
 	//	echo_n('        hAxis: { title: "日期"},');
 	//	echo_n('        vAxis: { title: "股價"},');
-	echo_n("        height: 500,");
-	echo_n("        width: 1000,");
+	// echo_n('        height: 500,');
+	// echo_n('        width: 1000,');
+	echo_n("        height: " . (count($prices)>300 ? count($prices) : 300) . ",");
+	echo_n("        width: " . (count($prices)>300 ? count($prices)*2 : 600) . ",");
 	echo_n('        chartArea: {');
 	echo_n("          left: '8%',");
 	echo_n("          width: '90%',");
@@ -1578,8 +1575,10 @@ function show_stock_candlestick_chart_with_pepo($id, $prices, $pepos)
 	echo_n('        legend: { position: "none"},');
 //	echo_n('        hAxis: { title: "日期"},');
 //	echo_n('        vAxis: { title: "股價"},');
-	echo_n('        height: 500,');
-	echo_n('        width: 1000,');
+	// echo_n('        height: 500,');
+	// echo_n('        width: 1000,');
+	echo_n("        height: " . (count($prices)>300 ? count($prices) : 300) . ",");
+	echo_n("        width: " . (count($prices)>300 ? count($prices)*2 : 600) . ",");
 	echo_n('        chartArea: {');
 	echo_n("          left: '8%',");
 	echo_n("          width: '90%',");
@@ -1624,8 +1623,10 @@ function show_stock_bar_chart($id, $prices)
 	echo_n('        legend: { position: "none"},');
 //	echo_n('        hAxis: { title: "日期"},');
 //	echo_n('        vAxis: { title: "張數"},');
-	echo_n('        height: 200,');
-	echo_n('        width: 1000,');
+	// echo_n('        height: 200,');
+	// echo_n('        width: 1000,');
+	echo_n("        height: 80,");
+	echo_n("        width: " . (count($prices)>300 ? count($prices)*2 : 600) . ",");
 	echo_n('        chartArea: {');
 	echo_n("          left: '8%',");
 	echo_n("          width: '90%',");
