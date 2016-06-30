@@ -17,7 +17,7 @@ include_once("stockIndicator.php");
 
 function stockIDCheck($id)
 {
-	stockIndicators($id);
+	stockIndicators($id, 'expert');
 }
 
 function nameCheck($name)
@@ -26,7 +26,7 @@ function nameCheck($name)
 	if ($id == '')
 		return;
 
-	stockIndicators($id);
+	stockIndicators($id, 'expert');
 }
 
 // 網頁頭

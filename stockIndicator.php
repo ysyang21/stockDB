@@ -18,7 +18,7 @@ include_once("stockMonthQuery.php");
 include_once("stockWebpage.php");
 include_once("stockVerdict.php");
 
-function stockIndicators($id)
+function stockIndicators($id, $level)
 {
 	$stock = query_id_data_by_id($id);
 	
@@ -53,35 +53,44 @@ function stockIndicators($id)
 	$months = load_monthly_revenue($id, 18);
 	$verdictm = calculate_verdictm($months);
 
-	echo_n ("<div class='xbrls'>");
-	show_xbrl_core($xbrls, $verdicts);
-	echo_n ("</div>"); // end of xbrls
-	echo_n ("<div class='monthly'>");
-	show_monthly_revenue($months, $verdictm);
-	echo_n ("</div>"); // end of monthly
+	if ($level == 'expert' or $level == 'normal' or $level == 'rookie')
+	{
+		echo_n ("<div class='xbrls'>");
+		show_xbrl_core($xbrls, $verdicts);
+		echo_n ("</div>"); // end of xbrls
+		echo_n ("<div class='monthly'>");
+		show_monthly_revenue($months, $verdictm);
+		echo_n ("</div>"); // end of monthly
+	}
 
-	// echo_n ("<div class='xbrly'>");
-	// show_yearly_xbrl($xbrly);
-	// echo_n ("</div>"); // end of xbrly
-	// echo_n ("<div class='xbrls'>");
-	// show_seasonly_xbrl($xbrls);
-	// echo_n ("</div>"); // end of xbrls
+	if ($level == 'expert' or $level == 'normal')
+	{
+		echo_n ("<div class='xbrly'>");
+		show_yearly_xbrl($xbrly);
+		echo_n ("</div>"); // end of xbrly
+		echo_n ("<div class='xbrls'>");
+		show_seasonly_xbrl($xbrls);
+		echo_n ("</div>"); // end of xbrls
+	}
 
-	// echo_n ("<div class='xbrls'>");
-	// show_xbrl_group_a($xbrls);
-	// echo_n ("</div>"); // end of xbrls
-	// echo_n ("<div class='xbrls'>");
-	// show_xbrl_group_b($xbrls);
-	// echo_n ("</div>"); // end of xbrls
-	// echo_n ("<div class='xbrls'>");
-	// show_xbrl_group_c($xbrls);
-	// echo_n ("</div>"); // end of xbrls
-	// echo_n ("<div class='xbrls'>");
-	// show_xbrl_group_d($xbrls);
-	// echo_n ("</div>"); // end of xbrls
-	// echo_n ("<div class='xbrls'>");
-	// show_xbrl_group_e($xbrls);
-	// echo_n ("</div>"); // end of xbrls
+	if ($level == 'expert')
+	{
+		echo_n ("<div class='xbrls'>");
+		show_xbrl_group_a($xbrls);
+		echo_n ("</div>"); // end of xbrls
+		echo_n ("<div class='xbrls'>");
+		show_xbrl_group_b($xbrls);
+		echo_n ("</div>"); // end of xbrls
+		echo_n ("<div class='xbrls'>");
+		show_xbrl_group_c($xbrls);
+		echo_n ("</div>"); // end of xbrls
+		echo_n ("<div class='xbrls'>");
+		show_xbrl_group_d($xbrls);
+		echo_n ("</div>"); // end of xbrls
+		echo_n ("<div class='xbrls'>");
+		show_xbrl_group_e($xbrls);
+		echo_n ("</div>"); // end of xbrls
+	}
 
 	echo_n ("</div>"); // end of container
 }
@@ -154,7 +163,7 @@ function gradedStocks($showgrade = '-1')
 		if ($grading == $showgrade or '-1'== $showgrade)
 		{
 			echo_n ("<div class='stock" . $gradings[$id] . "'>");
-			stockIndicators($id);
+			stockIndicators($id, 'rookie');
 			echo_n ("</div>"); // end of stockx
 
 			// if ($jj>=10)

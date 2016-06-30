@@ -27,7 +27,7 @@ function show_stock_brief($stock, $price_rank, $price, $yoy_rank, $yoy)
 	echo_n($thead);
 	echo '    <tbody><tr>';
 	echo '<td>' . '<a href="case.php?stockid=' . $stock->id . '">' . $stock->id . '</a>';
-	echo '<td>' . $stock->name;
+	echo '<td>' . '<a href="index.php?stockid=' . $stock->id . '">' . $stock->name . '</a>';
 	echo '<td>' . $stock->industry;
 	echo '<td>' . ($stock->market=='sii'?'上市':'上櫃');
 	echo '<td>' . $stock->onyyyy . $stock->onmm;
@@ -77,7 +77,7 @@ function show_stock_brief_case($stock)
 	echo_n($thead);
 	echo '    <tbody><tr>';
 	echo '<td>' . '<a href="index.php?stockid=' . $stock->id . '">' . $stock->id . '</a>';
-	echo '<td>' . $stock->name;
+	echo '<td>' . '<a href="case.php?stockid=' . $stock->id . '">' . $stock->name . '</a>';
 	echo '<td>' . $stock->industry;
 	echo '<td>' . ($stock->market=='sii'?'上市':'上櫃');
 	echo '<td>' . $stock->onyyyy . $stock->onmm;
