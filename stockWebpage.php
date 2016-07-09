@@ -1216,6 +1216,21 @@ function show_casestudy_updater($my_name)
 	echo_n('    </tbody>');
 	echo_n('  </table>');
 	echo_n('  <br>');
+
+	if (date('d')<=10)
+	{
+		echo_n('  <table class="t1">');
+		echo_n('    <caption style="color:red">電腦挑新土豆(當月十日之前已公布月營收的股票)</caption>');
+		echo_n('    <tbody>');
+		echo_n('      <tr>');
+		echo_n('        <td>' . '分數群組');
+		for ($ii=16;$ii>8;$ii--)
+			echo_n('        <td>' . '<input type=button value="' . $ii . '分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocksNew&grade=16'" . '">');
+		echo_n('        <td>' . '<input type=button value="All" onClick="self.location=' . "'" . $my_name . "?do=gradedStocksNew'" . '">');
+		echo_n('    </tbody>');
+		echo_n('  </table>');
+		echo_n('  <br>');
+	}
 }
 
 // 網頁頭

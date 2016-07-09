@@ -118,9 +118,9 @@ function gradedStocks($showgrade = '-1')
 {
 	$ids = array_keys(query_id_data());
 
-	$jj = 1;
 	$gradings = array();
 	$statics = array();
+	$jj = 1;
 	foreach($ids as $id)
 	{
 		if ($id == '')
@@ -136,6 +136,10 @@ function gradedStocks($showgrade = '-1')
 				$statics[$latest_verdict_of_this_id]++;
 			else
 				$statics[$latest_verdict_of_this_id]=1;
+		}
+		else
+		{
+			echo_n ( "No verdicts for id = " . $id . ".<br>");
 		}
 
 		// if ($jj>=10)
@@ -171,6 +175,80 @@ function gradedStocks($showgrade = '-1')
 			$jj++;
 		}
 	}
+}
+
+function gradedStocksNew($showgrade = '-1')
+{
+	$ids = array_keys(query_id_data_new_moon());
+
+	$gradings = array();
+	$statics = array();
+	$jj = 1;
+	foreach($ids as $id)
+	{
+		if ($id == '')
+			continue;
+
+		$verdicts = stockIndicatorsVerdict($id);
+
+		// It is possible that $verdicts is a null, so need a check here
+		if ($verdicts != null) // and $latest_verdict_of_this_id>8)
+		{
+			$latest_verdict_of_this_id = $verdicts[0]->verdict;
+			$gradings[$id] = $latest_verdict_of_this_id;
+			if (array_key_exists($latest_verdict_of_this_id, $statics))
+				$statics[$latest_verdict_of_this_id]++;
+			else
+				$statics[$latest_verdict_of_this_id]=1;
+		}
+		else
+		{
+			echo_n ( "No verdicts for id = " . $id . ".<br>");
+		}
+
+		// if ($jj>=10)
+		// 	break;
+		$jj++;
+	}
+
+// print_r($gradings);
+// print_r($statics);
+
+// $sum=0;
+// foreach($statics as $point => $num)
+// 	$sum += $num;
+
+// echo "<br>" . $sum;
+
+	arsort($gradings);
+
+	$first = array_values($gradings)[0];
+	$last = end($gradings);
+
+	for ($ii=$first;$ii>=$last;$ii--)
+	{
+		if ($ii == (int)$showgrade or '-1' == $showgrade)
+		{
+			if (array_key_exists($ii, $statics))
+				echo_n ("<div class='stock$ii'><a>$ii 分(共" . $statics[$ii] . "個)(按我可重複收合或展開)</a></div>");
+		}
+	}
+
+	$jj = 1;
+	foreach($gradings as $id => $grading)
+	{
+		if ($grading == $showgrade or '-1' == $showgrade)
+		{
+			echo_n ("<div class='stock" . $gradings[$id] . "'>");
+			stockIndicators($id, 'rookie');
+			echo_n ("</div>"); // end of stockx
+
+			// if ($jj>=10)
+			// 	break;
+			$jj++;
+		}
+	}
+
 }
 
 ?>

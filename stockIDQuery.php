@@ -71,6 +71,34 @@ function query_id_data()
 	return $iddata;
 }
 
+function query_id_data_new_moon()
+{
+	global $yearmonth_enum;
+
+	// 輸入日期, 按照財報死線推算肯定已經在monthdata的最新月營收月份季度
+	$latest_scheduled_month = get_latest_scheduled_month(today());
+
+	// 例如說今天是某月9日, 雖然還沒到公布上月月營收的死線, 但是我們推論它很可能已經被更新到 monthdata當中了
+	$might_have_been_published_month = $yearmonth_enum[array_search($latest_scheduled_month, $yearmonth_enum) - 1];
+
+	$query = "SELECT * FROM iddata WHERE id in (SELECT id FROM monthdata WHERE month = " . $might_have_been_published_month . ")";
+
+	$result = mysql_query($query) or die('MySQL query error');
+
+	$iddata = array();
+	while($row = mysql_fetch_array($result)){
+		$id = $row['id'];
+		$iddata[$id] = new idData();
+		$iddata[$id]->id = $id;
+		$iddata[$id]->market = $row['market'];
+		$iddata[$id]->onyyyy = substr($row['ondate'], 0, 4);
+		$iddata[$id]->onmm = substr($row['ondate'], 5, 2);
+	}
+
+	echo_v(DEBUG_VERBOSE, "[query_id_data] There are " . count($iddata) . " stocks in table iddata.");
+	return $iddata;
+}
+
 function query_id_data_sii()
 {
 	$iddata = array();

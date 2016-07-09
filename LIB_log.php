@@ -145,7 +145,7 @@ function get_latest_scheduled_month($date)
 	// Get latest monthData entry
 	$toyyyy = $year;
 	$tomm = "";
-	if ($day >= 10)
+	if ($day > 10)
 	{
 		$tomm = sprintf("%02d", (string)(((int)$month - 1) % 12));
 		if ((int)($month) < 1)
