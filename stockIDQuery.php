@@ -55,7 +55,7 @@ function query_id_data()
 {
 	$iddata = array();
 
-	$query = "SELECT * FROM iddata";
+	$query = "SELECT * FROM iddata WHERE report = 'ci-cr' OR report = 'ci-ir'";
 	$result = mysql_query($query) or die('MySQL query error');
 
 	while($row = mysql_fetch_array($result)){
@@ -81,7 +81,7 @@ function query_id_data_new_moon()
 	// 例如說今天是某月9日, 雖然還沒到公布上月月營收的死線, 但是我們推論它很可能已經被更新到 monthdata當中了
 	$might_have_been_published_month = $yearmonth_enum[array_search($latest_scheduled_month, $yearmonth_enum) - 1];
 
-	$query = "SELECT * FROM iddata WHERE id in (SELECT id FROM monthdata WHERE month = " . $might_have_been_published_month . ")";
+	$query = "SELECT * FROM iddata WHERE (report = 'ci-cr' OR report = 'ci-ir') AND id in (SELECT id FROM monthdata WHERE month = " . $might_have_been_published_month . ")";
 
 	$result = mysql_query($query) or die('MySQL query error');
 

@@ -68,11 +68,11 @@ function show_stock_brief($stock, $price_rank, $price, $yoy_rank, $yoy)
 	echo_n('  </table><br>');
 }
 
-function show_stock_brief_case($stock)
+function show_stock_brief_case($stock, $verdict = 0)
 {
 	echo_n('  <table class="t1">');
 	echo_n('    <caption>股票簡介</caption>');
-	$thead = '    <thead><th>代號<th>名稱<th>行業別<th>上市櫃別<th>上市櫃時間';
+	$thead = '    <thead><th>代號<th>名稱<th>行業別<th>上市櫃別<th>上市櫃時間<th>分數';
 	$thead = $thead . '</thead>';
 	echo_n($thead);
 	echo '    <tbody><tr>';
@@ -81,6 +81,7 @@ function show_stock_brief_case($stock)
 	echo '<td>' . $stock->industry;
 	echo '<td>' . ($stock->market=='sii'?'上市':'上櫃');
 	echo '<td>' . $stock->onyyyy . $stock->onmm;
+	echo '<td>' . $verdict;
 
 	echo_n('</tbody>');
 	echo_n('  </table><br>');
@@ -1170,6 +1171,8 @@ function show_casestudy_updater($my_name)
 	echo_n('  </table>');
 	echo_n('  <br>');
 
+	$a = array(8, 1, 1, 1, 1, 2, 2, 2, 2);
+
 	echo_n('  <table class="t1">');
 	echo_n('    <caption style="color:red">各財務指標的權值分配</caption>');
 	echo_n('    <tbody>');
@@ -1178,28 +1181,34 @@ function show_casestudy_updater($my_name)
 	echo_n('        <td>' . '分數');
 	echo_n('      <tr>');
 	echo_n('        <td>' . '近四季每股盈餘為正');
-	echo_n('        <td>' . '8');
+	echo_n('        <td>' . $a[0]);
 	echo_n('      <tr>');
 	echo_n('        <td>' . '近三季每股盈餘成長');
-	echo_n('        <td>' . '1');
+	echo_n('        <td>' . $a[1]);
 	echo_n('      <tr>');
 	echo_n('        <td>' . '近三季營收成長');
-	echo_n('        <td>' . '1');
+	echo_n('        <td>' . $a[2]);
 	echo_n('      <tr>');
 	echo_n('        <td>' . '近三季營業利益成長');
-	echo_n('        <td>' . '1');
+	echo_n('        <td>' . $a[3]);
 	echo_n('      <tr>');
 	echo_n('        <td>' . '近三季稅後淨利成長');
-	echo_n('        <td>' . '1');
+	echo_n('        <td>' . $a[4]);
 	echo_n('      <tr>');
 	echo_n('        <td>' . '近三季營業利益率穩定');
-	echo_n('        <td>' . '2');
+	echo_n('        <td>' . $a[5]);
 	echo_n('      <tr>');
 	echo_n('        <td>' . '近四季存貨週轉率沒下降');
-	echo_n('        <td>' . '2');
+	echo_n('        <td>' . $a[6]);
+	echo_n('      <tr>');
+	echo_n('        <td>' . '累計現金流量正遞增');
+	echo_n('        <td>' . $a[7]);
+	echo_n('      <tr>');
+	echo_n('        <td>' . '月營收年增率遞增');
+	echo_n('        <td>' . $a[8]);
 	echo_n('      <tr>');
 	echo_n('        <td>' . '滿分');
-	echo_n('        <td>' . '16');
+	echo_n('        <td>' . array_sum($a));
 
 	echo_n('    </tbody>');
 	echo_n('  </table>');
@@ -1210,9 +1219,8 @@ function show_casestudy_updater($my_name)
 	echo_n('    <tbody>');
 	echo_n('      <tr>');
 	echo_n('        <td>' . '分數群組');
-	for ($ii=16;$ii>8;$ii--)
-		echo_n('        <td>' . '<input type=button value="' . $ii . '分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=16'" . '">');
-	// echo_n('        <td>' . '<input type=button value="All" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks'" . '">');
+	for ($ii=20;$ii>10;$ii--)
+		echo_n('        <td>' . '<input type=button value="' . $ii . '分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=" . $ii . "'" . '">');
 	echo_n('    </tbody>');
 	echo_n('  </table>');
 	echo_n('  <br>');
@@ -1224,9 +1232,8 @@ function show_casestudy_updater($my_name)
 		echo_n('    <tbody>');
 		echo_n('      <tr>');
 		echo_n('        <td>' . '分數群組');
-		for ($ii=16;$ii>8;$ii--)
-			echo_n('        <td>' . '<input type=button value="' . $ii . '分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocksNew&grade=16'" . '">');
-		echo_n('        <td>' . '<input type=button value="All" onClick="self.location=' . "'" . $my_name . "?do=gradedStocksNew'" . '">');
+		for ($ii=20;$ii>10;$ii--)
+			echo_n('        <td>' . '<input type=button value="' . $ii . '分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=" . $ii . "&newmoon=true'" . '">');
 		echo_n('    </tbody>');
 		echo_n('  </table>');
 		echo_n('  <br>');
@@ -1246,7 +1253,7 @@ function show_webpage_header($stage)
 	echo_n('      <style type="text/css">');
 	echo_n('      .t1{border-collapse: collapse; border: inset;}');
 	echo_n('      #header {margin:0 auto;}');
-	for ($ii=16;$ii>8;$ii--)
+	for ($ii=20;$ii>10;$ii--)
 		echo_n("      .stock$ii {clear:both; margin:0 auto;}");
 	echo_n('      .container {position:relative; display:inline}');
 	echo_n('      .highlight {background:#00FF00;}');
@@ -1267,7 +1274,7 @@ function show_webpage_header($stage)
 	echo_n('    <script type="text/javascript" src="./jquery-1.3.1.js"></script>');
 
 	echo_n('    <script type="text/javascript">');
-	for ($ii=16;$ii>8;$ii--)
+	for ($ii=20;$ii>10;$ii--)
 	{
 		echo_n('        $(document).ready(function(){');
 		echo_n('	        $(".' . "stock$ii" . '").click(function(){');
@@ -1318,6 +1325,8 @@ function show_webpage_tail($t1)
 {
 	if(isset($_GET['do']) && isset($_GET['begin']) && function_exists($_GET['do'])) // index5
 		call_user_func($_GET['do'], $_GET['begin']);
+	else if(isset($_GET['do']) && isset($_GET['grade']) && isset($_GET['newmoon']) && function_exists($_GET['do'])) // case
+		call_user_func($_GET['do'], $_GET['grade'], $_GET['newmoon']);
 	else if(isset($_GET['do']) && isset($_GET['grade']) && function_exists($_GET['do'])) // index5, case
 		call_user_func($_GET['do'], $_GET['grade']);
 	else if(isset($_GET['do']) && function_exists($_GET['do'])) // index, index2, index5

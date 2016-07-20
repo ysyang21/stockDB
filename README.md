@@ -4,6 +4,8 @@ Usage:
 
 http://localhost/stockDB/index.php - FrontEnd
 
+http://localhost/stockDB/case.php - Case Study
+
 Description:
 
 1. Download XAMPP and install on your machine which XAMPP supports.
@@ -21,6 +23,8 @@ Description:
 6. Check restore_mem.sh and restore_inn.sh in decrypted util folder, one is
    for seeding MEMORY engine database stockDB and the other for InnoDB engine
    DB, I prefer MEMORY version myself.
+
+7. For detailed description please check https://tw.twincl.com/cloud/*652m
 
 Terms and Conditions:
 

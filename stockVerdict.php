@@ -75,7 +75,6 @@ class verdictsData
 	public $營業利益率穩定 = TRUE;
 	public $累計現金流量正遞增 = TRUE;
 	public $存貨週轉率沒下降 = TRUE;
-	public $verdict = 0;
 }
 
 function calculate_verdicts($xbrls)
@@ -267,14 +266,6 @@ function calculate_verdicts($xbrls)
 				break;
 			}
 		}
-
-		$verdicts[$ii]->verdict += ($verdicts[$ii]->每股盈餘為正?8:0);
-		$verdicts[$ii]->verdict += ($verdicts[$ii]->每股盈餘成長?1:0);
-		$verdicts[$ii]->verdict += ($verdicts[$ii]->營收成長?1:0);
-		$verdicts[$ii]->verdict += ($verdicts[$ii]->營業利益成長?1:0);
-		$verdicts[$ii]->verdict += ($verdicts[$ii]->稅後淨利成長?1:0);
-		$verdicts[$ii]->verdict += ($verdicts[$ii]->營業利益率穩定?2:0);
-		$verdicts[$ii]->verdict += ($verdicts[$ii]->存貨週轉率沒下降?2:0);
 	}
 
 	$start = $xbrls[0]['current'];
@@ -366,6 +357,27 @@ function calculate_verdicts($xbrls)
 	}
 
 	return $verdicts;
+}
+
+function calculate_verdict($verdicts, $verdictm)
+{
+	if ($verdicts == null or $verdictm == null or count($verdicts)==0 or count($verdictm)==0)
+		return 0;
+
+	$verdict = 0;
+
+	$verdict += ($verdicts[0]->每股盈餘為正?8:0);
+	$verdict += ($verdicts[0]->每股盈餘成長?1:0);
+	$verdict += ($verdicts[0]->營收成長?1:0);
+	$verdict += ($verdicts[0]->營業利益成長?1:0);
+	$verdict += ($verdicts[0]->稅後淨利成長?1:0);
+	$verdict += ($verdicts[0]->營業利益率穩定?2:0);
+	$verdict += ($verdicts[0]->存貨週轉率沒下降?2:0);
+	$verdict += ($verdicts[0]->累計現金流量正遞增?2:0);
+
+	$verdict += ($verdictm[0]->月營收年增率遞增?2:0);
+
+	return $verdict;
 }
 
 ?>
