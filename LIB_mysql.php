@@ -12,14 +12,11 @@ mysql_select_db($dbname);
 function exist_by($query)
 {
 	$result = mysql_query($query) or die('MySQL query error');
-	$ll=0;
+	$exist=false;
 	while( $row = mysql_fetch_array( $result)){
-		$ll++;
+		$exist=true;
 	}
-	if ($ll!=0)
-		return true;
-	else
-		return false;
+	return $exist;
 }
 
 ?>
