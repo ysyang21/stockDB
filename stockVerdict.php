@@ -291,7 +291,6 @@ function calculate_verdicts($xbrls)
 					if ( ($current->cashoa+$current->cashia) < ($earlier->cashoa+$earlier->cashia) )
 					{
 						$verdicts[0]->累計現金流量正遞增 = FALSE;
-						break;
 					}
 				}
 			}
@@ -302,7 +301,6 @@ function calculate_verdicts($xbrls)
 		if (count($xbrls)<3) // at least 3 items
 		{
 			$verdicts[0]->累計現金流量正遞增 = FALSE;
-			break;
 		}
 		else
 		{
@@ -331,7 +329,6 @@ function calculate_verdicts($xbrls)
 			if ( ($current->cashoa+$current->cashia) < ($earlier->cashoa+$earlier->cashia) )
 			{
 				$verdicts[0]->累計現金流量正遞增 = FALSE;
-				break;
 			}
 		}
 	}

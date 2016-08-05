@@ -1,4 +1,5 @@
 #!/bin/sh
 
 source ~/.bashrc
-mysqldump -u root -p stockDB > stockDB.mem.sql
+now=`date +"%Y%m%d"`
+mysqldump -u root -p stockDB > stockDB.mem.sql.$now

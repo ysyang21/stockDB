@@ -1086,7 +1086,7 @@ class etaData
 	public $ifrsETA = '';
 }
 
-// 網頁內容 (Frontend)
+// 網頁內容 (Frontend), used in index.php
 function show_frontend_updater($my_name)
 {
 	global $observed_stocks;
@@ -1127,12 +1127,24 @@ function show_frontend_updater($my_name)
 	echo_n('    </tbody>');
 	echo_n('  </table>');
 	echo_n('  <br>');
+
+	// index.php --> show_frontend_updater
+	// ?stockid=3008
+	// ?stockname=聯發科
+
+	if(isset($_GET['stockid']))
+		stockIDCheck($_GET['stockid']);
+	else if(isset($_GET['stockname']))
+		nameCheck($_GET['stockname']);
 }
 
-// 網頁內容 (Case Study)
+$a = array(8, 1, 1, 1, 1, 2, 2, 2, 2);
+
+// 網頁內容 (Case Study), used in case.php
 function show_casestudy_updater($my_name)
 {
 	global $observed_stocks;
+	global $a;
 
 	echo_n('  <table class="t1">');
 	echo_n('    <caption>個案研究</caption>');
@@ -1170,8 +1182,6 @@ function show_casestudy_updater($my_name)
 	echo_n('    </tbody>');
 	echo_n('  </table>');
 	echo_n('  <br>');
-
-	$a = array(8, 1, 1, 1, 1, 2, 2, 2, 2);
 
 	echo_n('  <table class="t1">');
 	echo_n('    <caption style="color:red">各財務指標的權值分配</caption>');
@@ -1219,7 +1229,7 @@ function show_casestudy_updater($my_name)
 	echo_n('    <tbody>');
 	echo_n('      <tr>');
 	echo_n('        <td>' . '分數群組');
-	for ($ii=20;$ii>10;$ii--)
+	for ($ii=array_sum($a);$ii>=0;$ii--)
 		echo_n('        <td>' . '<input type=button value="' . $ii . '分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=" . $ii . "'" . '">');
 	echo_n('    </tbody>');
 	echo_n('  </table>');
@@ -1228,21 +1238,65 @@ function show_casestudy_updater($my_name)
 	if (date('d')<=10)
 	{
 		echo_n('  <table class="t1">');
-		echo_n('    <caption style="color:red">電腦挑新土豆(當月十日之前已公布月營收的股票)</caption>');
+		echo_n('    <caption style="color:red">電腦挑新月份土豆(當月十日之前已公布月營收的股票)</caption>');
 		echo_n('    <tbody>');
 		echo_n('      <tr>');
 		echo_n('        <td>' . '分數群組');
-		for ($ii=20;$ii>10;$ii--)
-			echo_n('        <td>' . '<input type=button value="' . $ii . '分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=" . $ii . "&newmoon=true'" . '">');
+		echo_n('        <td>' . '<input type=button value="新月份月營收" onClick="self.location=' . "'" . $my_name . "?do=gradedNewStocks&tag=newmoon'" . '">');
 		echo_n('    </tbody>');
 		echo_n('  </table>');
 		echo_n('  <br>');
 	}
+
+	$date = today();
+	$dayOfYear = date( 'z', strtotime($date));
+	// treating 60th day in a leap year (3/1) the same as 59th day in a non-leap year (3/1)
+	// this implies treating 59th day in a leap year (2/29) also the same as 59th day in a non-leap year (3/1)
+	if (1==date('L', strtotime($date)) and $dayOfYear > 59)
+		$dayOfYear--;
+
+	// echo_n(today() . " is the " . $dayOfYear . "th day of the year.");
+	// echo_n('  <br>');
+
+	// comments in stockEvaluate.php line 48, 3/31(89), 5/15(134), 8/15(225), 11/15(317)
+	if ((69<=$dayOfYear and $dayOfYear<=89) or
+		(114<=$dayOfYear and $dayOfYear<=134) or
+		(205<=$dayOfYear and $dayOfYear<=225) or
+		(297<=$dayOfYear and $dayOfYear<=317))
+	{
+		echo_n('  <table class="t1">');
+		echo_n('    <caption style="color:red">電腦挑新一季土豆(截止日前二十天已公布財報的股票)</caption>');
+		echo_n('    <tbody>');
+		echo_n('      <tr>');
+		echo_n('        <td>' . '分數群組');
+		echo_n('        <td>' . '<input type=button value="新一季財報" onClick="self.location=' . "'" . $my_name . "?do=gradedNewStocks&tag=newseason'" . '">');
+		echo_n('    </tbody>');
+		echo_n('  </table>');
+		echo_n('  <br>');
+	}
+
+	// case.php --> show_casestudy_updater
+	// ?stockid=3008
+	// ?stockname=聯發科
+	// ?do=gradedStocks&grade=20
+	// ?do=gradedNewStocks&tag=newmoon
+	// ?do=gradedNewStocks&tag=newseason
+
+	if(isset($_GET['do']) && isset($_GET['grade']) && function_exists($_GET['do']))
+		call_user_func($_GET['do'], $_GET['grade']);
+	else if(isset($_GET['do']) && isset($_GET['tag']) && function_exists($_GET['do']))
+		call_user_func($_GET['do'], $_GET['tag']);
+	else if(isset($_GET['stockid']))
+		stockIDCheck($_GET['stockid']);
+	else if(isset($_GET['stockname']))
+		nameCheck($_GET['stockname']);
 }
 
 // 網頁頭
 function show_webpage_header($stage)
 {
+	global $a;
+
 	echo_n('');
 	echo_n('');
 	echo_n('<!doctype html>');
@@ -1253,7 +1307,7 @@ function show_webpage_header($stage)
 	echo_n('      <style type="text/css">');
 	echo_n('      .t1{border-collapse: collapse; border: inset;}');
 	echo_n('      #header {margin:0 auto;}');
-	for ($ii=20;$ii>10;$ii--)
+	for ($ii=array_sum($a);$ii>=0;$ii--)
 		echo_n("      .stock$ii {clear:both; margin:0 auto;}");
 	echo_n('      .container {position:relative; display:inline}');
 	echo_n('      .highlight {background:#00FF00;}');
@@ -1274,7 +1328,7 @@ function show_webpage_header($stage)
 	echo_n('    <script type="text/javascript" src="./jquery-1.3.1.js"></script>');
 
 	echo_n('    <script type="text/javascript">');
-	for ($ii=20;$ii>10;$ii--)
+	for ($ii=array_sum($a);$ii>=0;$ii--)
 	{
 		echo_n('        $(document).ready(function(){');
 		echo_n('	        $(".' . "stock$ii" . '").click(function(){');
@@ -1323,19 +1377,6 @@ function show_webpage_header($stage)
 // 網頁尾
 function show_webpage_tail($t1)
 {
-	if(isset($_GET['do']) && isset($_GET['begin']) && function_exists($_GET['do'])) // index5
-		call_user_func($_GET['do'], $_GET['begin']);
-	else if(isset($_GET['do']) && isset($_GET['grade']) && isset($_GET['newmoon']) && function_exists($_GET['do'])) // case
-		call_user_func($_GET['do'], $_GET['grade'], $_GET['newmoon']);
-	else if(isset($_GET['do']) && isset($_GET['grade']) && function_exists($_GET['do'])) // index5, case
-		call_user_func($_GET['do'], $_GET['grade']);
-	else if(isset($_GET['do']) && function_exists($_GET['do'])) // index, index2, index5
-		call_user_func($_GET['do']);
-	else if(isset($_GET['stockid'])) // index, case
-		stockIDCheck($_GET['stockid']);
-	else if(isset($_GET['stockname'])) // index, case
-		nameCheck($_GET['stockname']);
-
 	echo_n ("<div id='footer'>");
 	if (isset($_SERVER['HTTP_USER_AGENT'])) echo "<pre>";
 	$t2 = round(microtime(true) * 1000);

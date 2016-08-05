@@ -120,12 +120,9 @@ function stockIndicatorsVerdict($id)
 	return $verdict;
 }
 
-function gradedStocks($showgrade, $newmoon = 'false')
+function gradedStocks($showgrade)
 {
-	if ($newmoon == 'false')
-		$ids = array_keys(query_id_data());
-	else
-		$ids = array_keys(query_id_data_new_moon());
+	$ids = array_keys(query_id_data());
 
 	$gradings = array();
 	$statics = array();
@@ -176,6 +173,122 @@ function gradedStocks($showgrade, $newmoon = 'false')
 			// 	break;
 			$jj++;
 		}
+	}
+}
+
+function gradedNewStocks($tag = '')
+{
+	$ids = array();
+
+	if ($tag == 'newmoon')
+		$ids = array_keys(query_id_data_new_moon());
+	else if ($tag == 'newseason')
+		$ids = array_keys(query_id_data_new_season());
+	else
+		echo_v(ERROR_VERBOSE, "[gradedNewStocks] invalid tag!");
+
+	if (count($ids) == 0)
+		return;
+
+	$gradings = array();
+	$statics = array();
+	$jj = 1;
+	foreach($ids as $id)
+	{
+		if ($id == '')
+			continue;
+
+		$verdict = stockIndicatorsVerdict($id);
+
+		$latest_verdict_of_this_id = $verdict;
+		$gradings[$id] = $latest_verdict_of_this_id;
+		if (array_key_exists($latest_verdict_of_this_id, $statics))
+			$statics[$latest_verdict_of_this_id]++;
+		else
+			$statics[$latest_verdict_of_this_id]=1;
+
+		// if ($jj>=10)
+		// 	break;
+		$jj++;
+	}
+
+	arsort($gradings);
+
+	$first = array_values($gradings)[0];
+	$last = end($gradings);
+
+	for ($ii=$first;$ii>=$last;$ii--)
+	{
+		if (array_key_exists($ii, $statics))
+			echo_n ("<div class='stock$ii'><a>$ii 分(共" . $statics[$ii] . "個)(按我可重複收合或展開)</a></div>");
+	}
+
+	$jj = 1;
+	foreach($gradings as $id => $grading)
+	{
+		echo_n ("<div class='stock" . $gradings[$id] . "'>");
+		stockIndicators($id, 'rookie'); // rookie, normal, expert
+		echo_n ("</div>"); // end of stockx
+
+		// if ($jj>=10)
+		// 	break;
+		$jj++;
+	}
+}
+
+function backTesting()
+{
+	$ids = array_keys(query_id_data());
+
+	$gradings = array();
+	$statics = array();
+	$jj = 1;
+	foreach($ids as $id)
+	{
+		if ($id == '')
+			continue;
+
+		$verdict = stockIndicatorsVerdict($id);
+
+		$latest_verdict_of_this_id = $verdict;
+		$gradings[$id] = $latest_verdict_of_this_id;
+		if (array_key_exists($latest_verdict_of_this_id, $statics))
+			$statics[$latest_verdict_of_this_id]++;
+		else
+			$statics[$latest_verdict_of_this_id]=1;
+
+		if ($jj>=10)
+			break;
+		$jj++;
+	}
+
+	arsort($gradings);
+
+	$first = array_values($gradings)[0];
+	$last = end($gradings);
+
+	for ($ii=$first;$ii>=$last;$ii--)
+	{
+		// if ($ii == (int)$showgrade)
+		// {
+			if (array_key_exists($ii, $statics))
+				echo_n ("<div class='stock$ii'><a>$ii 分(共" . $statics[$ii] . "個)(按我可重複收合或展開)</a></div>");
+		// }
+	}
+
+	$jj = 1;
+	foreach($gradings as $id => $grading)
+	{
+		// if ($grading == $showgrade)
+		// {
+			echo_n ("<div class='stock" . $gradings[$id] . "'>");
+			stockIndicators($id, 'rookie'); // rookie, normal, expert
+			echo_n ("</div>"); // end of stockx
+
+			if ($jj>=10)
+				break;
+			$jj++;
+		// }
 	}
 }
 

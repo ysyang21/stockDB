@@ -99,6 +99,43 @@ function query_id_data_new_moon()
 	return $iddata;
 }
 
+function query_id_data_new_season()
+{
+	global $season_enum;
+
+	$latest_season = get_latest_scheduled_season(today());
+
+	$might_have_been_published_season = '';
+	foreach($season_enum as $index => $season)
+	{
+		if ($season == $latest_season and $index != 0)
+		{
+			$might_have_been_published_season = $season_enum[$index-1];
+			break;
+		}
+	}
+
+	if ($might_have_been_published_season == '')
+		return;
+
+	$query = "SELECT * FROM iddata WHERE (report = 'ci-cr' OR report = 'ci-ir') AND id in (SELECT id FROM xbrldata WHERE season = " . $might_have_been_published_season . ")";
+
+	$result = mysql_query($query) or die('MySQL query error');
+
+	$iddata = array();
+	while($row = mysql_fetch_array($result)){
+		$id = $row['id'];
+		$iddata[$id] = new idData();
+		$iddata[$id]->id = $id;
+		$iddata[$id]->market = $row['market'];
+		$iddata[$id]->onyyyy = substr($row['ondate'], 0, 4);
+		$iddata[$id]->onmm = substr($row['ondate'], 5, 2);
+	}
+
+	echo_v(DEBUG_VERBOSE, "[query_id_data] There are " . count($iddata) . " stocks in table iddata.");
+	return $iddata;
+}
+
 function query_id_data_sii()
 {
 	$iddata = array();
