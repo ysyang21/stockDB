@@ -32,6 +32,11 @@ function stockIndicators($id, $level)
 
 	// 最近(n+2)財務年表
 	$xbrly = load_yearly_xbrl($id, 4);
+	if (count($xbrly) < 2)
+	{
+		echo_v (ERROR_VERBOSE, "[stockIndicators] " . $id . " is not on my radar since ipo less then two years.");
+		return;
+	}
 
 	// 最近(m+8+8)季財務報表
 	$xbrls = load_seasonly_xbrl($id, 8);

@@ -953,7 +953,7 @@ function initialize_stock_data($stock, $date)
 	$diff = (int)$year - (int)$pepo->onyyyy;
 	if ($diff < 2)
 	{
-		echo_v (ERROR_VERBOSE, "[initialize_stock_data] It's not on my radar");
+		echo_v (ERROR_VERBOSE, "[initialize_stock_data] " . $pepo->id . " is not on my radar since ipo less then two years.");
 		return null;
 	}
 
