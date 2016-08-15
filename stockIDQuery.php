@@ -71,7 +71,7 @@ function query_id_data()
 	return $iddata;
 }
 
-function query_id_data_new_moon()
+function query_id_data_new_month()
 {
 	global $yearmonth_enum;
 
@@ -95,7 +95,7 @@ function query_id_data_new_moon()
 		$iddata[$id]->onmm = substr($row['ondate'], 5, 2);
 	}
 
-	echo_v(DEBUG_VERBOSE, "[query_id_data] There are " . count($iddata) . " stocks in table iddata.");
+	echo_v(DEBUG_VERBOSE, "[query_id_data_new_month] There are " . count($iddata) . " stocks in table iddata.");
 	return $iddata;
 }
 
@@ -132,7 +132,7 @@ function query_id_data_new_season()
 		$iddata[$id]->onmm = substr($row['ondate'], 5, 2);
 	}
 
-	echo_v(DEBUG_VERBOSE, "[query_id_data] There are " . count($iddata) . " stocks in table iddata.");
+	echo_v(DEBUG_VERBOSE, "[query_id_data_new_season] There are " . count($iddata) . " stocks in table iddata.");
 	return $iddata;
 }
 

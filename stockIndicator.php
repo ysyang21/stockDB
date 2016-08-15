@@ -34,7 +34,7 @@ function stockIndicators($id, $level)
 	$xbrly = load_yearly_xbrl($id, 4);
 	if (count($xbrly) < 2)
 	{
-		echo_v (ERROR_VERBOSE, "[stockIndicators] " . $id . " is not on my radar since ipo less then two years.");
+		echo_v (ERROR_VERBOSE, "[stockIndicators] " . $id . " is not on my radar since ipo less then two years.</div>");
 		return;
 	}
 
@@ -125,11 +125,11 @@ function stockIndicatorsVerdict($id)
 	return $verdict;
 }
 
-function gradedStocks($showgrade)
+function gradeStocks($showgrade = -1)
 {
 	$ids = array_keys(query_id_data());
 
-	$gradings = array();
+	$grades = array();
 	$statics = array();
 	$jj = 1;
 	foreach($ids as $id)
@@ -140,7 +140,7 @@ function gradedStocks($showgrade)
 		$verdict = stockIndicatorsVerdict($id);
 
 		$latest_verdict_of_this_id = $verdict;
-		$gradings[$id] = $latest_verdict_of_this_id;
+		$grades[$id] = $latest_verdict_of_this_id;
 		if (array_key_exists($latest_verdict_of_this_id, $statics))
 			$statics[$latest_verdict_of_this_id]++;
 		else
@@ -151,26 +151,26 @@ function gradedStocks($showgrade)
 		$jj++;
 	}
 
-	arsort($gradings);
+	arsort($grades);
 
-	$first = array_values($gradings)[0];
-	$last = end($gradings);
+	$first = array_values($grades)[0];
+	$last = end($grades);
 
-	for ($ii=$first;$ii>=$last;$ii--)
+	for ($grade=$first;$grade>=$last;$grade--)
 	{
-		if ($ii == (int)$showgrade)
+		if ($grade == (int)$showgrade or (int)$showgrade == -1)
 		{
-			if (array_key_exists($ii, $statics))
-				echo_n ("<div class='stock$ii'><a>$ii 分(共" . $statics[$ii] . "個)(按我可重複收合或展開)</a></div>");
+			if (array_key_exists($grade, $statics))
+				echo_n ("<div class='stock$grade'><a>$grade 分(共" . $statics[$grade] . "個)(按我可重複收合或展開)</a></div>");
 		}
 	}
 
 	$jj = 1;
-	foreach($gradings as $id => $grading)
+	foreach($grades as $id => $grade)
 	{
-		if ($grading == $showgrade)
+		if ($grade == (int)$showgrade or (int)$showgrade == -1)
 		{
-			echo_n ("<div class='stock" . $gradings[$id] . "'>");
+			echo_n ("<div class='stock" . $grades[$id] . "'>");
 			stockIndicators($id, 'rookie'); // rookie, normal, expert
 			echo_n ("</div>"); // end of stockx
 
@@ -181,21 +181,17 @@ function gradedStocks($showgrade)
 	}
 }
 
-function gradedNewStocks($tag = '')
+function gradeNewSeasonStocks($showgrade = -1)
 {
-	$ids = array();
-
-	if ($tag == 'newmoon')
-		$ids = array_keys(query_id_data_new_moon());
-	else if ($tag == 'newseason')
-		$ids = array_keys(query_id_data_new_season());
-	else
-		echo_v(ERROR_VERBOSE, "[gradedNewStocks] invalid tag!");
+	$ids = array_keys(query_id_data_new_season());
 
 	if (count($ids) == 0)
+	{
+		echo_v(ERROR_VERBOSE, "[gradeNewSeasonStocks] no new reports in new season!");
 		return;
+	}
 
-	$gradings = array();
+	$grades = array();
 	$statics = array();
 	$jj = 1;
 	foreach($ids as $id)
@@ -206,7 +202,7 @@ function gradedNewStocks($tag = '')
 		$verdict = stockIndicatorsVerdict($id);
 
 		$latest_verdict_of_this_id = $verdict;
-		$gradings[$id] = $latest_verdict_of_this_id;
+		$grades[$id] = $latest_verdict_of_this_id;
 		if (array_key_exists($latest_verdict_of_this_id, $statics))
 			$statics[$latest_verdict_of_this_id]++;
 		else
@@ -217,35 +213,47 @@ function gradedNewStocks($tag = '')
 		$jj++;
 	}
 
-	arsort($gradings);
+	arsort($grades);
 
-	$first = array_values($gradings)[0];
-	$last = end($gradings);
+	$first = array_values($grades)[0];
+	$last = end($grades);
 
-	for ($ii=$first;$ii>=$last;$ii--)
+	for ($grade=$first;$grade>=$last;$grade--)
 	{
-		if (array_key_exists($ii, $statics))
-			echo_n ("<div class='stock$ii'><a>$ii 分(共" . $statics[$ii] . "個)(按我可重複收合或展開)</a></div>");
+		if ($grade == (int)$showgrade or (int)$showgrade == -1)
+		{
+			if (array_key_exists($grade, $statics))
+				echo_n ("<div class='stock$grade'><a>$grade 分(共" . $statics[$grade] . "個)(按我可重複收合或展開)</a></div>");
+		}
 	}
 
 	$jj = 1;
-	foreach($gradings as $id => $grading)
+	foreach($grades as $id => $grade)
 	{
-		echo_n ("<div class='stock" . $gradings[$id] . "'>");
-		stockIndicators($id, 'rookie'); // rookie, normal, expert
-		echo_n ("</div>"); // end of stockx
+		if ($grade == (int)$showgrade or (int)$showgrade == -1)
+		{
+			echo_n ("<div class='stock" . $grades[$id] . "'>");
+			stockIndicators($id, 'rookie'); // rookie, normal, expert
+			echo_n ("</div>"); // end of stockx
 
-		// if ($jj>=10)
-		// 	break;
-		$jj++;
+			// if ($jj>=10)
+			// 	break;
+			$jj++;
+		}
 	}
 }
 
-function backTesting()
+function gradeNewMonthStocks($showgrade = -1)
 {
-	$ids = array_keys(query_id_data());
+	$ids = array_keys(query_id_data_new_month());
 
-	$gradings = array();
+	if (count($ids) == 0)
+	{
+		echo_v(ERROR_VERBOSE, "[gradeNewMonthStocks] no new reports in new month!");
+		return;
+	}
+
+	$grades = array();
 	$statics = array();
 	$jj = 1;
 	foreach($ids as $id)
@@ -256,7 +264,63 @@ function backTesting()
 		$verdict = stockIndicatorsVerdict($id);
 
 		$latest_verdict_of_this_id = $verdict;
-		$gradings[$id] = $latest_verdict_of_this_id;
+		$grades[$id] = $latest_verdict_of_this_id;
+		if (array_key_exists($latest_verdict_of_this_id, $statics))
+			$statics[$latest_verdict_of_this_id]++;
+		else
+			$statics[$latest_verdict_of_this_id]=1;
+
+		// if ($jj>=10)
+		// 	break;
+		$jj++;
+	}
+
+	arsort($grades);
+
+	$first = array_values($grades)[0];
+	$last = end($grades);
+
+	for ($grade=$first;$grade>=$last;$grade--)
+	{
+		if ($grade == (int)$showgrade or (int)$showgrade == -1)
+		{
+		if (array_key_exists($grade, $statics))
+			echo_n ("<div class='stock$grade'><a>$grade 分(共" . $statics[$grade] . "個)(按我可重複收合或展開)</a></div>");
+		}
+	}
+
+	$jj = 1;
+	foreach($grades as $id => $grade)
+	{
+		if ($grade == (int)$showgrade or (int)$showgrade == -1)
+		{
+			echo_n ("<div class='stock" . $grades[$id] . "'>");
+			stockIndicators($id, 'rookie'); // rookie, normal, expert
+			echo_n ("</div>"); // end of stockx
+
+			// if ($jj>=10)
+			// 	break;
+			$jj++;
+		}
+	}
+}
+
+function backTesting()
+{
+	$ids = array_keys(query_id_data());
+
+	$grades = array();
+	$statics = array();
+	$jj = 1;
+	foreach($ids as $id)
+	{
+		if ($id == '')
+			continue;
+
+		$verdict = stockIndicatorsVerdict($id);
+
+		$latest_verdict_of_this_id = $verdict;
+		$grades[$id] = $latest_verdict_of_this_id;
 		if (array_key_exists($latest_verdict_of_this_id, $statics))
 			$statics[$latest_verdict_of_this_id]++;
 		else
@@ -267,10 +331,10 @@ function backTesting()
 		$jj++;
 	}
 
-	arsort($gradings);
+	arsort($grades);
 
-	$first = array_values($gradings)[0];
-	$last = end($gradings);
+	$first = array_values($grades)[0];
+	$last = end($grades);
 
 	for ($ii=$first;$ii>=$last;$ii--)
 	{
@@ -282,11 +346,11 @@ function backTesting()
 	}
 
 	$jj = 1;
-	foreach($gradings as $id => $grading)
+	foreach($grades as $id => $grading)
 	{
 		// if ($grading == $showgrade)
 		// {
-			echo_n ("<div class='stock" . $gradings[$id] . "'>");
+			echo_n ("<div class='stock" . $grades[$id] . "'>");
 			stockIndicators($id, 'rookie'); // rookie, normal, expert
 			echo_n ("</div>"); // end of stockx
 

@@ -1228,9 +1228,10 @@ function show_casestudy_updater($my_name)
 	echo_n('    <caption style="color:red">電腦挑土豆(按一下要等兩分半鐘左右才會算出來, 請耐心等待)</caption>');
 	echo_n('    <tbody>');
 	echo_n('      <tr>');
-	echo_n('        <td>' . '分數群組');
+	echo_n('        <td>' . '已公佈財報');
+	echo_n('        <td>' . '<input type=button value="已公佈財報" onClick="self.location=' . "'" . $my_name . "?do=gradeStocks'" . '">');
 	for ($ii=array_sum($a);$ii>=0;$ii--)
-		echo_n('        <td>' . '<input type=button value="' . $ii . '分" onClick="self.location=' . "'" . $my_name . "?do=gradedStocks&grade=" . $ii . "'" . '">');
+		echo_n('        <td>' . '<input type=button value="' . $ii . '分" onClick="self.location=' . "'" . $my_name . "?do=gradeStocks&grade=" . $ii . "'" . '">');
 	echo_n('    </tbody>');
 	echo_n('  </table>');
 	echo_n('  <br>');
@@ -1241,8 +1242,10 @@ function show_casestudy_updater($my_name)
 		echo_n('    <caption style="color:red">電腦挑新月份土豆(當月十日之前已公布月營收的股票)</caption>');
 		echo_n('    <tbody>');
 		echo_n('      <tr>');
-		echo_n('        <td>' . '分數群組');
-		echo_n('        <td>' . '<input type=button value="新月份月營收" onClick="self.location=' . "'" . $my_name . "?do=gradedNewStocks&tag=newmoon'" . '">');
+		echo_n('        <td>' . '新月份營收');
+		echo_n('        <td>' . '<input type=button value="新月份營收" onClick="self.location=' . "'" . $my_name . "?do=gradeNewMonthStocks'" . '">');
+		for ($ii=array_sum($a);$ii>=0;$ii--)
+			echo_n('        <td>' . '<input type=button value="' . $ii . '分" onClick="self.location=' . "'" . $my_name . "?do=gradeNewMonthStocks&grade=" . $ii . "'" . '">');
 		echo_n('    </tbody>');
 		echo_n('  </table>');
 		echo_n('  <br>');
@@ -1255,10 +1258,10 @@ function show_casestudy_updater($my_name)
 	if (1==date('L', strtotime($date)) and $dayOfYear > 59)
 		$dayOfYear--;
 
-	// echo_n(today() . " is the " . $dayOfYear . "th day of the year.");
-	// echo_n('  <br>');
+	echo_n($date . " is the " . $dayOfYear . "th day of the year.");
+	echo_n('  <br>');
 
-	// comments in stockEvaluate.php line 48, 3/31(89), 5/15(134), 8/15(225), 11/15(317)
+	// comments in stockEvaluate.php line 48, 3/31(89), 5/15(134), 8/14(225), 11/15(317)
 	if ((69<=$dayOfYear and $dayOfYear<=89) or
 		(114<=$dayOfYear and $dayOfYear<=134) or
 		(205<=$dayOfYear and $dayOfYear<=225) or
@@ -1268,8 +1271,10 @@ function show_casestudy_updater($my_name)
 		echo_n('    <caption style="color:red">電腦挑新一季土豆(截止日前二十天已公布財報的股票)</caption>');
 		echo_n('    <tbody>');
 		echo_n('      <tr>');
-		echo_n('        <td>' . '分數群組');
-		echo_n('        <td>' . '<input type=button value="新一季財報" onClick="self.location=' . "'" . $my_name . "?do=gradedNewStocks&tag=newseason'" . '">');
+		echo_n('        <td>' . '新一季財報');
+		echo_n('        <td>' . '<input type=button value="新一季財報" onClick="self.location=' . "'" . $my_name . "?do=gradeNewSeasonStocks'" . '">');
+		for ($ii=array_sum($a);$ii>=0;$ii--)
+			echo_n('        <td>' . '<input type=button value="' . $ii . '分" onClick="self.location=' . "'" . $my_name . "?do=gradeNewSeasonStocks&grade=" . $ii . "'" . '">');
 		echo_n('    </tbody>');
 		echo_n('  </table>');
 		echo_n('  <br>');
@@ -1278,14 +1283,16 @@ function show_casestudy_updater($my_name)
 	// case.php --> show_casestudy_updater
 	// ?stockid=3008
 	// ?stockname=聯發科
-	// ?do=gradedStocks&grade=20
-	// ?do=gradedNewStocks&tag=newmoon
-	// ?do=gradedNewStocks&tag=newseason
+	// ?do=gradeStocks[&grade=20]
+	// ?do=gradeNewSeasonStocks[&grade=20]
+	// ?do=gradeNewMonthStocks[&grade=20]
 
 	if(isset($_GET['do']) && isset($_GET['grade']) && function_exists($_GET['do']))
 		call_user_func($_GET['do'], $_GET['grade']);
 	else if(isset($_GET['do']) && isset($_GET['tag']) && function_exists($_GET['do']))
 		call_user_func($_GET['do'], $_GET['tag']);
+	else if(isset($_GET['do']) && function_exists($_GET['do']))
+		call_user_func($_GET['do']);
 	else if(isset($_GET['stockid']))
 		stockIDCheck($_GET['stockid']);
 	else if(isset($_GET['stockname']))

@@ -170,16 +170,24 @@ function get_latest_scheduled_season($date)
 	// Get latest xbrlData entry
 	$toyyyy = substr($date, 0, 4);
 	$toqq = "";
-	$seq = date( 'z', strtotime($date)) + 1;
-	if ($seq >= 318) // 11/14
+	// $seq = date( 'z', strtotime($date)) + 1;
+
+	$date = today();
+	$dayOfYear = date( 'z', strtotime($date));
+	// treating 60th day in a leap year (3/1) the same as 59th day in a non-leap year (3/1)
+	// this implies treating 59th day in a leap year (2/29) also the same as 59th day in a non-leap year (3/1)
+	if (1==date('L', strtotime($date)) and $dayOfYear > 59)
+		$dayOfYear--;
+
+	if ($dayOfYear > 317) // 11/14
 	{
 		$toqq = '03';
 	}
-	else if ($seq >= 226) // 8/14
+	else if ($dayOfYear > 225) // 8/14
 	{
 		$toqq = '02';
 	}
-	else if ($seq > 135) // 5/15
+	else if ($dayOfYear > 134) // 5/15
 	{
 		$toqq = '01';
 	}
