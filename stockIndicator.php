@@ -139,12 +139,11 @@ function gradeStocks($showgrade = -1)
 
 		$verdict = stockIndicatorsVerdict($id);
 
-		$latest_verdict_of_this_id = $verdict;
-		$grades[$id] = $latest_verdict_of_this_id;
-		if (array_key_exists($latest_verdict_of_this_id, $statics))
-			$statics[$latest_verdict_of_this_id]++;
+		$grades[$id] = $verdict;
+		if (array_key_exists($verdict, $statics))
+			$statics[$verdict]++;
 		else
-			$statics[$latest_verdict_of_this_id]=1;
+			$statics[$verdict]=1;
 
 		// if ($jj>=10)
 		// 	break;

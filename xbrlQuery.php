@@ -383,14 +383,9 @@ function get_latest_xbrldata_season($id)
 	// 例如說今天是 8/13, 雖然還沒到公布第Q2財報的死線, 但是我們推論它很可能已經被更新到xbrldata當中了
 	$might_have_been_published_season = $season_enum[array_search($latest_scheduled_season, $season_enum) - 1];
 
-	$sql = "SELECT season FROM xbrldata WHERE id = " . $id . " AND season = " . $might_have_been_published_season;
-	$result = mysql_query($sql) or die('MySQL query error');
-	$ii=0;
-	while($row = mysql_fetch_array($result)){
-		$ii++;
-	}
+	$query = "SELECT season FROM xbrldata WHERE id = " . $id . " AND season = " . $might_have_been_published_season;
 
-	$latest_season = (($ii!=0)?$might_have_been_published_season:$latest_scheduled_season);
+	$latest_season = (exist_by($query)?$might_have_been_published_season:$latest_scheduled_season);
 
 	return $latest_season;
 }
