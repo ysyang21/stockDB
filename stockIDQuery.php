@@ -53,11 +53,10 @@ class idData
 
 function query_id_data()
 {
-	$iddata = array();
-
 	$query = "SELECT * FROM iddata WHERE report = 'ci-cr' OR report = 'ci-ir'";
 	$result = mysql_query($query) or die('MySQL query error');
 
+	$iddata = array();
 	while($row = mysql_fetch_array($result)){
 		$id = $row['id'];
 		$iddata[$id] = new idData();
@@ -73,15 +72,13 @@ function query_id_data()
 
 function query_id_data_new_month()
 {
-	global $yearmonth_enum;
-
 	// 輸入日期, 按照財報死線推算肯定已經在monthdata的最新月營收月份季度
-	$latest_scheduled_month = get_latest_scheduled_month(today());
+	$latest_month = get_latest_scheduled_month(today());
 
 	// 例如說今天是某月9日, 雖然還沒到公布上月月營收的死線, 但是我們推論它很可能已經被更新到 monthdata當中了
-	$might_have_been_published_month = $yearmonth_enum[array_search($latest_scheduled_month, $yearmonth_enum) - 1];
+	$one_month_before_latest_month = forward_month($latest_month);
 
-	$query = "SELECT * FROM iddata WHERE (report = 'ci-cr' OR report = 'ci-ir') AND id in (SELECT id FROM monthdata WHERE month = " . $might_have_been_published_month . ")";
+	$query = "SELECT * FROM iddata WHERE (report = 'ci-cr' OR report = 'ci-ir') AND id in (SELECT id FROM monthdata WHERE month = " . $one_month_before_latest_month . ")";
 
 	$result = mysql_query($query) or die('MySQL query error');
 
@@ -99,24 +96,59 @@ function query_id_data_new_month()
 	return $iddata;
 }
 
-function query_id_data_new_season()
+function query_id_data_no_latest_season()
 {
-	global $season_enum;
-
 	$latest_season = get_latest_scheduled_season(today());
+	$one_season_before_latest_season = backward_season($latest_season);
 
-	$might_have_been_published_season = '';
-	foreach($season_enum as $index => $season)
-	{
-		if ($season == $latest_season and $index != 0)
-		{
-			$might_have_been_published_season = $season_enum[$index-1];
-			break;
-		}
+	// For example, it's 2016/8/15, there should be 2Q reports for all ids but there are always some ids not available
+	// this query to sieve those ids
+	$query = "SELECT * FROM iddata WHERE (report = 'ci-cr' OR report = 'ci-ir') " .
+		"AND id in (SELECT id FROM xbrldata WHERE season = '" . $one_season_before_latest_season . "') " .
+		"AND id not in (SELECT id FROM xbrldata WHERE season = '" . $latest_season . "')";
+
+	$result = mysql_query($query) or die('MySQL query error');
+
+	$iddata = array();
+	while($row = mysql_fetch_array($result)){
+		$id = $row['id'];
+		$iddata[$id] = new idData();
+		$iddata[$id]->id = $id;
+		$iddata[$id]->market = $row['market'];
+		$iddata[$id]->onyyyy = substr($row['ondate'], 0, 4);
+		$iddata[$id]->onmm = substr($row['ondate'], 5, 2);
 	}
 
-	if ($might_have_been_published_season == '')
-		return;
+	echo_v(DEBUG_VERBOSE, "[query_id_data] There are " . count($iddata) . " stocks in table iddata.");
+	return $iddata;
+}
+
+function query_id_data_latest_season()
+{
+	$latest_season = get_latest_scheduled_season(today());
+
+	$query = "SELECT * FROM iddata WHERE (report = 'ci-cr' OR report = 'ci-ir') AND id in (SELECT id FROM xbrldata WHERE season = " . $latest_season . ")";
+
+	$result = mysql_query($query) or die('MySQL query error');
+
+	$iddata = array();
+	while($row = mysql_fetch_array($result)){
+		$id = $row['id'];
+		$iddata[$id] = new idData();
+		$iddata[$id]->id = $id;
+		$iddata[$id]->market = $row['market'];
+		$iddata[$id]->onyyyy = substr($row['ondate'], 0, 4);
+		$iddata[$id]->onmm = substr($row['ondate'], 5, 2);
+	}
+
+	echo_v(DEBUG_VERBOSE, "[query_id_data] There are " . count($iddata) . " stocks in table iddata.");
+	return $iddata;
+}
+
+function query_id_data_new_season()
+{
+	$latest_season = get_latest_scheduled_season(today());
+	$might_have_been_published_season = forward_season($latest_season);
 
 	$query = "SELECT * FROM iddata WHERE (report = 'ci-cr' OR report = 'ci-ir') AND id in (SELECT id FROM xbrldata WHERE season = " . $might_have_been_published_season . ")";
 

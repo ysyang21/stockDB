@@ -127,7 +127,13 @@ function stockIndicatorsVerdict($id)
 
 function gradeStocks($showgrade = -1)
 {
-	$ids = array_keys(query_id_data());
+	$ids = array_keys(query_id_data_latest_season());
+
+	if ($ids == null or count($ids) == 0)
+	{
+		echo_v(ERROR_VERBOSE, "[gradeStocks] no new reports in latest season!");
+		return;
+	}
 
 	$grades = array();
 	$statics = array();
@@ -184,7 +190,7 @@ function gradeNewSeasonStocks($showgrade = -1)
 {
 	$ids = array_keys(query_id_data_new_season());
 
-	if (count($ids) == 0)
+	if ($ids == null or count($ids) == 0)
 	{
 		echo_v(ERROR_VERBOSE, "[gradeNewSeasonStocks] no new reports in new season!");
 		return;
@@ -200,12 +206,11 @@ function gradeNewSeasonStocks($showgrade = -1)
 
 		$verdict = stockIndicatorsVerdict($id);
 
-		$latest_verdict_of_this_id = $verdict;
-		$grades[$id] = $latest_verdict_of_this_id;
-		if (array_key_exists($latest_verdict_of_this_id, $statics))
-			$statics[$latest_verdict_of_this_id]++;
+		$grades[$id] = $verdict;
+		if (array_key_exists($verdict, $statics))
+			$statics[$verdict]++;
 		else
-			$statics[$latest_verdict_of_this_id]=1;
+			$statics[$verdict]=1;
 
 		// if ($jj>=10)
 		// 	break;
@@ -246,7 +251,7 @@ function gradeNewMonthStocks($showgrade = -1)
 {
 	$ids = array_keys(query_id_data_new_month());
 
-	if (count($ids) == 0)
+	if ($ids == null or count($ids) == 0)
 	{
 		echo_v(ERROR_VERBOSE, "[gradeNewMonthStocks] no new reports in new month!");
 		return;
@@ -262,12 +267,11 @@ function gradeNewMonthStocks($showgrade = -1)
 
 		$verdict = stockIndicatorsVerdict($id);
 
-		$latest_verdict_of_this_id = $verdict;
-		$grades[$id] = $latest_verdict_of_this_id;
-		if (array_key_exists($latest_verdict_of_this_id, $statics))
-			$statics[$latest_verdict_of_this_id]++;
+		$grades[$id] = $verdict;
+		if (array_key_exists($verdict, $statics))
+			$statics[$verdict]++;
 		else
-			$statics[$latest_verdict_of_this_id]=1;
+			$statics[$verdict]=1;
 
 		// if ($jj>=10)
 		// 	break;
@@ -318,12 +322,11 @@ function backTesting()
 
 		$verdict = stockIndicatorsVerdict($id);
 
-		$latest_verdict_of_this_id = $verdict;
-		$grades[$id] = $latest_verdict_of_this_id;
-		if (array_key_exists($latest_verdict_of_this_id, $statics))
-			$statics[$latest_verdict_of_this_id]++;
+		$grades[$id] = $verdict;
+		if (array_key_exists($verdict, $statics))
+			$statics[$verdict]++;
 		else
-			$statics[$latest_verdict_of_this_id]=1;
+			$statics[$verdict]=1;
 
 		if ($jj>=10)
 			break;
