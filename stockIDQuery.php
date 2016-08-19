@@ -96,16 +96,17 @@ function query_id_data_new_month()
 	return $iddata;
 }
 
-function query_id_data_no_latest_season()
+// For example, it's 2016/8/16, IFRS 2Q reports shall be there for all sii/otc but always some companies postpone
+// This query is here to sieve those ids. You can use gradeStocks to do experiment on this query
+function query_id_data_lack_latest_season()
 {
 	$latest_season = get_latest_scheduled_season(today());
 	$one_season_before_latest_season = backward_season($latest_season);
 
-	// For example, it's 2016/8/15, there should be 2Q reports for all ids but there are always some ids not available
-	// this query to sieve those ids
 	$query = "SELECT * FROM iddata WHERE (report = 'ci-cr' OR report = 'ci-ir') " .
 		"AND id in (SELECT id FROM xbrldata WHERE season = '" . $one_season_before_latest_season . "') " .
 		"AND id not in (SELECT id FROM xbrldata WHERE season = '" . $latest_season . "')";
+	echo $query . "<br>\n";
 
 	$result = mysql_query($query) or die('MySQL query error');
 
