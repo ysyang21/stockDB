@@ -1338,6 +1338,7 @@ function show_webpage_header($stage)
 	for ($ii=array_sum($a);$ii>=0;$ii--)
 	{
 		echo_n('        $(document).ready(function(){');
+		echo_n('	        $(".' . "stock$ii" . '").children().hide().end().children("a").show();');
 		echo_n('	        $(".' . "stock$ii" . '").click(function(){');
 		echo_n('                ($(".' . "stock$ii" . '").hasClass("highlight")) ?');
 		echo_n('        	        ($(".' . "stock$ii" . '").removeClass("highlight").children().hide().end().children("a").show()) :');

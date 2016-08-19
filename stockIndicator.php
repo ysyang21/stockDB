@@ -175,7 +175,7 @@ function gradeStocks($showgrade = -1)
 	{
 		if ($grade == (int)$showgrade or (int)$showgrade == -1)
 		{
-			echo_n ("<div class='stock" . $grades[$id] . "'>");
+			echo_n ("<div class='stock$grade'>");
 			stockIndicators($id, 'rookie'); // rookie, normal, expert
 			echo_n ("</div>"); // end of stockx
 
