@@ -124,6 +124,26 @@ function query_id_data_lack_latest_season()
 	return $iddata;
 }
 
+function query_id_data_by_season($season)
+{
+	$query = "SELECT * FROM iddata WHERE (report = 'ci-cr' OR report = 'ci-ir') AND id in (SELECT id FROM xbrldata WHERE season = " . $season . ")";
+
+	$result = mysql_query($query) or die('MySQL query error');
+
+	$iddata = array();
+	while($row = mysql_fetch_array($result)){
+		$id = $row['id'];
+		$iddata[$id] = new idData();
+		$iddata[$id]->id = $id;
+		$iddata[$id]->market = $row['market'];
+		$iddata[$id]->onyyyy = substr($row['ondate'], 0, 4);
+		$iddata[$id]->onmm = substr($row['ondate'], 5, 2);
+	}
+
+	echo_v(DEBUG_VERBOSE, "[query_id_data] There are " . count($iddata) . " stocks in table iddata.");
+	return $iddata;
+}
+
 function query_id_data_latest_season()
 {
 	$latest_season = get_latest_scheduled_season(today());

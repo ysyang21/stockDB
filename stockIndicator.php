@@ -310,7 +310,21 @@ function gradeNewMonthStocks($showgrade = -1)
 
 function backTesting()
 {
-	$ids = array_keys(query_id_data());
+	// point season to latest scheduled season
+	$season = get_latest_scheduled_season(today());
+
+	// from 201602 to 201001, there are 27 seasons to analyse
+	$ids = array();
+	for ($ii=0;$ii<1;$ii++)
+	{
+		$ids = array_keys(query_id_data_by_season($season));
+		echo "The season $season has " . count($ids) . " xbrl reports, oh yeah!<br>\n";
+
+		$season = backward_season($season);
+	}
+
+	if ($ids == null or count($ids) == 0)
+		return;
 
 	$grades = array();
 	$statics = array();
@@ -328,8 +342,8 @@ function backTesting()
 		else
 			$statics[$verdict]=1;
 
-		if ($jj>=10)
-			break;
+		// if ($jj>=10)
+		// 	break;
 		$jj++;
 	}
 
@@ -338,6 +352,9 @@ function backTesting()
 	$first = array_values($grades)[0];
 	$last = end($grades);
 
+	print_r($grades);
+
+/*
 	for ($ii=$first;$ii>=$last;$ii--)
 	{
 		// if ($ii == (int)$showgrade)
@@ -361,6 +378,7 @@ function backTesting()
 			$jj++;
 		// }
 	}
+*/
 }
 
 ?>

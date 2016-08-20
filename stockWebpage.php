@@ -1225,11 +1225,11 @@ function show_casestudy_updater($my_name)
 	echo_n('  <br>');
 
 	echo_n('  <table class="t1">');
-	echo_n('    <caption style="color:red">電腦挑土豆(按一下要等兩分半鐘左右才會算出來, 請耐心等待)</caption>');
+	echo_n('    <caption style="color:red">電腦挑土豆(按全部需要十分鐘左右才會算出來, 其他需要三分鐘)</caption>');
 	echo_n('    <tbody>');
 	echo_n('      <tr>');
 	echo_n('        <td>' . '已公佈財報');
-	echo_n('        <td>' . '<input type=button value="已公佈財報" onClick="self.location=' . "'" . $my_name . "?do=gradeStocks'" . '">');
+	echo_n('        <td>' . '<input type=button value="全部" onClick="self.location=' . "'" . $my_name . "?do=gradeStocks'" . '">');
 	for ($ii=array_sum($a);$ii>=0;$ii--)
 		echo_n('        <td>' . '<input type=button value="' . $ii . '分" onClick="self.location=' . "'" . $my_name . "?do=gradeStocks&grade=" . $ii . "'" . '">');
 	echo_n('    </tbody>');
@@ -1243,7 +1243,7 @@ function show_casestudy_updater($my_name)
 		echo_n('    <tbody>');
 		echo_n('      <tr>');
 		echo_n('        <td>' . '新月份營收');
-		echo_n('        <td>' . '<input type=button value="新月份營收" onClick="self.location=' . "'" . $my_name . "?do=gradeNewMonthStocks'" . '">');
+		echo_n('        <td>' . '<input type=button value="全部" onClick="self.location=' . "'" . $my_name . "?do=gradeNewMonthStocks'" . '">');
 		for ($ii=array_sum($a);$ii>=0;$ii--)
 			echo_n('        <td>' . '<input type=button value="' . $ii . '分" onClick="self.location=' . "'" . $my_name . "?do=gradeNewMonthStocks&grade=" . $ii . "'" . '">');
 		echo_n('    </tbody>');
@@ -1271,8 +1271,8 @@ function show_casestudy_updater($my_name)
 		echo_n('    <caption style="color:red">電腦挑新一季土豆(截止日前二十天已公布財報的股票)</caption>');
 		echo_n('    <tbody>');
 		echo_n('      <tr>');
-		echo_n('        <td>' . '新一季財報');
-		echo_n('        <td>' . '<input type=button value="新一季財報" onClick="self.location=' . "'" . $my_name . "?do=gradeNewSeasonStocks'" . '">');
+		echo_n('        <td>' . '部分新季報');
+		echo_n('        <td>' . '<input type=button value="全部" onClick="self.location=' . "'" . $my_name . "?do=gradeNewSeasonStocks'" . '">');
 		for ($ii=array_sum($a);$ii>=0;$ii--)
 			echo_n('        <td>' . '<input type=button value="' . $ii . '分" onClick="self.location=' . "'" . $my_name . "?do=gradeNewSeasonStocks&grade=" . $ii . "'" . '">');
 		echo_n('    </tbody>');
