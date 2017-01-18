@@ -12,7 +12,8 @@ function send_notify_mail($url)
 {
 	$to = "ysyang21@gmail.com"; //收件者
 	$subject = "APC website notification"; //信件標題
-	$msg = "$url id down";//信件內容
+	$msg = "Hi Yu-Sheng, \n\n  I'm sorry to notify you that $url is down. " .
+		"Please help to fix it asap, thanks a lot! \n\nBR, Yu-Sheng\n";//信件內容
 	$headers = "From: ysyang@tgic.org.tw"; //寄件者
 
 	if(mail("$to", "$subject", "$msg", "$headers"))
