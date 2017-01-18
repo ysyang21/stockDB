@@ -6,20 +6,20 @@ $job = "http://iwork.apc.gov.tw/JOB_COUNSELORS_WEB";
 
 $gmail = "ysyang21@gmail.com";
 
-$ys = "ysyang@tgic.org.tw";
-$lj = "9300lj@tgic.org.tw";
-$yg = "ygdry7331@tgic.org.tw";
-$wsc = "wsc@tgic.org.tw";
-$wh = "wenhan@tgic.org.tw";
-$east = "east0122@tgic.org.tw";
+$ys = "ysyang@tgic.org.tw";		// engineer 1
+$lj = "9300lj@tgic.org.tw";		// engineer 2
+$yg = "ygdry7331@tgic.org.tw";	// pm 1
+$wsc = "wsc@tgic.org.tw";		// pm 2
+$wh = "wenhan@tgic.org.tw";		// artist
+$east = "east0122@tgic.org.tw";	// director, don't send to him
 
 function send_notify_mail($from, $to, $url)
 {
 	$subject = "[APCJob] $url is down!!";
-	$msg = "Dear APCJob team, \n\n" .
-			"    I'm sorry to inform you that $url is down. Please help to fix it asap, thanks a lot! \n\n" .
+	$msg = "Dear Team APCJob,\n\n" .
+			"    I'm sorry to inform you that $url is down. Please help to fix it asap, thanks a lot!\n\n" .
 			"BR,\n" .
-			"Site Monitor\n";
+			"Guardian\n";
 	$headers = "From: $from";
 
 	if(mail("$to", "$subject", "$msg", "$headers"))
@@ -29,5 +29,6 @@ function send_notify_mail($from, $to, $url)
 }
 
 send_notify_mail($ys, $gmail, $hrf);
+send_notify_mail($ys, $yg, $job);
 
 ?>
