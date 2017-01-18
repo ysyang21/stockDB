@@ -1,12 +1,12 @@
 <?php
   $to = "ysyang@tgic.org.tw"; //收件者
-  $subject = "test"; //信件標題
-  $msg = "smtp發信測試";//信件內容
-  $headers = "from:paul@netktv.com"; //寄件者
+  $subject = "APC website notification"; //信件標題
+  $msg = "APC1 id down";//信件內容
+  $headers = "from: admin@netktv.com"; //寄件者
   
   if(mail("$to", "$subject", "$msg", "$headers")):
-   echo "信件已經發送成功。";//寄信成功就會顯示的提示訊息
+   echo "Mail is sent ok!";//寄信成功就會顯示的提示訊息
   else:
-   echo "信件發送失敗！";//寄信失敗顯示的錯誤訊息
+   echo "Mail is sent fail!";//寄信失敗顯示的錯誤訊息
   endif;
 ?>
