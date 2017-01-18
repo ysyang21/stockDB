@@ -4,7 +4,7 @@ $hrf = "http://iwork.apc.gov.tw/HRF_WEB";
 $hrb = "http://iwork.apc.gov.tw/HRB_WEB";
 $job = "http://iwork.apc.gov.tw/JOB_COUNSELORS_WEB";
 
-$netktv = "ysyang@netktv.com"
+$netktv = "ysyang@netktv.com";
 $gmail = "ysyang21@gmail.com";
 
 $ys = "ysyang@tgic.org.tw";		// engineer 1
