@@ -28,7 +28,7 @@ function send_notify_mail($from, $to, $url)
 		echo "Mail is sent fail!\n";
 }
 
-send_notify_mail($ys, $gmail, $hrf);
-send_notify_mail($ys, $ys, $job);
+//send_notify_mail($ys, $gmail, $hrf);
+send_notify_mail($ys, $yg, $job);
 
 ?>
