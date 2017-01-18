@@ -18,7 +18,7 @@ function send_notify_mail($from, $to, $url)
 {
 	$subject = "[APCJob] $url is down!!";
 	$msg = "Dear Team APCJob,\n\n" .
-			"    I'm sorry to inform you that url is down. Please help to fix it asap, thanks a lot!\n\n" .
+			"    I'm sorry to inform you that website in the title is down. Please help to fix it asap, thanks a lot!\n\n" .
 			"BR,\n" .
 			"Guardian\n";
 	$headers = "From: $from";
@@ -30,6 +30,7 @@ function send_notify_mail($from, $to, $url)
 }
 
 //send_notify_mail($ys, $gmail, $hrf);
-send_notify_mail($netktv, $ys, $job);
+send_notify_mail($gmail, $yg, $job);
+send_notify_mail($gmail, $ys, $job);
 
 ?>
