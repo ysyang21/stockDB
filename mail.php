@@ -4,6 +4,7 @@ $hrf = "http://iwork.apc.gov.tw/HRF_WEB";
 $hrb = "http://iwork.apc.gov.tw/HRB_WEB";
 $job = "http://iwork.apc.gov.tw/JOB_COUNSELORS_WEB";
 
+$netktv = "ysyang@netktv.com"
 $gmail = "ysyang21@gmail.com";
 
 $ys = "ysyang@tgic.org.tw";		// engineer 1
@@ -29,6 +30,6 @@ function send_notify_mail($from, $to, $url)
 }
 
 //send_notify_mail($ys, $gmail, $hrf);
-send_notify_mail($ys, $ys, $job);
+send_notify_mail($netktv, $ys, $job);
 
 ?>
