@@ -1,9 +1,5 @@
 <?php
 
-//$hrf = "https://iwork.apc.gov.tw/HRF_WEB";
-//$hrb = "https://iwork.apc.gov.tw/HRB_WEB";
-//$job = "https://iwork.apc.gov.tw/JOB_COUNSELORS_WEB";
-
 $netktv = "ysyang@netktv.com";
 
 $ys = "ysyang@tgic.org.tw";		// engineer 1
@@ -15,26 +11,27 @@ $east = "east0122@tgic.org.tw";	// director, don't send to him
 
 function send_notify_mail($to, $url, $status, $from)
 {
-	$msg_oh = "Dear Team APCJob,\n\n" .
+	$msg_down = "Dear Team APCJob,\n\n" .
 			"    I'm sorry to inform you that website in the title is down. Please help to fix it asap, thanks a lot QQ!\n\n" .
 			"BR,\n" .
 			"Guardian\n";
 
-	$msg_ok = "Dear Team APCJob,\n\n" .
-			"    I'm happy to inform you that website in the title is ok. You can enjoy additional peaceful hour ^^!\n\n" .
+	$msg_fine = "Dear Team APCJob,\n\n" .
+			"    I'm happy to inform you that website in the title is fine. You can enjoy additional peaceful hour ^^!\n\n" .
 			"BR,\n" .
 			"Guardian\n";
 
-	if ($status=='oh')
+	if ($status=='down')
 	{
-		mail($to, "[APCJob] $url is down!!", $msg_oh, "From: $from");
+		mail($to, "[APCJob] $url is down!!", $msg_down, "From: $from");
 	}
-	else if ($status=='ok')
+	else if ($status=='fine')
 	{
-		mail($to, "[APCJob] $url is fine!!", $msg_ok, "From: $from");
+		mail($to, "[APCJob] $url is fine!!", $msg_fine, "From: $from");
 	}
 	else
 	{
+		//mail($to, "[APCJob] $url is else!!", $msg_else, "From: $from");
 	}
 }
 
