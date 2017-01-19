@@ -39,8 +39,12 @@ function send_notify_mail2($to, $url, $from)
 		echo "Mail is sent fail!<br>";
 }
 
-send_notify_mail($ys, $job, $netktv);				// this will be ok
-send_notify_mail($ys, $job, "ysyang@tgic.org.tw");	// to and from can't be in the same domain, or it will be regarded as a fraud mail
-send_notify_mail2($ys, $job, $netktv);				// $url can't be in the message, or it will be regarded as a fraud mail
+// to and from can't be in the same domain, or it will be regarded as a spoofing mail and thrown into garbage folder
+//send_notify_mail($ys, $job, "ysyang@tgic.org.tw");
+
+// a link can't be in the message, or it will be regarded as a dangerous mail and thrown into garbage folder
+//send_notify_mail2($ys, $job, $netktv);
+
+send_notify_mail($ys, $job, $netktv);
 
 ?>
