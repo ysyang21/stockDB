@@ -25,9 +25,9 @@ function send_notify_mail($to, $url, $status, $from)
 			"BR,\n" .
 			"Guardian\n";
 
-	if (status=='oh')
+	if ($status=='oh')
 		mail("$to@tgic.org.tw", "[APCJob] $url is down!!", $msg_oh, "From: $from");
-	else if (status=='ok')
+	else if ($status=='ok')
 		mail("$to@tgic.org.tw", "[APCJob] $url is fine!!", $msg_ok, "From: $from");
 }
 
