@@ -8,7 +8,5 @@ for ((i=0; i<${#urls[@]}; i++)); do
     cnt=`wget ${urls[$i]} -O - --no-check-certificate |wc -c`
     if [ $cnt != ${cnts[$i]} ]; then
         /opt/lampp/bin/php /opt/lampp/htdocs/stockDB/mail.php ${urls[$i]} 'down'
-    else
-        /opt/lampp/bin/php /opt/lampp/htdocs/stockDB/mail.php ${urls[$i]} 'fine'
     fi
 done
