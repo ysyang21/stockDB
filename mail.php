@@ -6,12 +6,12 @@
 
 $netktv = "ysyang@netktv.com";
 
-$ys = "ysyang";		// engineer 1
-$lj = "9300lj";		// engineer 2
-$yg = "ygdry7331";	// pm 1
-$wsc = "wsc";		// pm 2
-$wh = "wenhan";		// artist
-$east = "east0122";	// director, don't send to him
+$ys = "ysyang@tgic.org.tw";		// engineer 1
+$lj = "9300lj@tgic.org.tw";		// engineer 2
+$yg = "ygdry7331@tgic.org.tw";	// pm 1
+$wsc = "wsc@tgic.org.tw";		// pm 2
+$wh = "wenhan@tgic.org.tw";		// artist
+$east = "east0122@tgic.org.tw";	// director, don't send to him
 
 function send_notify_mail($to, $url, $status, $from)
 {
@@ -26,9 +26,16 @@ function send_notify_mail($to, $url, $status, $from)
 			"Guardian\n";
 
 	if ($status=='oh')
-		mail("$to@tgic.org.tw", "[APCJob] $url is down!!", $msg_oh, "From: $from");
+	{
+		mail($to, "[APCJob] $url is down!!", $msg_oh, "From: $from");
+	}
 	else if ($status=='ok')
-		mail("$to@tgic.org.tw", "[APCJob] $url is fine!!", $msg_ok, "From: $from");
+	{
+		mail($to, "[APCJob] $url is fine!!", $msg_ok, "From: $from");
+	}
+	else
+	{
+	}
 }
 
 function send_notify_mail2($to, $url, $from)
@@ -38,7 +45,7 @@ function send_notify_mail2($to, $url, $from)
 			"BR,\n" .
 			"Guardian\n"; // $url in the mail content, will cause the mail server treat it as dangerous
 
-	if(mail("$to@tgic.org.tw", "[APCJob] $url is down!!", "$msg", "From: $from"))
+	if(mail($to, "[APCJob] $url is down!!", $msg, "From: $from"))
 		echo "Mail is sent ok!<br>";
 	else
 		echo "Mail is sent fail!<br>";
