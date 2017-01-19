@@ -36,7 +36,7 @@ function send_notify_mail2($to, $url, $from)
 	$msg = "Dear Team APCJob,\n\n" .
 			"    I'm sorry to inform you that $url is down. Please help to fix it asap, thanks a lot!\n\n" .
 			"BR,\n" .
-			"Guardian\n";
+			"Guardian\n"; // $url in the mail content, will cause the mail server treat it as dangerous
 
 	if(mail("$to@tgic.org.tw", "[APCJob] $url is down!!", "$msg", "From: $from"))
 		echo "Mail is sent ok!<br>";
@@ -47,7 +47,7 @@ function send_notify_mail2($to, $url, $from)
 // to and from can't be in the same domain, or it will be regarded as a spoofing mail and thrown into garbage folder
 //send_notify_mail($ys, $job, "ysyang@tgic.org.tw");
 
-// a link can't be in the message, or it will be regarded as a dangerous mail and thrown into garbage folder
+// a link can't be in the mail content, or it will be regarded as a dangerous mail and thrown into garbage folder
 //send_notify_mail2($ys, $job, $netktv);
 
 send_notify_mail($ys, $argv[1], $argv[2], $netktv);
