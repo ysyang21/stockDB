@@ -55,6 +55,6 @@ function send_notify_mail2($to, $url, $from)
 //send_notify_mail2($ys, $job, $netktv);
 
 send_notify_mail($ys, $argv[1], $argv[2], $netktv);
-send_notify_mail($yg, $argv[1], $argv[2], $netktv);
+//send_notify_mail($yg, $argv[1], $argv[2], $netktv);
 
 ?>

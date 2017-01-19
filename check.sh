@@ -7,7 +7,7 @@ cnts=(47000 650 650)
 
 for ((i=0; i<${#urls[@]}; i++)); do
     cnt=`wget ${urls[$i]} -O - --no-check-certificate |wc -c`
-    if [ $cnt > ${cnts[$i]} ]; then
+    if [ $cnt -gt ${cnts[$i]} ]; then
         /opt/lampp/bin/php /opt/lampp/htdocs/stockDB/mail.php ${urls[$i]} 'down'
     fi
 done
