@@ -1367,6 +1367,7 @@ function show_webpage_header($stage)
 
 	echo_n('  </head>');
 	echo_n('  <body>');
+	echo_n('  <?php include_once("analyticstracking.php") ?>');
 
 	echo_n('  <input type=button value="Frontend" onClick="self.location=' . "'index.php'" . '">');
 	echo_n('  <input type=button value="CaseStudy" onClick="self.location=' . "'case.php'" . '">');
