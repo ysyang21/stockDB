@@ -5,15 +5,16 @@ $dbhost = '127.0.0.1';
 $dbuser = 'root';
 $dbpass = 'mouton88';
 $dbname = 'stockDB';
-$conn = mysql_connect($dbhost, $dbuser, $dbpass) or die('Error with MySQL connection');
-mysql_query("SET NAMES 'utf8'");
-mysql_select_db($dbname);
+$conn = mysqli_connect($dbhost, $dbuser, $dbpass) or die('Error with MySQL connection');
+mysqli_query($conn, "SET NAMES 'utf8'");
+mysqli_select_db($conn, $dbname);
 
 function exist_by($query)
 {
-	$result = mysql_query($query) or die('MySQL query error');
+	global $conn;
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 	$exist=false;
-	while( $row = mysql_fetch_array( $result)){
+	while( $row = mysqli_fetch_array($result)){
 		$exist=true;
 	}
 	return $exist;

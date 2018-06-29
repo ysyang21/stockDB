@@ -53,11 +53,12 @@ class idData
 
 function query_id_data()
 {
+	global $conn;
 	$query = "SELECT * FROM iddata WHERE report = 'ci-cr' OR report = 'ci-ir'";
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
 	$iddata = array();
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$id = $row['id'];
 		$iddata[$id] = new idData();
 		$iddata[$id]->id = $id;
@@ -72,6 +73,7 @@ function query_id_data()
 
 function query_id_data_new_month()
 {
+	global $conn;
 	// 輸入日期, 按照財報死線推算肯定已經在monthdata的最新月營收月份季度
 	$latest_month = get_latest_scheduled_month(today());
 
@@ -80,10 +82,10 @@ function query_id_data_new_month()
 
 	$query = "SELECT * FROM iddata WHERE (report = 'ci-cr' OR report = 'ci-ir') AND id in (SELECT id FROM monthdata WHERE month = " . $one_month_before_latest_month . ")";
 
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
 	$iddata = array();
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$id = $row['id'];
 		$iddata[$id] = new idData();
 		$iddata[$id]->id = $id;
@@ -100,6 +102,7 @@ function query_id_data_new_month()
 // This query is here to sieve those ids. You can use gradeStocks to do experiment on this query
 function query_id_data_lack_latest_season()
 {
+	global $conn;
 	$latest_season = get_latest_scheduled_season(today());
 	$one_season_before_latest_season = backward_season($latest_season);
 
@@ -108,10 +111,10 @@ function query_id_data_lack_latest_season()
 		"AND id not in (SELECT id FROM xbrldata WHERE season = '" . $latest_season . "')";
 	echo $query . "<br>\n";
 
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
 	$iddata = array();
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$id = $row['id'];
 		$iddata[$id] = new idData();
 		$iddata[$id]->id = $id;
@@ -126,12 +129,13 @@ function query_id_data_lack_latest_season()
 
 function query_id_data_by_season($season)
 {
+	global $conn;
 	$query = "SELECT * FROM iddata WHERE (report = 'ci-cr' OR report = 'ci-ir') AND id in (SELECT id FROM xbrldata WHERE season = " . $season . ")";
 
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($query) or die('MySQL query error');
 
 	$iddata = array();
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$id = $row['id'];
 		$iddata[$id] = new idData();
 		$iddata[$id]->id = $id;
@@ -150,10 +154,10 @@ function query_id_data_latest_season()
 
 	$query = "SELECT * FROM iddata WHERE (report = 'ci-cr' OR report = 'ci-ir') AND id in (SELECT id FROM xbrldata WHERE season = " . $latest_season . ")";
 
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
 	$iddata = array();
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$id = $row['id'];
 		$iddata[$id] = new idData();
 		$iddata[$id]->id = $id;
@@ -168,15 +172,16 @@ function query_id_data_latest_season()
 
 function query_id_data_new_season()
 {
+	global $conn;
 	$latest_season = get_latest_scheduled_season(today());
 	$might_have_been_published_season = forward_season($latest_season);
 
 	$query = "SELECT * FROM iddata WHERE (report = 'ci-cr' OR report = 'ci-ir') AND id in (SELECT id FROM xbrldata WHERE season = " . $might_have_been_published_season . ")";
 
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
 	$iddata = array();
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$id = $row['id'];
 		$iddata[$id] = new idData();
 		$iddata[$id]->id = $id;
@@ -191,12 +196,13 @@ function query_id_data_new_season()
 
 function query_id_data_sii()
 {
+	global $conn;
 	$iddata = array();
 
 	$query = "SELECT * FROM iddata WHERE market = 'sii'";
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$id = $row['id'];
 		$iddata[$id] = new idData();
 		$iddata[$id]->id = $id;
@@ -211,12 +217,13 @@ function query_id_data_sii()
 
 function query_id_data_otc()
 {
+	global $conn;
 	$iddata = array();
 
 	$query = "SELECT * FROM iddata WHERE market = 'otc'";
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$id = $row['id'];
 		$iddata[$id] = new idData();
 		$iddata[$id]->id = $id;
@@ -231,12 +238,13 @@ function query_id_data_otc()
 
 function query_id_data_by_ys($year, $season)
 {
+	global $conn;
 	$iddata = array();
 
 	$query = "SELECT * FROM iddata";
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$onyyyy = substr($row['ondate'], 0, 4);
 		$onmm = substr($row['ondate'], 5, 2);
 
@@ -257,12 +265,13 @@ function query_id_data_by_ys($year, $season)
 
 function query_id_data_by_ym($year, $month)
 {
+	global $conn;
 	$iddata = array();
 
 	$query = "SELECT * FROM iddata";
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$onyyyy = substr($row['ondate'], 0, 4);
 		$onmm = substr($row['ondate'], 5, 2);
 
@@ -284,11 +293,12 @@ function query_id_data_by_ym($year, $month)
 
 function query_id_data_by_id($id)
 {
+	global $conn;
 	$query = "SELECT * FROM iddata WHERE id = " . $id;
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		if ($id == $row['id'])
 		{
 			$stock = new idData();
@@ -309,10 +319,11 @@ function query_id_data_by_id($id)
 
 function query_name_by_id($id)
 {
+	global $conn;
 	$name = '';
 	$query = "SELECT name FROM iddata WHERE id = " . $id;
-	$result = mysql_query($query) or die('MySQL query error');
-	while($row = mysql_fetch_array($result)){
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
+	while($row = mysqli_fetch_array($result)){
 		$name = $row['name'];
 	}
 
@@ -323,10 +334,11 @@ function query_name_by_id($id)
 
 function query_id_by_name($name)
 {
+	global $conn;
 	$id = '';
 	$query = "SELECT id FROM iddata WHERE name = '" . $name . "'";
-	$result = mysql_query($query) or die('MySQL query error');
-	while($row = mysql_fetch_array($result)){
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
+	while($row = mysqli_fetch_array($result)){
 		$id = $row['id'];
 	}
 

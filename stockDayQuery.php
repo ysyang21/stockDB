@@ -40,11 +40,12 @@ function query_day_price_by_id_y($id, $year, $dayprices)
 
 function query_day_price_by_id_since($id, $date)
 {
+	global $conn;
 	$query = "SELECT date, close FROM daydata WHERE id = '" . $id . "' AND date >= '" . $date . "' ORDER BY date DESC;";
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 	$kline = array();
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		if (is_numeric($row[1]))
 			$kline[$row[0]] = $row[1];
 	}
@@ -54,10 +55,11 @@ function query_day_price_by_id_since($id, $date)
 
 function query_day_price_lochs_by_id_since($id, $date)
 {
+	global $conn;
 	$query = "SELECT date, low, open, close, high, stock FROM daydata WHERE id = '" . $id . "' AND date >= '" . $date . "' ORDER BY date DESC;";
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 	$kline = array();
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$kline[$row[0]] = array($row[1], $row[2], $row[3], $row[4], $row[5]);
 	}
 	return $kline;
@@ -87,11 +89,12 @@ function get_latest_sii_date_before($date, $sii_kline)
 
 function query_day_prices_sorted_on_date($date)
 {
+	global $conn;
 	$query = "SELECT id, close FROM daydata WHERE date = '" . $date . "' AND id != 'sii' AND id != 'otc' ORDER BY close DESC";
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 	$kline = array();
-	while( $row = mysql_fetch_array( $result)){
+	while( $row = mysqli_fetch_array( $result)){
 		$kline[$row[0]] = $row[1];
 	}
 	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");

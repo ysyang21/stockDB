@@ -47,16 +47,17 @@ class perData
 
 function query_xdr_data_by_id($id)
 {
+	global $conn;
 	$xdrdata = array();
 
 	// Does it matter to set ORDER DESC or ORDER ASC?
 	// if DESC, a little different from moneyDJ values
 	$query = "SELECT * FROM xdrdata WHERE id = '" . $id . "' ORDER BY date";
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
 	$ii = 0;
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$xdrdata[$ii] = new xdrData();
 		$xdrdata[$ii]->date = $row['date'];
 		$xdrdata[$ii]->market = $row['market'];
@@ -79,16 +80,17 @@ function query_xdr_data_by_id($id)
 
 function query_xdr_data_by_id_y($id, $year)
 {
+	global $conn;
 	$xdrdata = array();
 
 	// Does it matter to set ORDER DESC or ORDER ASC?
 	// if DESC, a little different from moneyDJ values
 	$query = "SELECT * FROM xdrdata WHERE id = '" . $id . "' AND Year(date) = '" . $year . "' ORDER BY date";
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
 	$ii = 0;
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$xdrdata[$ii] = new xdrData();
 		$xdrdata[$ii]->date = $row['date'];
 		$xdrdata[$ii]->market = $row['market'];
@@ -111,14 +113,15 @@ function query_xdr_data_by_id_y($id, $year)
 
 function query_xr_data_by_id($id)
 {
+	global $conn;
 	$xr = 0.0;
 
 	$query = "SELECT xr FROM xdrdata WHERE id = '" . $id . "' AND market = 'sii' AND Year(date) = '" . date("Y") . "'";
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
 	$kk = 0;
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$xr = $row['xr'];
 		echo_v(DEBUG_VERBOSE, "[query_xr_data_by_id] stock " . $id . ", xr= " . $xr);
 		$kk++;
@@ -133,10 +136,10 @@ function query_xr_data_by_id($id)
 
 	$query = "SELECT xr FROM xdrdata WHERE id = '" . $id . "' AND market = 'otc' AND Year(date) = '" . date("Y") . "'";
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
 	$jj = 0;
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$xr = $row['xr'];
 		echo_v(DEBUG_VERBOSE, "[query_xr_data_by_id] stock " . $id . ", xr= " . $xr);
 		$jj++;
@@ -151,10 +154,10 @@ function query_xr_data_by_id($id)
 
 	$query = "SELECT xr FROM xdrdata WHERE id = '" . $id . "' AND market = 'bod' AND Year(date) = '" . date("Y") . "'";
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
 	$ii = 0;
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$xr = $row['xr'];
 		echo_v(DEBUG_VERBOSE, "[query_xr_data_by_id] stock " . $id . ", xr= " . $xr);
 		$ii++;

@@ -19,13 +19,14 @@ $id_seasonly_xbrl = [];
 
 function prepare_id_seasonly_xbrl($id)
 {
+	global $conn;
 	global $id_seasonly_xbrl;
 
 	$query = "SELECT season, revenue, stock, eps, eps2, publish FROM xbrldata WHERE id = " . $id;
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 	$id_seasonly_xbrl = [];
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$id_seasonly_xbrl[$row[0]] = array((int)$row[1], (int)$row[2], (float)$row[3], (float)$row[4], $row[5]);
 	}
 
@@ -34,11 +35,12 @@ function prepare_id_seasonly_xbrl($id)
 
 function query_xbrl_inventory($id)
 {
+	global $conn;
 	$query = "SELECT season, inventory FROM xbrldata WHERE id = " . $id;
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 	$inventory = [];
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$inventory[$row[0]] = $row[1];
 	}
 
@@ -48,11 +50,12 @@ function query_xbrl_inventory($id)
 
 function query_xbrl_income_statement($id)
 {
+	global $conn;
 	$query = "SELECT season, revenue, income, eps, eps2 FROM xbrldata WHERE id = " . $id;
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 	$inventory = [];
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$inventory[$row[0]] = $row[1];
 	}
 
@@ -191,6 +194,7 @@ function query_year_eps2($id, $year)
 
 function query_est_profitax_over_revenue($id, $date)
 {
+	global $conn;
 	$ratio = -1;
 
 	$year = substr($date, 0, 4);
@@ -286,8 +290,8 @@ function query_est_profitax_over_revenue($id, $date)
 		" OR season = " . $season_list[3] . ") " .
 		"ORDER BY season DESC";
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
-	while($row = mysql_fetch_array($result)){
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
+	while($row = mysqli_fetch_array($result)){
 		$ratio = $row[0];
 	}
 	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
@@ -297,11 +301,12 @@ function query_est_profitax_over_revenue($id, $date)
 // if given xbrl is published in given date
 function query_xbrl_on_date($id, $year, $season, $date)
 {
+	global $conn;
 	$publish = "";
 	$query = "SELECT publish FROM xbrldata WHERE id = " . $id . " AND season = " . $year . $season . " AND report = 'ci-cr'";
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
-	while($row = mysql_fetch_array($result)){
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
+	while($row = mysqli_fetch_array($result)){
 		$publish = $row[0];
 	}
 	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
@@ -318,8 +323,8 @@ function query_xbrl_on_date($id, $year, $season, $date)
 		$publish = "";
 		$query = "SELECT publish FROM xbrldata WHERE id = " . $id . " AND season = " . $year . $season . " AND report = 'ci-ir'";
 		stopwatch_inter();
-		$result = mysql_query($query) or die('MySQL query error');
-		while($row = mysql_fetch_array($result)){
+		$result = mysqli_query($conn, $query) or die('MySQL query error');
+		while($row = mysqli_fetch_array($result)){
 			$publish = $row[0];
 		}
 		echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
@@ -341,14 +346,15 @@ function query_xbrl_on_date($id, $year, $season, $date)
 // get all dates either new monData or new xbrlData is coming
 function query_evaluate_dates_since($id, $since_date, $sii_kline)
 {
+	global $conn;
 	$date = $since_date;
 	$evaluate_dates = array();
 
 	$query = "SELECT publish FROM xbrldata WHERE id = " . $id;
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$publish = $row[0];
 		if (strtotime($date) <= strtotime($publish) and strtotime(today()) >= strtotime($publish))
 			array_push($evaluate_dates, $publish);
@@ -429,6 +435,7 @@ class xbrlData
 function load_seasonly_xbrl($id, $num)
 {
 	global $season_enum;
+	global $conn;
 
 	$latest_season = get_latest_xbrldata_season($id);
 
@@ -460,10 +467,10 @@ function load_seasonly_xbrl($id, $num)
 
 	$sql = $sql . ") ORDER BY season DESC";
 
-	$result = mysql_query($sql) or die('MySQL query error' . $sql);
+	$result = mysqli_query($conn, $sql) or die('MySQL query error' . $sql);
 
 	$jj = 0;
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$season = $row[$jj++];
 		$xbrl = array();
 		$xbrl['current'] = new xbrlData();
@@ -520,11 +527,11 @@ function load_seasonly_xbrl($id, $num)
 
 	$sql = $sql . ") ORDER BY season DESC";
 
-	$result = mysql_query($sql) or die('MySQL query error' . $sql);
+	$result = mysqli_query($conn, $sql) or die('MySQL query error' . $sql);
 
 	$jj = 0;
 	$ii = 0;
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$season = $row[$jj++];
 		//$xbrl = $xbrls[$season];
 		$xbrl = $xbrls[$ii++];
@@ -675,6 +682,7 @@ function load_seasonly_xbrl($id, $num)
 function load_yearly_xbrl($id, $num)
 {
 	global $season_enum;
+	global $conn;
 
 	$latest_season = get_latest_xbrldata_season($id);
 
@@ -706,10 +714,10 @@ function load_yearly_xbrl($id, $num)
 
 	$sql = $sql . ") ORDER BY season DESC";
 
-	$result = mysql_query($sql) or die('MySQL query error' . $sql);
+	$result = mysqli_query($conn, $sql) or die('MySQL query error' . $sql);
 
 	$jj = 0;
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$season = $row[$jj++];
 		if (substr($season, 4, 2) != '04')
 		{

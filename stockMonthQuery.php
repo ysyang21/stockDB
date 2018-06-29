@@ -18,12 +18,13 @@ $id_monthly_revenue = [];
 function prepare_id_monthly_revenue($id)
 {
 	global $id_monthly_revenue;
+	global $conn;
 
 	$query = "SELECT month, thisMonth, yearAgo FROM monthdata WHERE id = " . $id;
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 	$id_monthly_revenue = [];
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$id_monthly_revenue[$row[0]] = array((int)$row[1], (int)$row[2]);
 	}
 
@@ -34,6 +35,7 @@ function query_est_monthly_revenue_yoy($pepo, $year, $month, $day)
 {
 	global $yearmonth_enum;
 	global $id_monthly_revenue;
+	global $conn;
 	$yoy1 = 0;
 	$yoy2 = 0;
 	$id = $pepo->id;
@@ -81,6 +83,7 @@ function query_est_monthly_revenue_yoy($pepo, $year, $month, $day)
 
 	if (count($month_list)==6)
 	{
+
 		$query = "SELECT month, ((thisMonth/yearAgo)-1) FROM monthdata WHERE id = " . $id .
 			" AND (month = " . $month_list[0] .
 			" OR month = " . $month_list[1] .
@@ -88,8 +91,8 @@ function query_est_monthly_revenue_yoy($pepo, $year, $month, $day)
 			" OR month = " . $month_list[3] .
 			" OR month = " . $month_list[4] .
 			" OR month = " . $month_list[5] . ")";
-		$result = mysql_query($query) or die('MySQL query error');
-		while($row = mysql_fetch_array($result)){
+		$result = mysqli_query($conn, $query) or die('MySQL query error');
+		while($row = mysqli_fetch_array($result)){
 			$pepo->monthly_revenue_yoy[$row[0]]=$row[1];
 		}
 		echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
@@ -110,8 +113,8 @@ function query_est_monthly_revenue_yoy($pepo, $year, $month, $day)
 			" OR month = " . $month_list[4] .
 			" OR month = " . $month_list[5] .
 			" OR month = " . $month_list[6] . ")";
-		$result = mysql_query($query) or die('MySQL query error');
-		while($row = mysql_fetch_array($result)){
+		$result = mysqli_query($conn, $query) or die('MySQL query error');
+		while($row = mysqli_fetch_array($result)){
 			$pepo->monthly_revenue_yoy[$row[0]]=$row[1];
 		}
 		echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
@@ -122,9 +125,9 @@ function query_est_monthly_revenue_yoy($pepo, $year, $month, $day)
 		$query = "SELECT month, thisMonth FROM monthdata WHERE id = " . $id .
 			" AND (month = " . (string)((int)$year-1) . "02" .
 			" OR month = " . (string)((int)$year-1) . "01)";
-		$result = mysql_query($query) or die('MySQL query error');
+		$result = mysqli_query($conn, $query) or die('MySQL query error');
 		$revenue = array();
-		while($row = mysql_fetch_array($result)){
+		while($row = mysqli_fetch_array($result)){
 			$revenue[$row[0]] = $row[1];
 		}
 		echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
@@ -142,15 +145,16 @@ function query_est_monthly_revenue_yoy($pepo, $year, $month, $day)
 function query_est_monthly_revenue_yoy_v0($pepo, $year, $month, $day)
 {
 	global $yearmonth_enum;
+	global $conn;
 	$yoy1 = 0;
 	$yoy2 = 0;
 	$id = $pepo->id;
 
 	$query = "SELECT month FROM monthdata WHERE id = " . $id . " AND month = " . $yearmonth_enum[array_search($year.$month, $yearmonth_enum) + 1];
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 	$ii=0;
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$ii++;
 	}
 	echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
@@ -203,8 +207,8 @@ function query_est_monthly_revenue_yoy_v0($pepo, $year, $month, $day)
 			" OR month = " . $month_list[3] .
 			" OR month = " . $month_list[4] .
 			" OR month = " . $month_list[5] . ")";
-		$result = mysql_query($query) or die('MySQL query error');
-		while($row = mysql_fetch_array($result)){
+		$result = mysqli_query($conn, $query) or die('MySQL query error');
+		while($row = mysqli_fetch_array($result)){
 			$pepo->monthly_revenue_yoy[$row[0]]=$row[1];
 		}
 		echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
@@ -225,8 +229,8 @@ function query_est_monthly_revenue_yoy_v0($pepo, $year, $month, $day)
 			" OR month = " . $month_list[4] .
 			" OR month = " . $month_list[5] .
 			" OR month = " . $month_list[6] . ")";
-		$result = mysql_query($query) or die('MySQL query error');
-		while($row = mysql_fetch_array($result)){
+		$result = mysqli_query($conn, $query) or die('MySQL query error');
+		while($row = mysqli_fetch_array($result)){
 			$pepo->monthly_revenue_yoy[$row[0]]=$row[1];
 		}
 		echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
@@ -237,9 +241,9 @@ function query_est_monthly_revenue_yoy_v0($pepo, $year, $month, $day)
 		$query = "SELECT month, thisMonth FROM monthdata WHERE id = " . $id .
 			" AND (month = " . (string)((int)$year-1) . "02" .
 			" OR month = " . (string)((int)$year-1) . "01)";
-		$result = mysql_query($query) or die('MySQL query error');
+		$result = mysqli_query($conn, $query) or die('MySQL query error');
 		$revenue = array();
-		while($row = mysql_fetch_array($result)){
+		while($row = mysqli_fetch_array($result)){
 			$revenue[$row[0]] = $row[1];
 		}
 		echo_v(LOG_VERBOSE, stopwatch_inter() . " ms to ". formatstr($query) . "[" . __FUNCTION__ . "]");
@@ -257,10 +261,11 @@ function query_est_monthly_revenue_yoy_v0($pepo, $year, $month, $day)
 // Check if monthData of (year.month) exist on given date
 function query_monthly_revenue($id, $month)
 {
+	global $conn;
 	$revenue = -1;
 	$query = "SELECT thisMonth FROM monthdata WHERE id = " . $id . " AND month = " . $month;
-	$result = mysql_query($query) or die('MySQL query error');
-	while($row = mysql_fetch_array($result)){
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
+	while($row = mysqli_fetch_array($result)){
 		$revenue = $row[0];
 	}
 	if($revenue == -1)
@@ -270,6 +275,7 @@ function query_monthly_revenue($id, $month)
 
 function query_month_revenue_yoys_sorted_on_month($month)
 {
+	global $conn;
 	$yoys = array();
 
 	//$sql = "SELECT id, (thisMonth/yearAgo)-1 FROM monthdata WHERE month = '" . $month . "' ORDER BY (thisMonth/yearAgo) DESC";
@@ -281,9 +287,9 @@ function query_month_revenue_yoys_sorted_on_month($month)
 			"' AND m.yearAgo != 0 ORDER BY (m.thisMonth/m.yearAgo) DESC";
 	//echo_v(ALARM_VERBOSE, "[query_id_by_month_revenue_yoy_topN_from_start] sql = ". $sql);
 	stopwatch_inter();
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		//$yoys[$row['id']] = $row['(thisMonth/yearAgo)-1'];
 		$yoys[$row[0]] = $row[1];
 	}
@@ -306,6 +312,7 @@ class monthData
 function load_monthly_revenue($id, $num)
 {
 	global $yearmonth_enum;
+	global $conn;
 	$year = date('Y');
 	$month = date('m');
 
@@ -319,8 +326,8 @@ function load_monthly_revenue($id, $num)
 	{
 		$possible_yearmonth = $yearmonth_enum[$start];
 		$query = "SELECT month FROM monthdata WHERE id = " . $id . " AND month = " . $possible_yearmonth;
-		$result = mysql_query($query) or die('MySQL query error');
-		while($row = mysql_fetch_array($result)){
+		$result = mysqli_query($conn, $query) or die('MySQL query error');
+		while($row = mysqli_fetch_array($result)){
 			$found = TRUE;
 		}
 		$start++;
@@ -343,11 +350,11 @@ function load_monthly_revenue($id, $num)
 	for ($ii=1;$ii<count($month_list);$ii++)
 		$query = $query . " OR month = " . $month_list[$ii];
 	$query = $query . ") ORDER BY month DESC";
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
 	$months = array();
 	$ii=0;
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$months[$ii] = new monthData();
 		$months[$ii]->month = $row[0];
 		$months[$ii]->current = $row[1];
@@ -360,13 +367,14 @@ function load_monthly_revenue($id, $num)
 
 function query_id_by_month_revenue_yoy_topN_from_start($month, $start, $topN)
 {
+	global $conn;
 	$yoys = array();
 
 	$query = "SELECT id, (thisMonth/yearAgo)-1 FROM monthdata WHERE month = '" . $month . "' ORDER BY (thisMonth/yearAgo) DESC";
 	//echo_v(ALARM_VERBOSE, "[query_id_by_month_revenue_yoy_topN_from_start] sql = ". $sql);
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		//$yoys[$row['id']] = $row['(thisMonth/yearAgo)-1'];
 		$yoys[$row[0]] = $row[1];
 	}
@@ -383,6 +391,7 @@ function query_id_by_month_revenue_yoy_topN_from_start($month, $start, $topN)
 function get_latest_monthdata_month($id)
 {
 	global $yearmonth_enum;
+	global $conn;
 
 	// 輸入日期, 按照財報死線推算肯定已經在monthdata的最新月營收月份季度
 	$latest_scheduled_month = get_latest_scheduled_month(today());
@@ -391,9 +400,9 @@ function get_latest_monthdata_month($id)
 	$might_have_been_published_month = $yearmonth_enum[array_search($latest_scheduled_month, $yearmonth_enum) - 1];
 
 	$query = "SELECT month FROM monthdata WHERE id = " . $id . " AND month = " . $might_have_been_published_month;
-	$result = mysql_query($query) or die('MySQL query error');
+	$result = mysqli_query($conn, $query) or die('MySQL query error');
 	$ii=0;
-	while($row = mysql_fetch_array($result)){
+	while($row = mysqli_fetch_array($result)){
 		$ii++;
 	}
 
